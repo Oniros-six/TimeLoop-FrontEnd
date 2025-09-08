@@ -2,7 +2,7 @@
 // Import global de estilos
 import "../styles/global.css";
 // import Footer from "@/components/footer/Footer.astro";
-import Navbar from "@/components/navbar/Navbar.astro";
+import Navbar from "@/components/navbar/Navbar";
 ---
 
 <!doctype html>
@@ -21,9 +21,11 @@ import Navbar from "@/components/navbar/Navbar.astro";
     <meta name="generator" content={Astro.generator} />
     <title>TimeLoop</title>
   </head>
-  <body class="flex flex-col bg-[hsl(var(--background))]">
-    <Navbar />
-    <slot />
+  <body class="flex flex-col bg-background">
+    <Navbar client:load/>
+    <main class="p-2">
+      <slot/>
+    </main>
     <!-- <Footer /> -->
   </body>
 </html>
