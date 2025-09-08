@@ -84,7 +84,7 @@ export default function FeaturesSection() {
         <div className="text-center mt-10">
           <p className="text-lg text-foreground mb-6">¡Los cupos de pre-lanzamiento son limitados!</p>
           <div className="inline-flex items-center gap-2 text-accent font-medium">
-            //TODO Esto tendria que ser un boton
+            {/* //TODO Esto tendria que ser un boton */}
             <span>Unete ahora!</span>
             <Zap className="w-4 h-4" />
           </div>
