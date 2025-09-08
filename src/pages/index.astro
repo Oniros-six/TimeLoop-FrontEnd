@@ -1,7 +1,9 @@
 ---
 import Hero from '../components/hero/Hero';
+import FeaturesSection from '../components/features/Features';
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout>
     <Hero client:only="react" />
+    <FeaturesSection client:load/>
 </Layout>
