@@ -2,10 +2,12 @@
 import Hero from '../components/hero/Hero';
 import FeaturesSection from '../components/features/Features';
 import Layout from '../layouts/Layout.astro';
-import ProcessSection from '@/components/process/process';
+import ProcessSection from '@/components/process/Process';
+import PricingSection from '@/components/pricing/Pricing';
 ---
 <Layout>
     <Hero client:load />
     <FeaturesSection client:load/>
     <ProcessSection client:load/>
+    <PricingSection client:load/>
 </Layout>
