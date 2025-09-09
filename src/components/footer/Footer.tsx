@@ -77,12 +77,12 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-muted-foreground text-sm">© 2025 TimeLoop. Todos los derechos reservados.</p>
             <div className="flex gap-6">
-              <a href="#"
+              <a href="/privacidad"
                 className="hover:cursor-pointer text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
               >
                 Política de Privacidad
               </a>
-              <a href="#"
+              <a href="/tyc"
                 className="hover:cursor-pointer text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
               >
                 Términos de Servicio
