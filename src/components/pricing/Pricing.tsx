@@ -47,7 +47,7 @@ export default function PricingSection() {
   
 
   return (
-    <section className="py-24 px-4 bg-background">
+    <section className="bg-background mt-40">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">

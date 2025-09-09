@@ -28,7 +28,7 @@ const steps = [
 
 export default function ProcessSection() {
     return (
-        <section className="py-24 bg-background">
+        <section className="bg-background mt-40">
             <div className="container mx-auto">
                 <div className="text-center mb-16">
                     <Badge variant="outline" className="mb-4 text-primary border-primary/20">
