@@ -105,6 +105,7 @@
 }
 @theme {
     --color-background: hsl(var(--background));
+    --color-background-alt: hsl(250.34deg 90% 3.9%);
     --color-foreground: hsl(var(--foreground));
     --color-card: hsl(var(--card));
     --color-card-foreground: hsl(var(--card-foreground));

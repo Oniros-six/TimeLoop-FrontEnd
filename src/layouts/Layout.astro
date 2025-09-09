@@ -1,7 +1,7 @@
 ---
 // Import global de estilos
 import "../styles/global.css";
-// import Footer from "@/components/footer/Footer.astro";
+import Footer from "@/components/footer/Footer";
 import Navbar from "@/components/navbar/Navbar";
 ---
 
@@ -26,6 +26,6 @@ import Navbar from "@/components/navbar/Navbar";
     <main class="p-2">
       <slot/>
     </main>
-    <!-- <Footer /> -->
+    <Footer client:load/>
   </body>
 </html>

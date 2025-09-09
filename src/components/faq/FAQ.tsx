@@ -57,7 +57,7 @@ const faqs = [
 
 export default function FAQSection() {
   return (
-    <section className="bg-background mt-40">
+    <section id="faq" className="bg-background mt-40">
       <div className="container mx-auto">
         <div className="max-w-4xl mx-auto">
           {/* Header */}

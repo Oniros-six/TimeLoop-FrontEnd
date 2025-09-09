@@ -2,15 +2,17 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Menu, X } from "lucide-react"
+import { useSmoothScroll } from "@/hooks/useSmoothScroll"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const smoothScroll = useSmoothScroll(() => setIsOpen(false));
 
   const navItems = [
     { name: "Características", href: "#features" },
-    { name: "Precios", href: "#pricing" },
+    { name: "Como funciona", href: "#process" },
+    { name: "Precios", href: "#plans" },
     { name: "Preguntas", href: "#faq" },
-    { name: "Contacto", href: "#contact" },
   ]
 
   return (
@@ -28,8 +30,8 @@ export default function Navbar() {
               {navItems.map((item) => (
                 <a
                   key={item.name}
-                  href={item.href}
-                  className="text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  onClick={(event) => smoothScroll(event, item.href)}
+                  className="hover:cursor-pointer text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
                 >
                   {item.name}
                 </a>
@@ -55,8 +57,7 @@ export default function Navbar() {
                   {navItems.map((item, index) => (
                     <a
                       key={item.name}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
+                      onClick={(event) => smoothScroll(event, item.href)}
                       className="text-foreground hover:text-primary text-2xl font-medium transition-colors duration-200 animate-in fade-in-0 slide-in-from-bottom-4"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >

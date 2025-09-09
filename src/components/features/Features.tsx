@@ -46,7 +46,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="bg-background mt-40">
+    <section id="features" className="bg-background mt-40">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
