@@ -5,7 +5,7 @@ import { Clock, Settings, BarChart3, UserPlus } from "lucide-react"
 const steps = [
     {
         title: "Crea tu cuenta",
-        description: "En 2 minutos creas la cuenta de tu negocio.",
+        description: "En 2 minutos creas la cuenta de tu negocio. Tan sencillo como suena.",
         icon: UserPlus,
     },
     {
@@ -48,12 +48,12 @@ export default function ProcessSection() {
                             return (
                                 <Card
                                     key={index}
-                                    className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20"
+                                    className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20 py-0 min-h-60 md:min-h-40 justify-center"
                                 >
                                     <CardContent className="p-2 sm:p-4 md:p-8">
                                         <div className="flex items-start gap-6">
                                             {/* Step Icon */}
-                                            <div className="flex-shrink-0">
+                                            <div className="flex-shrink-0 self-center">
                                                 <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                                     <Icon className="w-8 h-8" />
                                                 </div>

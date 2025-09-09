@@ -29,9 +29,8 @@ export default function Footer() {
             <h4 className="font-semibold text-foreground">Navegación</h4>
             <ul className="space-y-2">
               {navItems.map((item) => (
-                <li>
+                <li key={item.name}>
                   <a
-                    key={item.name}
                     onClick={(event) => smoothScroll(event, item.href)}
                     className="hover:cursor-pointer text-foreground hover:text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
                   >
