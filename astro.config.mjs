@@ -6,6 +6,8 @@ import tunnel from 'astro-tunnel';
 import path from 'path';
 import vercel from '@astrojs/vercel';
 
+import sitemap from '@astrojs/sitemap';
+
 export default defineConfig({
   output: 'server',
 
@@ -18,7 +20,7 @@ export default defineConfig({
       extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
     },
   },
-
-  integrations: [react(), tunnel()],
+  site: "https://timeloop.com.uy",
+  integrations: [react(), tunnel(), sitemap()],
   adapter: vercel(),
 });
