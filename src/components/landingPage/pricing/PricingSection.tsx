@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 export default function PricingSection() {
   const plans = [
     {
-      name: "Plan Fijo",
+      name: "Tarifa fija",
       subtitle: "Ideal para negocios con agenda estable",
       price: "$790",
       period: "/mes",
@@ -25,7 +25,7 @@ export default function PricingSection() {
       recommended: false,
     },
     {
-      name: "Plan Variable",
+      name: "Según ingresos",
       subtitle: "Ideal para cualquier negocio, sin importar el tamaño",
       price: "1%",
       period: "de tu facturación",
@@ -97,13 +97,16 @@ export default function PricingSection() {
 
                 {/* CTA Button */}
                 <Button
-                  className={`w-full py-6 text-lg font-semibold transition-all duration-300 mt-6 ${
+                  asChild
+                  className={`w-full py-6 text-lg font-semibold transition-all duration-300 mt-6 hover:scale-105 ${
                     plan.recommended
                       ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-xl"
-                      : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
                   }`}
                 >
-                  {plan.cta}
+                  <a href="/sign-up" className="hover:cursor-pointer">
+                    {plan.cta}
+                  </a>
                 </Button>
               </CardContent>
             </Card>

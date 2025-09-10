@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Bell, Clock, CreditCard, Database, Share2, TrendingUp, Users, Zap } from "lucide-react"
+import { Bell, Clock, CreditCard, Database, Gift, Megaphone, Palette, Share2, ShoppingCart, TrendingUp, Users, Zap } from "lucide-react"
 
 const features = [
   {
@@ -40,13 +40,13 @@ const features = [
   {
     icon: Bell,
     title: "Recordatorios Automáticos",
-    description: "Envía recordatorios por email y WhatsApp para que tus clientes nunca olviden sus turnos.",
-  },  
+    description: "Evitá un 30 % de faltas con recordatorios automáticos vía email y WhatsApp 24 horas antes",
+  },
 ]
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="bg-background mt-40">
+    <section id="features" className="bg-background mt-20">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -67,7 +67,7 @@ export default function FeaturesSection() {
             >
               <CardContent className="pt-6 text-center">
                 <div className="mb-6 flex justify-center">
-                    <feature.icon className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <feature.icon className="w-8 h-8 text-primary mx-auto mb-3" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
@@ -75,18 +75,27 @@ export default function FeaturesSection() {
             </Card>
           ))}
         </div>
-
-        <div className="text-center mt-8">
-          <p className="text-foreground mb-6">¡Y esto es solo el comienzo de lo que llegará!</p>
-        </div>
-
+        
         {/* Bottom CTA */}
-        <div className="text-center mt-10">
-          <p className="text-lg text-foreground mb-6">¡Los cupos de pre-lanzamiento son limitados!</p>
-          <div className="inline-flex items-center gap-2 text-accent font-medium">
-            {/* //TODO Esto tendria que ser un boton */}
-            <span>Unete ahora!</span>
-            <Zap className="w-4 h-4" />
+        <div className="text-center mt-16">
+          <h3 className="text-2xl font-bold text-foreground mb-8">Próximamente en TimeLoop</h3>
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto">
+            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
+              <Gift className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs md:text-sm font-medium text-foreground">Sistema de fidelización</span>
+            </div>
+            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
+              <ShoppingCart className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs md:text-sm font-medium text-foreground">Ecommerce integrado</span>
+            </div>
+            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
+              <Megaphone className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs md:text-sm font-medium text-foreground">Publicidad en el sitio</span>
+            </div>
+            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
+              <Palette className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs md:text-sm font-medium text-foreground">Personalización avanzada</span>
+            </div>
           </div>
         </div>
       </div>

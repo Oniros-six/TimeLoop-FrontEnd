@@ -30,11 +30,15 @@ export default function HeroSection() {
         {/* CTA Button */}
         <div className="flex justify-center items-center animate-fade-in-up animation-delay-600">
           <Button
+            asChild
             size="lg"
             className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+          
           >
-            Participar del pre-lanzamiento
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <a href="/sign-up" className="hover:cursor-pointer">
+              Participar del pre-lanzamiento
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </a>
           </Button>
         </div>
 
