@@ -6,6 +6,7 @@ import tunnel from 'astro-tunnel';
 import path from 'path';
 
 export default defineConfig({
+  output: 'server',
   vite: {
     plugins: [tailwindcss()],
     resolve: {

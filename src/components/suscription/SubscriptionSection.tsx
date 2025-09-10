@@ -7,34 +7,37 @@ import { useState } from "react"
 export default function SubscriptionSection() {
     const [email, setEmail] = useState("")
     const [isSubscribed, setIsSubscribed] = useState(false)
-    
-    const makeUrl = import.meta.env.PUBLIC_MAKE_URL
-    const makeApiKey = import.meta.env.PUBLIC_MAKE_API_KEY
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState("")
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!makeUrl) {
-            console.error("MAKE_URL no está definido");
-            return;
-        }
-        fetch(makeUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-make-apikey": makeApiKey ?? ""
-            },
-            body: JSON.stringify({
-                email: email,
-            }),
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("Error al enviar el email");
-                setEmail("")
-                setIsSubscribed(true)
+        setIsLoading(true)
+        setError("")
+        
+        try {
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email })
             })
-            .catch((err) => {
-                console.error("Error:", err);
-            });
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al procesar la suscripción')
+            }
+
+            setEmail("")
+            setIsSubscribed(true)
+        } catch (err) {
+            console.error("Error:", err)
+            setError(err instanceof Error ? err.message : 'Error desconocido')
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -98,15 +101,25 @@ export default function SubscriptionSection() {
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="tu@email.com"
                                             className="flex-1 h-12 text-lg border-2 border-border focus:border-primary"
+                                            disabled={isLoading}
+                                            required
                                         />
                                         <Button
                                             type="submit"
                                             size="lg"
-                                            className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-secondary transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                                            className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-secondary transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                                            disabled={isLoading || !email}
                                         >
-                                            ¡Suscríbete!
+                                            {isLoading ? "Enviando..." : "¡Suscríbete!"}
                                         </Button>
                                     </form>
+                                    
+                                    {/* Error message */}
+                                    {error && (
+                                        <div className="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm">
+                                            {error}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Trust indicators */}
