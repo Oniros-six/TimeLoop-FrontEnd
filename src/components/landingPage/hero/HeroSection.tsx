@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowRight, Clock, Gift, Sparkles, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
