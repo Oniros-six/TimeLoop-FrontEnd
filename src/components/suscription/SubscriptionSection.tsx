@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Clock, CheckCircle } from "lucide-react"
 
-export default function SubscriptionCTA() {
+export default function SubscriptionSection() {
     return (
         <section className="bg-gradient-to-br from-background via-muted/30 to-background mt-20">
             <div className="max-w-4xl mx-auto text-center">

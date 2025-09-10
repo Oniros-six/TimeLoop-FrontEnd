@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-export default function Hero() {
+export default function HeroSection() {
   return (
     <section id="home" className="flex justify-center bg-background px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-4xl mx-auto text-center">
