@@ -4,7 +4,7 @@ import react from '@astrojs/react';
 import tailwindcss from "@tailwindcss/vite";
 import tunnel from 'astro-tunnel';
 import path from 'path';
-import netlify from '@astrojs/netlify';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   output: 'server',
@@ -20,5 +20,5 @@ export default defineConfig({
   },
 
   integrations: [react(), tunnel()],
-  adapter: netlify(),
+  adapter: vercel(),
 });
