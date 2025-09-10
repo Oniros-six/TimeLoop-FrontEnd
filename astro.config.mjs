@@ -12,6 +12,7 @@ export default defineConfig({
       alias: {
         '@': path.resolve('./src'),
       },
+      extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
     },
   },
   integrations: [react(), tunnel()],
