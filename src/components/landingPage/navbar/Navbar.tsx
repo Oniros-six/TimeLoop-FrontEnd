@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog"
 import { Menu, X } from "lucide-react"
 import { useSmoothScroll } from "@/hooks/useSmoothScroll"
 
@@ -43,16 +43,20 @@ export default function Navbar() {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <div className="relative w-6 h-6">
+                  <div className="relative">
                     {isOpen ? (
-                      <X className="h-6 w-6 animate-in spin-in-180 duration-200" />
+                      <X className="size-8 animate-in spin-in-180 duration-200" />
                     ) : (
-                      <Menu className="h-6 w-6 animate-in spin-in-180 duration-200" />
+                      <Menu className="size-8 animate-in spin-in-180 duration-200" />
                     )}
                   </div>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="w-screen h-screen max-w-none max-h-none p-0 m-0 rounded-none border-none bg-background/95 backdrop-blur-md">
+              <DialogContent showCloseButton={false} className="w-screen h-screen max-w-none max-h-none p-0 m-0 rounded-none border-none bg-background/95 backdrop-blur-md">
+                <DialogClose className="absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                  <X className="size-8" />
+                  <span className="sr-only">Cerrar</span>
+                </DialogClose>
                 <div className="flex flex-col items-center justify-center h-full space-y-8">
                   {navItems.map((item, index) => (
                     <a
