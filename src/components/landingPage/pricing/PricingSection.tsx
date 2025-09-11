@@ -22,11 +22,11 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-12">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
       recommended: false,
     },
     {
-      name: "Según ingresos",
+      name: "Tarifa variable",
       subtitle: "Ideal para cualquier negocio, sin importar el tamaño",
       price: "1%",
       period: "de tu facturación",
@@ -42,7 +42,7 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2">Ejemplo: Si tu facturación mensual supera $50.000, cobremos 1% solo sobre el total. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-12">Ejemplo: Si tu facturación mensual supera $50.000, cobremos 1% solo sobre el total. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
       recommended: true,
     },
   ]
