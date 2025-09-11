@@ -23,7 +23,7 @@ const steps = [
 
 export default function ProcessSection() {
   return (
-    <section id="process" className="bg-background py-24">
+    <section id="process" className="bg-background mt-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 text-primary border-primary/20">
