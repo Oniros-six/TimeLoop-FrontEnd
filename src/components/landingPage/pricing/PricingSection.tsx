@@ -21,7 +21,8 @@ export default function PricingSection() {
         "Soporte por email",
         "Panel de control completo",
       ],
-      cta: "Comenzar ahora",
+      cta: "Sumarme al pre-lanzamiento",
+      example: <p className="text-xs mx-2">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
       recommended: false,
     },
     {
@@ -40,14 +41,15 @@ export default function PricingSection() {
         "Soporte por email prioritario",
         "Panel de control completo",
       ],
-      cta: "Comenzar ahora",
+      cta: "Sumarme al pre-lanzamiento",
+      example: <p className="text-xs mx-2">Ejemplo: Si tu facturación mensual supera $50.000, cobremos 1% solo sobre el total. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
       recommended: true,
     },
   ]
-  
+
 
   return (
-    <section id="plans" className="bg-background mt-40">
+    <section id="plans" className="bg-background mt-10">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -64,9 +66,8 @@ export default function PricingSection() {
           {plans.map((plan, index) => (
             <Card
               key={index}
-              className={`relative transition-all duration-300 hover:shadow-lg flex flex-col ${
-                plan.recommended ? "border-primary shadow-lg bg-card" : "border-border hover:border-primary/50"
-              }`}
+              className={`relative transition-all duration-300 hover:shadow-lg flex flex-col ${plan.recommended ? "border-primary shadow-lg bg-card" : "border-border hover:border-primary/50"
+                }`}
             >
               {plan.recommended && (
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-secondary text-secondary-foreground px-4 py-1">
@@ -98,18 +99,20 @@ export default function PricingSection() {
                 {/* CTA Button */}
                 <Button
                   asChild
-                  className={`w-full py-6 text-lg font-semibold transition-all duration-300 mt-6 hover:scale-105 ${
-                    plan.recommended
-                      ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-xl"
-                      : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
-                  }`}
+                  className={`w-full py-6 text-lg font-semibold transition-all duration-300 mt-6 hover:scale-105 ${plan.recommended
+                    ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-xl"
+                    : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
+                    }`}
                 >
                   <a href="/sign-up" className="hover:cursor-pointer">
                     {plan.cta}
                   </a>
                 </Button>
               </CardContent>
+              {plan.example}
+
             </Card>
+
           ))}
         </div>
 
@@ -118,6 +121,6 @@ export default function PricingSection() {
           <p className="text-muted-foreground">Todos los planes tienen un segmento gratuito para que pruebes sin compromiso.</p>
         </div>
       </div>
-    </section>
+    </section >
   )
 }
