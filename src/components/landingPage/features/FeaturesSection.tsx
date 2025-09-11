@@ -8,6 +8,21 @@ const features = [
     description: "Tus clientes se agendan solos, reduciendo la carga de trabajo de tu personal.",
   },
   {
+    icon: Bell,
+    title: "Recordatorios Automáticos",
+    description: "Evitá un 30 % de faltas con recordatorios automáticos vía email y WhatsApp 24 horas antes",
+  },
+  {
+    icon: Database,
+    title: "Historial de Clientes",
+    description: "Mantén toda la información y reservas de tus clientes en un solo lugar.",
+  },
+  {
+    icon: CreditCard,
+    title: "Pagos Online",
+    description: "Acepta pagos online o en efectivo, según prefieras.",
+  },
+  {
     icon: TrendingUp,
     title: "Análisis de Rendimiento",
     description: "Obtén insights claros sobre tu negocio y detecta oportunidades de mejora.",
@@ -26,21 +41,6 @@ const features = [
     icon: Share2,
     title: "Redes Sociales",
     description: "Muestra los enlaces a tus redes sociales para que tus clientes puedan seguirte y contactarte fácilmente.",
-  },
-  {
-    icon: Database,
-    title: "Historial de Clientes",
-    description: "Mantén toda la información y reservas de tus clientes en un solo lugar.",
-  },
-  {
-    icon: CreditCard,
-    title: "Pagos Online",
-    description: "Acepta pagos online o en efectivo, según prefieras.",
-  },
-  {
-    icon: Bell,
-    title: "Recordatorios Automáticos",
-    description: "Evitá un 30 % de faltas con recordatorios automáticos vía email y WhatsApp 24 horas antes",
   },
 ]
 

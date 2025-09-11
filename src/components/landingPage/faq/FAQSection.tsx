@@ -68,6 +68,12 @@ const faqs = [
     answer:
       "Sí, podés cambiar tu suscripción en cualquier momento sin penalizaciones. Tu plan en vigencia continuará hasta el final de tu período de facturación actual.",
   },
+  {
+    id: "10",
+    question: "¿Tengo que conectar MercadoPago obligatoriamente?",
+    answer:
+      "No, solo para aceptar pagos, configurás MercadoPago cuando quieras y si quieres.",
+  },
 ];
 
 

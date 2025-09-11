@@ -22,7 +22,7 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-12">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
       recommended: false,
     },
     {
@@ -42,14 +42,14 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-12">Ejemplo: Si tu facturación mensual supera $50.000, cobremos 1% solo sobre el total. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu facturación mensual es de $61.000, cobremos 1%, es decir $610. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
       recommended: true,
     },
   ]
 
 
   return (
-    <section id="plans" className="bg-background mt-10">
+    <section id="plans" className="bg-background mt-20">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">

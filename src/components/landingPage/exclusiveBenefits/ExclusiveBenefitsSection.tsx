@@ -16,8 +16,8 @@ export default function ExclusiveBenefitsSection() {
     },
     {
       icon: Gift,
-      title: "Acceso exclusivo",
-      description: "Acceso exlcusivo a la comunidad de TimeLoop",
+      title: "Acceso gratuito",
+      description: "Primer més sin costo!",
     },
     {
       icon: Users,
