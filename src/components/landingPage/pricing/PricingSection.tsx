@@ -62,7 +62,7 @@ export default function PricingSection() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-2 place-content-center gap-8 max-w-4xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <Card
               key={index}
