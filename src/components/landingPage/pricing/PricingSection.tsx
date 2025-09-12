@@ -104,7 +104,7 @@ export default function PricingSection() {
                     : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
                     }`}
                 >
-                  <a href="/sign-up" className="hover:cursor-pointer">
+                  <a href="/registro" className="hover:cursor-pointer">
                     {plan.cta}
                   </a>
                 </Button>
