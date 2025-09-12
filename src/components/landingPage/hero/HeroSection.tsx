@@ -106,29 +106,10 @@ export default function HeroSection() {
             <CheckCircle className="w-10 h-10 text-[#059669]" />
           </div>
           <p className="text-xl text-muted-foreground mb-4">
-            ¡Gracias por suscribirte! <br /> Te contactaremos pronto con todos los detalles del pre-lanzamiento.
+            ¡Guardaremos tu lugar! <br /> Te contactaremos pronto con todos los detalles del pre-lanzamiento.
           </p>
-          {/* <p className="text-sm text-muted-foreground">Revisa tu email para confirmar tu suscripción.</p> */}
         </div>
       )}
-      {/* <div className='flex flex-col items-center gap-3'>
-        <div className="flex justify-center items-center animate-fade-in-up animation-delay-600">
-          <Button
-            asChild
-            size="lg"
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-
-          >
-            <a href="/sign-up" className="hover:cursor-pointer">
-              Sumarme al pre-lanzamiento
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </a>
-          </Button>
-        </div>
-        <Badge variant="outline" className="mb-4 bg-accent text-accent-foreground border-primary/20">
-          <CreditCard /> No se requiere tarjeta
-        </Badge>
-      </div> */}
 
       <div className="mt-16 grid grid-cols-1 sm:grid-cols-4 gap-6 mx-auto animate-fade-in-up animation-delay-800">
         <Card className="border-0 bg-card/50 hover:bg-card/80 transition-colors">
