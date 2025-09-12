@@ -17,7 +17,7 @@ export default function ExclusiveBenefitsSection() {
     {
       icon: Gift,
       title: "Acceso gratuito",
-      description: "Primer més sin costo!",
+      description: "2 meses sin costo! (Limitado: 10 cupos restantes)",
     },
     {
       icon: Users,
