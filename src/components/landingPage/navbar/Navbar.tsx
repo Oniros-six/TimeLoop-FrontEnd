@@ -21,7 +21,9 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <img src="/logo.png" alt="TimeLoop Logo" className="w-26" />
+            <a  onClick={(event) => smoothScroll(event, "home")} aria-label="Ir al inicio">
+              <img src="/logo.png" alt="TimeLoop Logo" className="w-26 cursor-pointer" />
+            </a>
           </div>
 
           {/* Desktop Navigation */}
