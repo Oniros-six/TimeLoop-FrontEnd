@@ -3,11 +3,9 @@ import { MultiStepSignup } from '@/components/signUp/MultiStepSignup';
 import Signup from '@/layouts/Signup.astro';
 ---
 <Signup>
-    <div class="min-h-screen bg-background flex items-center justify-center p-4">
-        <div class="text-center space-y-6">
-          <h1 class="text-4xl font-bold">TimeLoop</h1>
-          <p class="text-muted-foreground text-lg">Reserva tu cupo en el pre-lanzamiento</p>
-          <MultiStepSignup client:load />
-        </div>
-      </div>
+  <div class="min-h-screen bg-background flex items-center justify-center">
+    <div class="w-full max-w-2xl">
+      <MultiStepSignup client:load/>
+    </div>
+  </div>
 </Signup>
