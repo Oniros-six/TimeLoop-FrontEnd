@@ -59,9 +59,9 @@ const STEPS = [
 ]
 
 export function MultiStepSignup() {
+  const backendURL = import.meta.env.BACKEND_URL ?? "http://localhost:3000"
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
   const [signupData, setSignupData] = useState<SignupData>({
     account: {
       ownerName: "",
@@ -205,7 +205,7 @@ export function MultiStepSignup() {
 
     try {
       // Aquí enviarías los datos al backend
-      const response = await fetch("http://localhost:3000/auth/signup", {
+      const response = await fetch(backendURL + "/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
