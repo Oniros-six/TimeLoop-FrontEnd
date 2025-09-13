@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, Store, Calendar, Clock, Mail, MapPin, Phone } from "lucide-react"
-import type { SignupData } from "../MultiStepSignup"
+import { CheckCircle, Store, Calendar, Clock, Mail, MapPin, Phone, User } from "lucide-react"
+import type { SignupData } from "@/components/signUp/MultiStepSignup"
 
 interface WelcomeStepProps {
   data: SignupData
@@ -8,7 +8,7 @@ interface WelcomeStepProps {
   isSubmitting: boolean
 }
 
-export function WelcomeStep({ data }: WelcomeStepProps) {
+export function WelcomeStep({ data, onSubmit, isSubmitting }: WelcomeStepProps) {
   const formatWorkingDays = (days: string[]) => {
     const dayNames: Record<string, string> = {
       monday: "Lunes",
@@ -23,7 +23,12 @@ export function WelcomeStep({ data }: WelcomeStepProps) {
     return days.map((day) => dayNames[day]).join(", ")
   }
 
-  const formatSchedules = (schedules: Record<string, Array<{ open: string; close: string }>>) => {
+  const formatSchedules = (
+    schedules: Record<
+      string,
+      { morningOpen?: string; morningClose?: string; afternoonOpen?: string; afternoonClose?: string }
+    >,
+  ) => {
     const dayNames: Record<string, string> = {
       monday: "Lunes",
       tuesday: "Martes",
@@ -35,12 +40,17 @@ export function WelcomeStep({ data }: WelcomeStepProps) {
     }
 
     return Object.entries(schedules)
-      .map(([day, shifts]) => {
-        const dayName = dayNames[day]
-        const shiftTimes = shifts.map(shift => `${shift.open} - ${shift.close}`).join(", ")
-        return `${dayName}: ${shiftTimes}`
+      .map(([day, schedule]) => {
+        const morning = schedule.morningOpen && schedule.morningClose
+          ? `${schedule.morningOpen} - ${schedule.morningClose}`
+          : ""
+        const afternoon =
+          schedule.afternoonOpen && schedule.afternoonClose
+            ? ` y ${schedule.afternoonOpen} - ${schedule.afternoonClose}`
+            : ""
+        return `${dayNames[day]}: ${morning}${afternoon}`
       })
-      .join("; ")
+      .join(", ")
   }
 
   return (
@@ -50,19 +60,28 @@ export function WelcomeStep({ data }: WelcomeStepProps) {
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
         <div>
-          <h3 className="text-2xl font-bold">Confirmación / Bienvenida</h3>
+          <h3 className="text-2xl font-bold">Paso 4 — Confirmación / Bienvenida</h3>
           <p className="text-muted-foreground mt-2">¡Perfecto! Revisa tu información antes de completar el registro</p>
         </div>
       </div>
 
-      <Card className="border-0">
-        <CardContent className="space-y-6 p-0 sm:px-4 md:px-6">
+      <Card>
+        <CardContent className="p-6 space-y-6">
           <div className="space-y-4">
-            <h4 className="font-bold text-center text-xl text-primary">
+            <h4 className="font-semibold text-lg flex items-center gap-2">
+              <Store className="w-5 h-5" />
               Resumen de tu comercio
             </h4>
 
             <div className="grid gap-4">
+              <div className="flex items-start gap-3">
+                <User className="w-4 h-4 mt-1 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">Propietario</p>
+                  <p className="text-sm text-muted-foreground">{data.account.ownerName}</p>
+                </div>
+              </div>
+
               <div className="flex items-start gap-3">
                 <Store className="w-4 h-4 mt-1 text-muted-foreground" />
                 <div>

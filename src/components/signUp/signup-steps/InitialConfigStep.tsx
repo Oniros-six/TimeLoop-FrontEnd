@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -46,7 +44,10 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
 
     if (checked) {
       newDays = [...currentDays, dayId]
-      newSchedules[dayId] = [{ open: "09:00", close: "18:00" }]
+      newSchedules[dayId] = {
+        morningOpen: "09:00",
+        morningClose: "18:00",
+      }
     } else {
       newDays = currentDays.filter((day) => day !== dayId)
       delete newSchedules[dayId]
@@ -59,70 +60,134 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
     }
   }
 
-  const handleScheduleChange = (dayId: string, shiftIndex: number, type: "open" | "close", value: string) => {
+  const handleScheduleChange = (
+    dayId: string,
+    field: "morningOpen" | "morningClose" | "afternoonOpen" | "afternoonClose",
+    value: string,
+  ) => {
     const currentSchedules = data.initialConfig.schedules
-    const daySchedules = [...(currentSchedules[dayId] || [])]
-
-    if (!daySchedules[shiftIndex]) {
-      daySchedules[shiftIndex] = { open: "09:00", close: "18:00" }
-    }
-
-    daySchedules[shiftIndex] = {
-      ...daySchedules[shiftIndex],
-      [type]: value,
-    }
+    const daySchedule = currentSchedules[dayId] || {}
 
     const newSchedules = {
       ...currentSchedules,
-      [dayId]: daySchedules,
+      [dayId]: {
+        ...daySchedule,
+        [field]: value,
+      },
     }
 
-    const shift = daySchedules[shiftIndex]
-    if (type === "open" && shift.close <= value) {
-      setErrors((prev) => ({
-        ...prev,
-        [`${dayId}_${shiftIndex}_schedule`]: "La hora de apertura debe ser menor a la de cierre",
-      }))
-    } else if (type === "close" && shift.open >= value) {
-      setErrors((prev) => ({
-        ...prev,
-        [`${dayId}_${shiftIndex}_schedule`]: "La hora de cierre debe ser mayor a la de apertura",
-      }))
+    // Validar horarios
+    const schedule = newSchedules[dayId]
+    let errorKey = ""
+    let errorMessage = ""
+
+    if (field === "morningOpen" && schedule.morningClose && schedule.morningClose <= value) {
+      errorKey = `${dayId}_morning_schedule`
+      errorMessage = "La hora de apertura debe ser menor a la de cierre"
+    } else if (field === "morningClose" && schedule.morningOpen && schedule.morningOpen >= value) {
+      errorKey = `${dayId}_morning_schedule`
+      errorMessage = "La hora de cierre debe ser mayor a la de apertura"
+    } else if (field === "afternoonOpen" && schedule.afternoonClose && schedule.afternoonClose <= value) {
+      errorKey = `${dayId}_afternoon_schedule`
+      errorMessage = "La hora de apertura debe ser menor a la de cierre"
+    } else if (field === "afternoonClose" && schedule.afternoonOpen && schedule.afternoonOpen >= value) {
+      errorKey = `${dayId}_afternoon_schedule`
+      errorMessage = "La hora de cierre debe ser mayor a la de apertura"
     } else {
-      setErrors((prev) => ({ ...prev, [`${dayId}_${shiftIndex}_schedule`]: "" }))
+      // Limpiar errores si todo está bien
+      setErrors((prev) => ({
+        ...prev,
+        [`${dayId}_morning_schedule`]: "",
+        [`${dayId}_afternoon_schedule`]: "",
+      }))
+    }
+
+    if (errorKey) {
+      setErrors((prev) => ({ ...prev, [errorKey]: errorMessage }))
     }
 
     updateData("initialConfig", { schedules: newSchedules })
   }
 
-  const addShift = (dayId: string) => {
+  const addMorningShift = (dayId: string) => {
     const currentSchedules = data.initialConfig.schedules
-    const daySchedules = [...(currentSchedules[dayId] || [])]
+    const daySchedule = currentSchedules[dayId] || {}
 
-    if (daySchedules.length >= 2) {
+    const newSchedules = {
+      ...currentSchedules,
+      [dayId]: {
+        ...daySchedule,
+        morningOpen: "09:00",
+        morningClose: "13:00",
+      },
+    }
+
+    updateData("initialConfig", { schedules: newSchedules })
+  }
+
+  const removeMorningShift = (dayId: string) => {
+    const currentSchedules = data.initialConfig.schedules
+    const daySchedule = currentSchedules[dayId] || {}
+
+    if (!daySchedule.afternoonOpen || !daySchedule.afternoonClose) {
+      setErrors((prev) => ({
+        ...prev,
+        [`${dayId}_shifts`]: "Debe tener al menos un turno activo",
+      }))
       return
     }
 
-    daySchedules.push({ open: "09:00", close: "18:00" })
+    const newSchedules = {
+      ...currentSchedules,
+      [dayId]: {
+        afternoonOpen: daySchedule.afternoonOpen,
+        afternoonClose: daySchedule.afternoonClose,
+      },
+    }
+
+    // Limpiar error si existe
+    setErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
+    updateData("initialConfig", { schedules: newSchedules })
+  }
+
+  const addAfternoonShift = (dayId: string) => {
+    const currentSchedules = data.initialConfig.schedules
+    const daySchedule = currentSchedules[dayId] || {}
 
     const newSchedules = {
       ...currentSchedules,
-      [dayId]: daySchedules,
+      [dayId]: {
+        ...daySchedule,
+        afternoonOpen: "16:00",
+        afternoonClose: "20:00",
+      },
     }
 
     updateData("initialConfig", { schedules: newSchedules })
   }
 
-  const removeShift = (dayId: string, shiftIndex: number) => {
+  const removeAfternoonShift = (dayId: string) => {
     const currentSchedules = data.initialConfig.schedules
-    const daySchedules = [...(currentSchedules[dayId] || [])]
-    daySchedules.splice(shiftIndex, 1)
+    const daySchedule = currentSchedules[dayId] || {}
+
+    if (!daySchedule.morningOpen || !daySchedule.morningClose) {
+      setErrors((prev) => ({
+        ...prev,
+        [`${dayId}_shifts`]: "Debe tener al menos un turno activo",
+      }))
+      return
+    }
 
     const newSchedules = {
       ...currentSchedules,
-      [dayId]: daySchedules,
+      [dayId]: {
+        morningOpen: daySchedule.morningOpen,
+        morningClose: daySchedule.morningClose,
+      },
     }
 
+    // Limpiar error si existe
+    setErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
     updateData("initialConfig", { schedules: newSchedules })
   }
 
@@ -153,30 +218,27 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
 
                   {data.initialConfig.workingDays.includes(day.id) && (
                     <div className="ml-6 space-y-3">
-                      {(data.initialConfig.schedules[day.id] || []).map((shift, shiftIndex) => (
-                        <div key={shiftIndex} className="space-y-2">
+                      {data.initialConfig.schedules[day.id]?.morningOpen &&
+                      data.initialConfig.schedules[day.id]?.morningClose ? (
+                        <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground">
-                              {shiftIndex === 0 ? "Turno Mañana" : "Turno Tarde"}
-                            </span>
-                            {shiftIndex > 0 && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeShift(day.id, shiftIndex)}
-                                className="h-6 px-2 text-xs text-red-600 hover:text-red-700"
-                              >
-                                Eliminar
-                              </Button>
-                            )}
+                            <span className="text-xs font-medium text-muted-foreground">Turno Mañana</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeMorningShift(day.id)}
+                              className="h-6 px-2 text-xs text-red-600 hover:text-red-700"
+                            >
+                              Eliminar
+                            </Button>
                           </div>
 
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div className="flex flex-col gap-1">
                               <span className="text-xs text-muted-foreground font-medium">APERTURA:</span>
                               <Select
-                                value={shift.open}
-                                onValueChange={(value) => handleScheduleChange(day.id, shiftIndex, "open", value)}
+                                value={data.initialConfig.schedules[day.id]?.morningOpen || "09:00"}
+                                onValueChange={(value) => handleScheduleChange(day.id, "morningOpen", value)}
                               >
                                 <SelectTrigger className="w-full h-8">
                                   <SelectValue />
@@ -194,8 +256,8 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
                             <div className="flex flex-col gap-1">
                               <span className="text-xs text-muted-foreground font-medium">CIERRE:</span>
                               <Select
-                                value={shift.close}
-                                onValueChange={(value) => handleScheduleChange(day.id, shiftIndex, "close", value)}
+                                value={data.initialConfig.schedules[day.id]?.morningClose || "13:00"}
+                                onValueChange={(value) => handleScheduleChange(day.id, "morningClose", value)}
                               >
                                 <SelectTrigger className="w-full h-8">
                                   <SelectValue />
@@ -211,21 +273,93 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
                             </div>
                           </div>
 
-                          {errors[`${day.id}_${shiftIndex}_schedule`] && (
-                            <p className="text-xs text-red-500">{errors[`${day.id}_${shiftIndex}_schedule`]}</p>
+                          {errors[`${day.id}_morning_schedule`] && (
+                            <p className="text-xs text-red-500">{errors[`${day.id}_morning_schedule`]}</p>
                           )}
                         </div>
-                      ))}
-
-                      {(data.initialConfig.schedules[day.id] || []).length < 2 && (
+                      ) : (
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => addShift(day.id)}
+                          onClick={() => addMorningShift(day.id)}
+                          className="w-full h-8 text-xs"
+                        >
+                          + Agregar turno mañana
+                        </Button>
+                      )}
+
+                      {data.initialConfig.schedules[day.id]?.afternoonOpen &&
+                      data.initialConfig.schedules[day.id]?.afternoonClose ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-muted-foreground">Turno Tarde</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeAfternoonShift(day.id)}
+                              className="h-6 px-2 text-xs text-red-600 hover:text-red-700"
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-xs text-muted-foreground font-medium">APERTURA:</span>
+                              <Select
+                                value={data.initialConfig.schedules[day.id]?.afternoonOpen || "16:00"}
+                                onValueChange={(value) => handleScheduleChange(day.id, "afternoonOpen", value)}
+                              >
+                                <SelectTrigger className="w-full h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {TIME_OPTIONS.map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                      {time}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <span className="text-xs text-muted-foreground font-medium">CIERRE:</span>
+                              <Select
+                                value={data.initialConfig.schedules[day.id]?.afternoonClose || "20:00"}
+                                onValueChange={(value) => handleScheduleChange(day.id, "afternoonClose", value)}
+                              >
+                                <SelectTrigger className="w-full h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {TIME_OPTIONS.map((time) => (
+                                    <SelectItem key={time} value={time}>
+                                      {time}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {errors[`${day.id}_afternoon_schedule`] && (
+                            <p className="text-xs text-red-500">{errors[`${day.id}_afternoon_schedule`]}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addAfternoonShift(day.id)}
                           className="w-full h-8 text-xs"
                         >
                           + Agregar turno tarde
                         </Button>
+                      )}
+
+                      {errors[`${day.id}_shifts`] && (
+                        <p className="text-xs text-red-500">{errors[`${day.id}_shifts`]}</p>
                       )}
                     </div>
                   )}

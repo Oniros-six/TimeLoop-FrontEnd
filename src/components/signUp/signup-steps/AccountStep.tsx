@@ -44,6 +44,19 @@ export function AccountStep({ data, updateData }: AccountStepProps) {
 
       <div className="space-y-4">
         <div className="space-y-2">
+          <Label htmlFor="ownerName">Tu nombre</Label>
+          <Input
+            id="ownerName"
+            type="text"
+            placeholder="Juan Perez"
+            value={data.account.ownerName}
+            onChange={(e) => handleInputChange("ownerName", e.target.value)}
+            className={errors.ownerName ? "border-red-500" : ""}
+          />
+          {errors.ownerName && <p className="text-sm text-red-500">{errors.ownerName}</p>}
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"

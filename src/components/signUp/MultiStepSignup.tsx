@@ -10,6 +10,7 @@ import { WelcomeStep } from "./signup-steps/WelcomeStep"
 
 export interface SignupData {
   account: {
+    ownerName: string
     email: string
     password: string
     confirmPassword: string
@@ -22,7 +23,15 @@ export interface SignupData {
   }
   initialConfig: {
     workingDays: string[]
-    schedules: Record<string, Array<{ open: string; close: string }>>
+    schedules: Record<
+      string,
+      {
+        morningOpen?: string
+        morningClose?: string
+        afternoonOpen?: string
+        afternoonClose?: string
+      }
+    >
   }
 }
 
@@ -55,6 +64,7 @@ export function MultiStepSignup() {
 
   const [signupData, setSignupData] = useState<SignupData>({
     account: {
+      ownerName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -83,17 +93,26 @@ export function MultiStepSignup() {
   const validateCurrentStep = (): boolean => {
     switch (currentStep) {
       case 0: // Account step
-        const { email, password, confirmPassword } = signupData.account
-        if (!email || !password || !confirmPassword) {
-          return false
-        }
-        if (password !== confirmPassword) {
-          return false
-        }
-        if (password.length < 6) {
-          return false
-        }
-        return true
+        const { ownerName, email, password, confirmPassword } = signupData.account
+
+        // Validar nombre del propietario
+        const ownerNameValid = ownerName.trim().length > 0
+
+        // Validar email
+        const emailValid = email != undefined && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+        // Validar contraseña
+        const passwordLength = password.length >= 8
+        const hasNumbers = /\d/.test(password)
+        const hasLetters = /[a-zA-Z]/.test(password)
+        const hasSymbols = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(password)
+        const passwordValid = passwordLength && hasNumbers && hasLetters && hasSymbols
+
+        // Validar confirmación
+        const confirmPasswordValid = confirmPassword.length > 0
+        const passwordsMatch = password === confirmPassword
+
+        return ownerNameValid && emailValid && passwordValid && confirmPasswordValid && passwordsMatch
 
       case 1: // Business data step
         const { businessName, businessType, address, phone } = signupData.businessData
@@ -107,14 +126,19 @@ export function MultiStepSignup() {
           return false
         }
         for (const day of workingDays) {
-          if (!schedules[day] || schedules[day].length === 0) {
+          if (!schedules[day]) {
             return false
           }
-          // Verificar que todos los turnos tengan horarios válidos
-          for (const shift of schedules[day]) {
-            if (!shift.open || !shift.close) {
-              return false
-            }
+          const daySchedule = schedules[day]
+          const hasMorningShift = daySchedule.morningOpen && daySchedule.morningClose
+          const hasAfternoonShift = daySchedule.afternoonOpen && daySchedule.afternoonClose
+
+          if (!hasMorningShift && !hasAfternoonShift) {
+            return false
+          }
+
+          if (hasAfternoonShift && !hasMorningShift) {
+            return false
           }
         }
         return true
@@ -149,14 +173,27 @@ export function MultiStepSignup() {
   // Función para enviar datos al backend
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    
+
     // Procesar los horarios para enviar al backend
-    const processedSchedules = signupData.initialConfig.workingDays.map(day => ({
-      weekday: day.toUpperCase(),
-      shifts: signupData.initialConfig.schedules[day] || []
-    }))
+    const processedSchedules = signupData.initialConfig.workingDays.map(day => {
+      const daySchedule = signupData.initialConfig.schedules[day] || {}
+
+      // Crear el objeto de turnos con null para los que no existen
+      const shifts = {
+        morningOpen: daySchedule.morningOpen || null,
+        morningClose: daySchedule.morningClose || null,
+        afternoonOpen: daySchedule.afternoonOpen || null,
+        afternoonClose: daySchedule.afternoonClose || null
+      }
+
+      return {
+        weekday: day.toUpperCase(),
+        shifts
+      }
+    })
 
     const payload = {
+      ownerName: signupData.account.ownerName,
       email: signupData.account.email,
       password: signupData.account.password,
       name: signupData.businessData.businessName,
@@ -177,13 +214,8 @@ export function MultiStepSignup() {
       })
 
       const result = await response.json()
-
-      if (response.ok && result.success) {
-        // Manejar éxito
-        console.log("Registro exitoso:", result.message)
-        alert(`¡Registro exitoso! Bienvenido ${result.data.businessName}`)
-        // Aquí puedes redirigir al panel de administración
-        // window.location.href = '/dashboard'
+      if (response.ok && result.statusCode == 201) {
+        window.location.replace('https://www.timeloop.com.uy/')
       } else {
         // Manejar error
         console.error("Error en el registro:", result.error)
@@ -217,6 +249,8 @@ export function MultiStepSignup() {
   }
 
   const progressPercentage = ((currentStep + 1) / STEPS.length) * 100
+
+  const isNextButtonDisabled = !validateCurrentStep()
 
   return (
     <Card className="w-full max-w-2xl mx-auto mt-20">
