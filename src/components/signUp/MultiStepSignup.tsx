@@ -58,11 +58,11 @@ const STEPS = [
   },
 ]
 
-export function MultiStepSignup() {
+export function MultiStepSignup({ plan }: { plan: string }) {
   const backendURL = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3000'
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string>("")
+  const [submitError, setSubmitError] = useState<Array<string>>()
   const [stepErrors, setStepErrors] = useState<Record<string, Record<string, string>>>({})
   const [signupData, setSignupData] = useState<SignupData>({
     account: {
@@ -186,7 +186,7 @@ export function MultiStepSignup() {
   // Función para enviar datos al backend
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    setSubmitError("")
+    setSubmitError([])
 
     // Procesar los horarios para enviar al backend
     const processedSchedules = signupData.initialConfig.workingDays.map(day => {
@@ -214,9 +214,9 @@ export function MultiStepSignup() {
       phone: signupData.businessData.phone,
       address: signupData.businessData.address,
       businessCategory: signupData.businessData.businessType,
-      schedules: processedSchedules
+      schedules: processedSchedules,
+      billingType: plan.toUpperCase()
     };
-
     try {
       const response = await fetch(backendURL + "/auth/signup", {
         method: "POST",
@@ -232,24 +232,12 @@ export function MultiStepSignup() {
         window.location.replace('https://www.timeloop.com.uy/bienvenido')
       } else {
         // Mostrar el mensaje específico del backend
-        let errorMessage = "Error desconocido"
-
-        if (result.message) {
-          errorMessage = result.message
-        } else if (result.error) {
-          errorMessage = result.error
-        } else if (result.details) {
-          errorMessage = result.details
-        } else if (result.errors && Array.isArray(result.errors)) {
-          errorMessage = result.errors.join(", ")
-        }
-
-        setSubmitError(errorMessage)
+        setSubmitError(result.message)
         console.error("Error en el registro:", result)
       }
     } catch (error) {
       console.error("Error de conexión:", error)
-      setSubmitError("Error de conexión. Por favor verifica tu internet e intenta nuevamente.")
+      setSubmitError(["Error de conexión. Por favor verifica tu internet e intenta nuevamente."])
     } finally {
       setIsSubmitting(false)
     }
@@ -320,7 +308,15 @@ export function MultiStepSignup() {
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">Error al registrar</h3>
                 <div className="mt-2 text-sm text-red-700">
-                  <p>• {submitError}</p>
+                  {Array.isArray(submitError) ? (
+                    <ul>
+                      {submitError.map((error, idx) => (
+                        <li key={idx}>• {error}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>{submitError}</p>
+                  )}
                 </div>
               </div>
             </div>

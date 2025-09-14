@@ -7,6 +7,7 @@ export default function PricingSection() {
   const plans = [
     {
       name: "Tarifa fija",
+      type: "flat",
       subtitle: "Ideal para negocios con agenda estable",
       price: "$790",
       period: "/mes",
@@ -22,11 +23,12 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br/> Si tiene 35, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br /> Si tiene 35, no pagás la tarifa.</p>,
       recommended: false,
     },
     {
       name: "Tarifa variable",
+      type: "flexible",
       subtitle: "Ideal para cualquier negocio, sin importar el tamaño",
       price: "1%",
       period: "de tu facturación",
@@ -42,7 +44,7 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu facturación mensual es de $61.000, cobremos 1%, es decir $610. <br/> Si no llega a $50.000, no pagás la tarifa.</p>,
+      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu facturación mensual es de $61.000, cobremos 1%, es decir $610. <br /> Si no llega a $50.000, no pagás la tarifa.</p>,
       recommended: true,
     },
   ]
@@ -104,7 +106,7 @@ export default function PricingSection() {
                     : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl"
                     }`}
                 >
-                  <a href="/registro" className="hover:cursor-pointer">
+                  <a href={`/registro?plan=${plan.type}`} className="hover:cursor-pointer">
                     {plan.cta}
                   </a>
                 </Button>

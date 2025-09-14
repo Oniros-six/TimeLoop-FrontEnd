@@ -26,7 +26,7 @@ export default function Welcome() {
                 </div>
 
                 <a href="/">
-                    <Button className="w-full text-base md:text-lg lg:text-xl py-2 md:py-3 lg:py-4">
+                    <Button className="w-full text-base md:text-lg lg:text-xl py-2 md:py-3 lg:py-4 hover:cursor-pointer">
                         Volver al inicio
                     </Button>
                 </a>

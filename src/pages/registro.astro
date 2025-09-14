@@ -1,11 +1,13 @@
 ---
 import { MultiStepSignup } from '@/components/signUp/MultiStepSignup';
 import Signup from '@/layouts/Signup.astro';
+
+const plan = Astro.url.searchParams.get("plan");
 ---
 <Signup>
   <div class="min-h-screen bg-background flex items-center justify-center">
     <div class="w-full max-w-2xl">
-      <MultiStepSignup client:load/>
+      <MultiStepSignup plan={plan ?? "flexible"} client:load />
     </div>
   </div>
 </Signup>
