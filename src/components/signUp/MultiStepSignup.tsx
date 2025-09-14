@@ -59,9 +59,11 @@ const STEPS = [
 ]
 
 export function MultiStepSignup() {
-  const backendURL = import.meta.env.BACKEND_URL ?? "http://localhost:3000"
+  const backendURL = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3000'
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string>("")
+  const [stepErrors, setStepErrors] = useState<Record<string, Record<string, string>>>({})
   const [signupData, setSignupData] = useState<SignupData>({
     account: {
       ownerName: "",
@@ -89,71 +91,82 @@ export function MultiStepSignup() {
     }))
   }
 
-  // Función de validación para cada paso
-  const validateCurrentStep = (): boolean => {
+
+  // Función para validar y mostrar errores del paso actual
+  const validateAndShowErrors = (): boolean => {
+    const errors: Record<string, string> = {}
+
     switch (currentStep) {
       case 0: // Account step
         const { ownerName, email, password, confirmPassword } = signupData.account
 
-        // Validar nombre del propietario
-        const ownerNameValid = ownerName.trim().length > 0
+        if (!ownerName.trim()) {
+          errors.ownerName = 'El nombre es obligatorio'
+        }
 
-        // Validar email
-        const emailValid = email != undefined && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        if (!email) {
+          errors.email = 'El email es obligatorio'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errors.email = 'Por favor ingresa un email válido'
+        }
 
-        // Validar contraseña
-        const passwordLength = password.length >= 8
-        const hasNumbers = /\d/.test(password)
-        const hasLetters = /[a-zA-Z]/.test(password)
-        const hasSymbols = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(password)
-        const passwordValid = passwordLength && hasNumbers && hasLetters && hasSymbols
+        if (!password) {
+          errors.password = 'La contraseña es obligatoria'
+        } else if (password.length < 10 || !/\d/.test(password) || !/[a-zA-Z]/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+          errors.password = 'La contraseña debe tener al menos 10 caracteres, números, letras y símbolos'
+        }
 
-        // Validar confirmación
-        const confirmPasswordValid = confirmPassword.length > 0
-        const passwordsMatch = password === confirmPassword
-
-        return ownerNameValid && emailValid && passwordValid && confirmPasswordValid && passwordsMatch
+        if (!confirmPassword) {
+          errors.confirmPassword = 'La confirmación de contraseña es obligatoria'
+        } else if (password !== confirmPassword) {
+          errors.confirmPassword = 'Las contraseñas no coinciden'
+        }
+        break
 
       case 1: // Business data step
         const { businessName, businessType, address, phone } = signupData.businessData
-        // Validar que el teléfono tenga exactamente 9 dígitos
-        const phoneDigits = phone.replace(/\D/g, '') // Remover caracteres no numéricos
-        return !!(businessName && businessType && address && phone && phoneDigits.length === 9)
+
+        if (!businessName.trim()) {
+          errors.businessName = 'El nombre del comercio es obligatorio'
+        }
+
+        if (!businessType) {
+          errors.businessType = 'Debes seleccionar un rubro'
+        }
+
+        if (!address.trim()) {
+          errors.address = 'La dirección es obligatoria'
+        }
+
+        const phoneDigits = phone.replace(/\D/g, '')
+        if (!phone) {
+          errors.phone = 'El teléfono es obligatorio'
+        } else if (phoneDigits.length !== 9) {
+          errors.phone = 'El número de teléfono debe tener exactamente 9 dígitos'
+        }
+        break
 
       case 2: // Initial config step
-        const { workingDays, schedules } = signupData.initialConfig
+        const { workingDays } = signupData.initialConfig
+
         if (workingDays.length === 0) {
-          return false
+          errors.workingDays = 'Selecciona al menos un día de trabajo'
         }
-        for (const day of workingDays) {
-          if (!schedules[day]) {
-            return false
-          }
-          const daySchedule = schedules[day]
-          const hasMorningShift = daySchedule.morningOpen && daySchedule.morningClose
-          const hasAfternoonShift = daySchedule.afternoonOpen && daySchedule.afternoonClose
-
-          if (!hasMorningShift && !hasAfternoonShift) {
-            return false
-          }
-
-          if (hasAfternoonShift && !hasMorningShift) {
-            return false
-          }
-        }
-        return true
-
-      case 3: // Welcome step
-        return true
-
-      default:
-        return false
+        break
     }
+
+    // Guardar errores del paso actual
+    setStepErrors(prev => ({
+      ...prev,
+      [currentStep]: errors
+    }))
+
+    return Object.keys(errors).length === 0
   }
 
   // Navegación entre pasos
   const goToNextStep = () => {
-    if (validateCurrentStep() && currentStep < STEPS.length - 1) {
+    if (validateAndShowErrors() && currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -173,6 +186,7 @@ export function MultiStepSignup() {
   // Función para enviar datos al backend
   const handleSubmit = async () => {
     setIsSubmitting(true)
+    setSubmitError("")
 
     // Procesar los horarios para enviar al backend
     const processedSchedules = signupData.initialConfig.workingDays.map(day => {
@@ -204,7 +218,6 @@ export function MultiStepSignup() {
     };
 
     try {
-      // Aquí enviarías los datos al backend
       const response = await fetch(backendURL + "/auth/signup", {
         method: "POST",
         headers: {
@@ -214,15 +227,29 @@ export function MultiStepSignup() {
       })
 
       const result = await response.json()
+
       if (response.ok && result.statusCode == 201) {
-        window.location.replace('https://www.timeloop.com.uy/')
+        window.location.replace('https://www.timeloop.com.uy/bienvenido')
       } else {
-        // Manejar error
-        console.error("Error en el registro:", result.error)
-        alert(`Error: ${result.error}`)
+        // Mostrar el mensaje específico del backend
+        let errorMessage = "Error desconocido"
+
+        if (result.message) {
+          errorMessage = result.message
+        } else if (result.error) {
+          errorMessage = result.error
+        } else if (result.details) {
+          errorMessage = result.details
+        } else if (result.errors && Array.isArray(result.errors)) {
+          errorMessage = result.errors.join(", ")
+        }
+
+        setSubmitError(errorMessage)
+        console.error("Error en el registro:", result)
       }
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error de conexión:", error)
+      setSubmitError("Error de conexión. Por favor verifica tu internet e intenta nuevamente.")
     } finally {
       setIsSubmitting(false)
     }
@@ -232,6 +259,8 @@ export function MultiStepSignup() {
     const stepProps = {
       data: signupData,
       updateData: updateStepData,
+      errors: stepErrors[currentStep] || {},
+      clearErrors: () => setStepErrors(prev => ({ ...prev, [currentStep]: {} }))
     }
 
     switch (currentStep) {
@@ -250,7 +279,6 @@ export function MultiStepSignup() {
 
   const progressPercentage = ((currentStep + 1) / STEPS.length) * 100
 
-  const isNextButtonDisabled = !validateCurrentStep()
 
   return (
     <Card className="w-full max-w-2xl mx-auto mt-20">
@@ -281,9 +309,23 @@ export function MultiStepSignup() {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 px-2">
         {/* Contenido del paso actual */}
         <div className="min-h-[400px]">{renderCurrentStep()}</div>
+
+        {/* Mostrar error de envío si existe */}
+        {submitError && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex">
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error al registrar</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>• {submitError}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Navegación */}
         <div className="flex justify-between pt-4 border-t">
@@ -291,19 +333,19 @@ export function MultiStepSignup() {
             variant="outline"
             onClick={goToPreviousStep}
             disabled={currentStep === 0}
-            className="flex items-center gap-2 bg-transparent"
+            className="flex items-center gap-2 bg-transparent hover:cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             Anterior
           </Button>
 
           {currentStep < STEPS.length - 1 ? (
-            <Button onClick={goToNextStep} className="flex items-center gap-2">
+            <Button onClick={goToNextStep} className="flex items-center gap-2 hover:cursor-pointer">
               Siguiente
               <ChevronRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={isSubmitting} className="flex items-center gap-2">
+            <Button onClick={handleSubmit} disabled={isSubmitting} className="flex items-center gap-2 hover:cursor-pointer">
               {isSubmitting ? "Registrando..." : "Ir al panel"}
             </Button>
           )}

@@ -54,21 +54,21 @@ export function WelcomeStep({ data, onSubmit, isSubmitting }: WelcomeStepProps) 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-0">
       <div className="text-center space-y-4">
         <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
           <CheckCircle className="w-8 h-8 text-green-600" />
         </div>
         <div>
-          <h3 className="text-2xl font-bold">Paso 4 — Confirmación / Bienvenida</h3>
+          <h3 className="text-2xl font-bold">Paso 4 — Confirmación</h3>
           <p className="text-muted-foreground mt-2">¡Perfecto! Revisa tu información antes de completar el registro</p>
         </div>
       </div>
 
       <Card>
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="space-y-6 px-2 md:p-6">
           <div className="space-y-4">
-            <h4 className="font-semibold text-lg flex items-center gap-2">
+            <h4 className="font-semibold text-lg flex items-center justify-self-center gap-2">
               <Store className="w-5 h-5" />
               Resumen de tu comercio
             </h4>

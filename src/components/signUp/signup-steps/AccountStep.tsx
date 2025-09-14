@@ -8,12 +8,13 @@ import type { SignupData } from "../MultiStepSignup"
 interface AccountStepProps {
   data: SignupData
   updateData: (stepKey: keyof SignupData, data: any) => void
+  errors: Record<string, string>
+  clearErrors: () => void
 }
 
-export function AccountStep({ data, updateData }: AccountStepProps) {
+export function AccountStep({ data, updateData, errors, clearErrors }: AccountStepProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
   
   const validatePassword = (password: string) => {
     return {
@@ -26,12 +27,14 @@ export function AccountStep({ data, updateData }: AccountStepProps) {
 
   const passwordValidation = validatePassword(data.account.password)
   const allPasswordRequirementsMet = Object.values(passwordValidation).every(Boolean)
+  const passwordsMatch = data.account.password === data.account.confirmPassword && data.account.confirmPassword.length > 0
 
   const handleInputChange = (field: string, value: string) => {
     updateData("account", { [field]: value })
+    
     // Limpiar error cuando el usuario empiece a escribir
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
+      clearErrors()
     }
   }
 
@@ -150,7 +153,7 @@ export function AccountStep({ data, updateData }: AccountStepProps) {
               placeholder="Repite tu contraseña"
               value={data.account.confirmPassword}
               onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-              className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+              className={`pr-10 ${errors.confirmPassword ? "border-red-500" : passwordsMatch ? "border-green-500" : ""}`}
             />
             <Button
               type="button"
@@ -162,6 +165,19 @@ export function AccountStep({ data, updateData }: AccountStepProps) {
               {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </Button>
           </div>
+          
+          {/* Indicador de coincidencia de contraseñas */}
+          {data.account.confirmPassword.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${passwordsMatch ? "bg-green-500" : "bg-red-500"}`}
+              />
+              <span className={`text-sm ${passwordsMatch ? "text-green-700" : "text-red-500"}`}>
+                {passwordsMatch ? "Las contraseñas coinciden" : "Las contraseñas no coinciden"}
+              </span>
+            </div>
+          )}
+          
           {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
         </div>
       </div>

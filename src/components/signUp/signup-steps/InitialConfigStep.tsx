@@ -8,6 +8,8 @@ import type { SignupData } from "@/components/signUp/MultiStepSignup"
 interface InitialConfigStepProps {
   data: SignupData
   updateData: (stepKey: keyof SignupData, data: any) => void
+  errors: Record<string, string>
+  clearErrors: () => void
 }
 
 const DAYS_OF_WEEK = [
@@ -33,8 +35,8 @@ const generateTimeOptions = () => {
 
 const TIME_OPTIONS = generateTimeOptions()
 
-export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({})
+export function InitialConfigStep({ data, updateData, errors, clearErrors }: InitialConfigStepProps) {
+  const [localErrors, setLocalErrors] = useState<Record<string, string>>({})
 
   const handleDayToggle = (dayId: string, checked: boolean) => {
     const currentDays = data.initialConfig.workingDays
@@ -55,8 +57,9 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
 
     updateData("initialConfig", { workingDays: newDays, schedules: newSchedules })
 
+    // Limpiar error cuando el usuario selecciona días
     if (newDays.length > 0 && errors.workingDays) {
-      setErrors((prev) => ({ ...prev, workingDays: "" }))
+      clearErrors()
     }
   }
 
@@ -95,15 +98,16 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
       errorMessage = "La hora de cierre debe ser mayor a la de apertura"
     } else {
       // Limpiar errores si todo está bien
-      setErrors((prev) => ({
+      setLocalErrors((prev) => ({
         ...prev,
         [`${dayId}_morning_schedule`]: "",
         [`${dayId}_afternoon_schedule`]: "",
       }))
+      
     }
 
     if (errorKey) {
-      setErrors((prev) => ({ ...prev, [errorKey]: errorMessage }))
+      setLocalErrors((prev) => ({ ...prev, [errorKey]: errorMessage }))
     }
 
     updateData("initialConfig", { schedules: newSchedules })
@@ -130,7 +134,7 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
     const daySchedule = currentSchedules[dayId] || {}
 
     if (!daySchedule.afternoonOpen || !daySchedule.afternoonClose) {
-      setErrors((prev) => ({
+      setLocalErrors((prev) => ({
         ...prev,
         [`${dayId}_shifts`]: "Debe tener al menos un turno activo",
       }))
@@ -146,7 +150,7 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
     }
 
     // Limpiar error si existe
-    setErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
+    setLocalErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
     updateData("initialConfig", { schedules: newSchedules })
   }
 
@@ -171,7 +175,7 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
     const daySchedule = currentSchedules[dayId] || {}
 
     if (!daySchedule.morningOpen || !daySchedule.morningClose) {
-      setErrors((prev) => ({
+      setLocalErrors((prev) => ({
         ...prev,
         [`${dayId}_shifts`]: "Debe tener al menos un turno activo",
       }))
@@ -187,7 +191,7 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
     }
 
     // Limpiar error si existe
-    setErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
+    setLocalErrors((prev) => ({ ...prev, [`${dayId}_shifts`]: "" }))
     updateData("initialConfig", { schedules: newSchedules })
   }
 
@@ -358,9 +362,10 @@ export function InitialConfigStep({ data, updateData }: InitialConfigStepProps) 
                         </Button>
                       )}
 
-                      {errors[`${day.id}_shifts`] && (
-                        <p className="text-xs text-red-500">{errors[`${day.id}_shifts`]}</p>
+                      {localErrors[`${day.id}_shifts`] && (
+                        <p className="text-xs text-red-500">{localErrors[`${day.id}_shifts`]}</p>
                       )}
+                      
                     </div>
                   )}
                 </div>

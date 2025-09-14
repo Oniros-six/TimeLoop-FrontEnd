@@ -7,6 +7,8 @@ import type { SignupData } from "../MultiStepSignup"
 interface BusinessDataStepProps {
   data: SignupData
   updateData: (stepKey: keyof SignupData, data: any) => void
+  errors: Record<string, string>
+  clearErrors: () => void
 }
 
 const BUSINESS_TYPES = [
@@ -19,25 +21,13 @@ const BUSINESS_TYPES = [
   "Otro"
 ]
 
-export function BusinessDataStep({ data, updateData }: BusinessDataStepProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
+export function BusinessDataStep({ data, updateData, errors, clearErrors }: BusinessDataStepProps) {
   const handleInputChange = (field: string, value: string) => {
     updateData("businessData", { [field]: value })
     
-    // Validación específica para el teléfono
-    if (field === "phone") {
-      const phoneDigits = value.replace(/\D/g, '') // Remover caracteres no numéricos
-      if (phoneDigits.length > 0 && phoneDigits.length !== 9) {
-        setErrors((prev) => ({ ...prev, [field]: "El número de teléfono debe tener exactamente 9 dígitos" }))
-      } else {
-        setErrors((prev) => ({ ...prev, [field]: "" }))
-      }
-    } else {
-      // Limpiar error cuando el usuario empiece a escribir
-      if (errors[field]) {
-        setErrors((prev) => ({ ...prev, [field]: "" }))
-      }
+    // Limpiar error cuando el usuario empiece a escribir
+    if (errors[field]) {
+      clearErrors()
     }
   }
 
