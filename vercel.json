@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "TimeLoop-FrontEnd/landingPage/package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "dist" }
+      },
+      {
+        "src": "TimeLoop-FrontEnd/adminPanel/package.json",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "build" }
+      }
+    ],
+    "routes": [
+      { "src": "/admin/(.*)", "dest": "TimeLoop-FrontEnd/adminPanel/$1" },
+      { "src": "/(.*)", "dest": "TimeLoop-FrontEnd/landingPage/$1" }
+    ]
+  }
+  
