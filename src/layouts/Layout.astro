@@ -3,6 +3,7 @@
 import "../styles/global.css";
 import Footer from "@/components/landingPage/footer/Footer";
 import Navbar from "@/components/landingPage/navbar/Navbar";
+import Analytics from '@vercel/analytics/astro'
 ---
 
 <!doctype html>
@@ -27,5 +28,6 @@ import Navbar from "@/components/landingPage/navbar/Navbar";
       <slot/>
     </main>
     <Footer client:load/>
+    <Analytics/>
   </body>
 </html>
