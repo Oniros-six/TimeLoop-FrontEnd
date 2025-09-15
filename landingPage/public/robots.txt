@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://timeloop.com.uy/sitemap-0.xml
