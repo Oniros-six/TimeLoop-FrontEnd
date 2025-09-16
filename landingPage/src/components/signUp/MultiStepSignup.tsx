@@ -231,7 +231,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
       const result = await response.json()
 
       if (response.ok && result.statusCode == 201) {
-        window.location.replace('https://www.timeloop.com.uy/bienvenido')
+        window.location.href = '/bienvenido'
       } else {
         // Mostrar el mensaje específico del backend
         setSubmitError(result.message)
