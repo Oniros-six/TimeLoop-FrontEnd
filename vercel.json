@@ -1,21 +1,23 @@
 {
-  "builds": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
+  "headers": [
     {
-      "src": "landingPage/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "source": "/(.*)\\.(css|js|mjs|png|svg|ico|jpg|jpeg|gif|webp|avif|woff2)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
     },
     {
-      "src": "adminPanel/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "source": "/favicon.ico",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
     }
   ],
   "rewrites": [
-    { "source": "/about", "destination": "/adminPanel/index.html" }
+    { "source": "/admin", "destination": "/adminPanel/dist/index.html" },
+    { "source": "/admin/(.*)", "destination": "/adminPanel/dist/index.html" },
+    { "source": "/(.*)", "destination": "/landingPage/dist/index.html" }
   ]
 }
