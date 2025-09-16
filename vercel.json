@@ -19,19 +19,7 @@
   "rewrites": [
     {
       "source": "/admin",
-      "destination": "/adminPanel/dist/index.html"
-    },
-    {
-      "source": "/about",
       "destination": "/adminPanel/index.html"
-    },
-    {
-      "source": "/a",
-      "destination": "/adminPanel/"
-    },
-    {
-      "source": "/b",
-      "destination": "/adminPanel/dist/"
     }
   ]
 }
