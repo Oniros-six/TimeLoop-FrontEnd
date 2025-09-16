@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "builds": [
     {
       "src": "landingPage/package.json",
@@ -16,8 +15,7 @@
       }
     }
   ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/admin(/.*)?", "dest": "/adminPanel/dist/index.html" }
+  "rewrites": [
+    { "source": "/about", "destination": "/adminPanel/index.html" }
   ]
 }
