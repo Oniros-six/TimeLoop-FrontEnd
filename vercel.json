@@ -17,13 +17,7 @@
     }
   ],
   "routes": [
-    {
-      "src": "/admin/(.*)",
-      "dest": "adminPanel/dist/index.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "landingPage/dist/index.html"
-    }
+    { "handle": "filesystem" },
+    { "src": "/admin(/.*)?", "dest": "/adminPanel/dist/index.html" }
   ]
 }
