@@ -1,15 +1,14 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "builds": [
     {
-      "src": "/landingPage/package.json",
+      "src": "landingPage/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
       }
     },
     {
-      "src": "/adminPanel/package.json",
+      "src": "adminPanel/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -23,12 +22,16 @@
       "destination": "/adminPanel/dist/index.html"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/adminPanel/dist/index.html"
+      "source": "/about",
+      "destination": "/adminPanel/index.html"
     },
     {
-      "source": "/(.*)",
-      "destination": "/landingPage/dist/index.html"
+      "source": "/a",
+      "destination": "/adminPanel/"
+    },
+    {
+      "source": "/b",
+      "destination": "/adminPanel/dist/"
     }
   ]
 }
