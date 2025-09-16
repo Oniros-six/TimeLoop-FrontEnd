@@ -59,7 +59,9 @@ const STEPS = [
 ]
 
 export function MultiStepSignup({ plan }: { plan: string }) {
-  const backendURL = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3000'
+
+  const backendURL = import.meta.env.PUBLIC_ENV === "DEV" ? "http://localhost:3000" : import.meta.env.PUBLIC_BACKEND_URL
+
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<Array<string>>()

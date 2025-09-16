@@ -1,0 +1,11 @@
+---
+import Signup from '@/layouts/Signup.astro';
+import LoginComponent from '@/components/login/Login';
+---
+<Signup>
+  <div class="min-h-screen bg-background flex items-center justify-center">
+    <div class="w-full max-w-2xl">
+      <LoginComponent client:load/>
+    </div>
+  </div>
+</Signup>
