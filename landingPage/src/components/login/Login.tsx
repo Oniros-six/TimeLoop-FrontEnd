@@ -58,7 +58,7 @@ export default function Login() {
                 <div className="mt-6 text-center">
                     <p className="text-sm text-muted-foreground mb-3">¿Aún no tienes cuenta?</p>
                     <a href="/registro?plan=flexible">
-                        <Button variant="outline" className="w-full bg-transparent">
+                        <Button variant="outline" className="w-full bg-transparent cursor-pointer hover:border-border">
                             Crear cuenta
                         </Button>
                     </a>

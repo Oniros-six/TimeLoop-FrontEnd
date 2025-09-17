@@ -107,7 +107,7 @@ export default function SubscriptionSection() {
                                         <Button
                                             type="submit"
                                             size="lg"
-                                            className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-secondary transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-secondary transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                                             disabled={isLoading || !email}
                                         >
                                             {isLoading ? "Enviando..." : "¡Suscríbete!"}

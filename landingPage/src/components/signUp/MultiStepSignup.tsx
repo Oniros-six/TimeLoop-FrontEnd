@@ -231,7 +231,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
       const result = await response.json()
 
       if (response.ok && result.statusCode == 201) {
-        window.location.href = '/bienvenido'
+        window.location.href = '/admin'
       } else {
         // Mostrar el mensaje específico del backend
         setSubmitError(result.message)

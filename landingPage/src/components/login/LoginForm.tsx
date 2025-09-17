@@ -112,7 +112,7 @@ export function LoginForm({ onSubmit, errors = {}, isLoading = false }: LoginFor
           {displayErrors.password && <p className="text-sm text-red-500">{displayErrors.password}</p>}
         </div>
 
-        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+        <Button type="submit" className="w-full mt-4 cursor-pointer hover:bg-primary/80 hover:text-white" disabled={isLoading}>
           {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </Button>
 

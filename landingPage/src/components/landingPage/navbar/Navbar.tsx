@@ -21,7 +21,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a  onClick={(event) => smoothScroll(event, "home")} aria-label="Ir al inicio">
+            <a onClick={(event) => smoothScroll(event, "home")} aria-label="Ir al inicio">
               <img src="/logo.png" alt="TimeLoop Logo" className="w-26 cursor-pointer" />
             </a>
           </div>
@@ -38,6 +38,11 @@ export default function Navbar() {
                   {item.name}
                 </a>
               ))}
+              <Button asChild className="cursor-pointer hover:bg-primary/80 hover:text-white">
+                <a href="/login" className="hover:cursor-pointer">
+                  Iniciar sesión
+                </a>
+              </Button>
             </div>
           </div>
 
@@ -70,6 +75,11 @@ export default function Navbar() {
                       {item.name}
                     </a>
                   ))}
+                  <Button asChild>
+                    <a href="/login" className="hover:cursor-pointer">
+                      Iniciar sesión
+                    </a>
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
