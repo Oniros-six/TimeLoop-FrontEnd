@@ -10,7 +10,7 @@ export type Metric = {
 
 export const metrics: Metric[] = [
   {
-    title: "Ganancias en lo que va del mes",
+    title: "Ganancias este mes",
     value: "$12,450",
     change: "+12.5%",
     icon: DollarSign,
@@ -24,7 +24,7 @@ export const metrics: Metric[] = [
     color: "text-blue-600",
   },
   {
-    title: "Clientes que se cortan al menos una vez al mes",
+    title: "Clientes recurrentes",
     value: "89%",
     change: "+2.1% vs mes anterior",
     icon: UserCheck,

@@ -9,12 +9,12 @@ export function RecentActivityCard() {
   return (
     <Card className="col-span-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Calendar className="h-5 w-5" />
-          Actividad reciente (reservas, cancelaciones...)
+          Actividad reciente
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-2">
         <div className="space-y-4">
           {activities.map((activity) => (
             <div
@@ -31,11 +31,11 @@ export function RecentActivityCard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex justify-between gap-2 sm:gap-4">
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   <span>{activity.time}</span>
-                  <span className="hidden sm:inline">- {activity.date}</span>
+                  <span className="inline">- {activity.date}</span>
                 </div>
                 <Badge
                   variant={

@@ -1,4 +1,4 @@
-import { Briefcase, Calendar, BarChartBig as ChartBar, FileText, HelpCircle, Home, Settings, User, Users } from "lucide-react"
+import { Briefcase, Calendar, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Settings, User, Users } from "lucide-react"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
@@ -7,28 +7,33 @@ import { Button } from "@/components/ui/button"
 const items = [
   {
     title: "Panel de control",
-    url: "#",
+    url: "/adminPanel/",
     icon: Home,
     isActive: true,
   },
   {
     title: "Servicios",
-    url: "#",
+    url: "/adminPanel/services",
     icon: Briefcase,
   },
   {
     title: "Usuarios",
-    url: "#",
+    url: "/adminPanel/users",
     icon: Users,
   },
   {
     title: "Agenda",
-    url: "#",
+    url: "/adminPanel/schedule",
     icon: Calendar,
   },
   {
+    title: "Historial",
+    url: "/adminPanel/history",
+    icon: Clock,
+  },
+  {
     title: "Reportes",
-    url: "#",
+    url: "/adminPanel/reports",
     icon: FileText,
   },
 ]
@@ -37,19 +42,19 @@ const items = [
 const bottomItems = [
   {
     title: "Configuración",
-    url: "#",
+    url: "/adminPanel/config",
     icon: Settings,
   },
   {
     title: "Soporte",
-    url: "#",
+    url: "/adminPanel/suport",
     icon: HelpCircle,
   },
 ]
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="h-full">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -102,12 +107,10 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Button variant="ghost" className="w-full justify-start">
+                  <div className="flex gap-2 align-content-center w-full justify-start">
                     <User />
                     <span>Usuario activo</span>
-                  </Button>
-                </SidebarMenuButton>
+                  </div>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
