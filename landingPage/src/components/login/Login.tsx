@@ -14,11 +14,10 @@ export default function Login() {
         setErrors({})
 
         try {
-            console.log("Login data:", data)
-
             // Simulación de llamada al backend
             const response = await fetch(backendURL + "/auth/login", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
