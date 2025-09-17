@@ -6,33 +6,33 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 const items = [
   {
     title: "Panel de control",
-    url: "/adminPanel/",
+    url: "/",
     icon: Home,
     isActive: true,
   },
   {
     title: "Servicios",
-    url: "/adminPanel/services",
+    url: "services",
     icon: Briefcase,
   },
   {
     title: "Usuarios",
-    url: "/adminPanel/users",
+    url: "users",
     icon: Users,
   },
   {
     title: "Agenda",
-    url: "/adminPanel/schedule",
+    url: "schedule",
     icon: Calendar,
   },
   {
     title: "Historial",
-    url: "/adminPanel/history",
+    url: "history",
     icon: Clock,
   },
   {
     title: "Reportes",
-    url: "/adminPanel/reports",
+    url: "reports",
     icon: FileText,
   },
 ]
@@ -41,12 +41,12 @@ const items = [
 const bottomItems = [
   {
     title: "Configuración",
-    url: "/adminPanel/config",
+    url: "config",
     icon: Settings,
   },
   {
     title: "Soporte",
-    url: "/adminPanel/suport",
+    url: "support",
     icon: HelpCircle,
   },
 ]
