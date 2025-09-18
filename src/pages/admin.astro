@@ -1,7 +1,10 @@
 ---
 import Layout from "@/layouts/DashboardLayout.astro";
-import SidebarLayoutIsland from "@/components/dashboard/SidebarLayoutIsland";
+import DashboardIsland from "@/components/dashboard/DashboardIsland";
+import ProtectedRoute from "@/components/ProtectedRoute";
 ---
 <Layout>
-    <SidebarLayoutIsland client:load />
+    <ProtectedRoute client:load>
+        <DashboardIsland client:load />
+    </ProtectedRoute>
 </Layout>
