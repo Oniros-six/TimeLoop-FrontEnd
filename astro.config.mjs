@@ -5,12 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 import tunnel from 'astro-tunnel';
 import path from 'path';
 import vercel from '@astrojs/vercel';
-
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  output: 'server',
-
   vite: {
     plugins: [tailwindcss()],
     resolve: {
@@ -22,6 +19,8 @@ export default defineConfig({
   },
   site: "https://timeloop.com.uy",
   integrations: [react(), tunnel(), sitemap()],
-  adapter: vercel(),
-  base: '/admin',
+  output: "server",
+  adapter: vercel({
+    webAnalytics: { enabled: true }
+  }),
 });

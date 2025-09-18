@@ -1,7 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { MetricsGrid } from "@/components/metrics-grid"
-import { RecentActivityCard } from "@/components/recent-activity-card"
-import { HistoryCard } from "@/components/history-card"
+import { MetricsGrid } from "@/components/dashboard/metrics-grid"
+import { RecentActivityCard } from "@/components/dashboard/recent-activity-card"
+import { HistoryCard } from "@/components/dashboard/history-card"
 
 export function DashboardContent() {
   const currentDate = new Date().toLocaleDateString("es-ES", {
