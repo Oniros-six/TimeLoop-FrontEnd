@@ -1,13 +1,25 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { userAtom } from '@/stores/auth';
+import { useAtom } from 'jotai';
 import { LoginForm } from "@/components/login/LoginForm"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useAuthCheck } from "@/hooks/useAuthCheck";
 
 export default function Login() {
     const backendURL = import.meta.env.PUBLIC_ENV === "DEV" ? "http://localhost:3000" : import.meta.env.PUBLIC_BACKEND_URL
 
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isLoading, setIsLoading] = useState(false)
+    const [, setUser] = useAtom(userAtom);
+    const { user } = useAuthCheck();
+
+    useEffect(() => {
+      if (user) {
+        window.location.href = '/admin'; // redirige si ya está logueado
+      }
+    }, [user]);
+  
 
     const handleLogin = async (data: { email: string; password: string }) => {
         setIsLoading(true)
@@ -37,7 +49,7 @@ export default function Login() {
 
             const result = await response.json()
 
-            console.info("Login exitoso!")
+            setUser(result.user);
             window.location.href = '/admin'
 
         } catch (error) {

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -7,6 +7,7 @@ import { AccountStep } from "./signup-steps/AccountStep"
 import { BusinessDataStep } from "./signup-steps/BusinessDataStep"
 import { InitialConfigStep } from "./signup-steps/InitialConfigStep"
 import { WelcomeStep } from "./signup-steps/WelcomeStep"
+import { useAuthCheck } from "@/hooks/useAuthCheck"
 
 export interface SignupData {
   account: {
@@ -59,8 +60,14 @@ const STEPS = [
 ]
 
 export function MultiStepSignup({ plan }: { plan: string }) {
-
   const backendURL = import.meta.env.PUBLIC_ENV === "DEV" ? "http://localhost:3000" : import.meta.env.PUBLIC_BACKEND_URL
+  const { user } = useAuthCheck();
+
+  useEffect(() => {
+    if (user) {
+      window.location.href = '/admin'; // redirige si ya está logueado
+    }
+  }, [user]);
 
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -268,7 +275,6 @@ export function MultiStepSignup({ plan }: { plan: string }) {
   }
 
   const progressPercentage = ((currentStep + 1) / STEPS.length) * 100
-
 
   return (
     <Card className="w-full max-w-2xl mx-auto mt-20">
