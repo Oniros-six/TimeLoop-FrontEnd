@@ -1,5 +1,5 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "./node_modules/astro/tsconfigs/strict",
   "include": [
     ".astro/types.d.ts",
     "**/*"
@@ -9,6 +9,8 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "ESNext",
+    "types": ["vite/client", "astro/client"],
     "paths": {
       "@/*": [
         "src/*"
