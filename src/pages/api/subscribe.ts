@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro'
+import { logger } from '@/lib/logger'
 
 export const prerender = false
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    console.log('Request received:', {
+    logger.dev('Subscribe request received:', {
       method: request.method,
       url: request.url,
       headers: Object.fromEntries(request.headers.entries())
@@ -12,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Verificar que el request tenga contenido
     const contentType = request.headers.get('content-type')
-    console.log('Content-Type:', contentType)
+    logger.dev('Content-Type:', contentType)
     
     if (!contentType || !contentType.includes('application/json')) {
       return new Response(JSON.stringify({ error: 'Content-Type debe ser application/json' }), {
@@ -23,7 +24,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Leer el body como texto primero para debugging
     const textBody = await request.text()
-    console.log('Raw body:', textBody)
+    logger.dev('Raw body length:', textBody.length)
 
     if (!textBody || textBody.trim() === '') {
       return new Response(JSON.stringify({ error: 'Body vacío' }), {
@@ -35,9 +36,9 @@ export const POST: APIRoute = async ({ request }) => {
     let body
     try {
       body = JSON.parse(textBody)
-      console.log('Parsed body:', body)
+      logger.dev('Parsed body:', { email: body.email })
     } catch (parseError) {
-      console.error('Error parsing JSON:', parseError)
+      logger.error('Error parsing JSON:', parseError)
       return new Response(JSON.stringify({ error: 'JSON inválido en el request' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -67,7 +68,7 @@ export const POST: APIRoute = async ({ request }) => {
     const makeApiKey = import.meta.env.MAKE_API_KEY
 
     if (!makeUrl || !makeApiKey) {
-      console.error('Variables de entorno MAKE_URL o MAKE_API_KEY no están configuradas')
+      logger.error('Variables de entorno MAKE_URL o MAKE_API_KEY no están configuradas')
       return new Response(JSON.stringify({ error: 'Configuración del servidor incompleta' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -97,7 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
   } catch (error) {
-    console.error('Error en suscripción:', error)
+    logger.error('Error en suscripción:', error)
     return new Response(JSON.stringify({ 
       error: 'Error interno del servidor' 
     }), {
