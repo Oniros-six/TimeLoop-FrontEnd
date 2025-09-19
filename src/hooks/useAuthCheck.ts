@@ -5,13 +5,15 @@ import { userAtom } from '@/stores/auth';
 export const useAuthCheck = () => {
   const [user, setUser] = useAtom(userAtom);
   const [loading, setLoading] = useState(true);
-  const backendURL = import.meta.env.PUBLIC_BACKEND_URL
 
   useEffect(() => {
-
     const checkSession = async () => {
       try {
-        const res = await fetch(backendURL + '/auth/me', { credentials: 'include' }); // incluye cookies
+        const res = await fetch('/api/auth/verify', { 
+          method: 'GET',
+          credentials: 'include' 
+        });
+        
         if (res.status === 200) {
           const data = await res.json();
           setUser(data.user);
@@ -19,6 +21,7 @@ export const useAuthCheck = () => {
           setUser(null);
         }
       } catch (err) {
+        console.error('Error verificando sesión:', err);
         setUser(null);
       } finally {
         setLoading(false);
