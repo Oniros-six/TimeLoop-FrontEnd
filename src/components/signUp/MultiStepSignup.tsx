@@ -226,7 +226,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
       billingType: plan.toUpperCase()
     };
     try {
-      const response = await fetch("/api/signup", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

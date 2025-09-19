@@ -24,7 +24,7 @@ export default function Login() {
         setErrors({})
 
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
                 credentials: "include",
                 headers: {

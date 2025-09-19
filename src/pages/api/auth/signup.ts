@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro'
+import { logger } from '@/lib/logger'
 
 export const prerender = false
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    console.log('Signup request received:', {
+    logger.dev('Signup request received:', {
       method: request.method,
       url: request.url,
       headers: Object.fromEntries(request.headers.entries())
@@ -12,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Verificar que el request tenga contenido
     const contentType = request.headers.get('content-type')
-    console.log('Content-Type:', contentType)
+    logger.dev('Content-Type:', contentType)
     
     if (!contentType || !contentType.includes('application/json')) {
       return new Response(JSON.stringify({ error: 'Content-Type debe ser application/json' }), {
@@ -23,7 +24,13 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Leer el body
     const body = await request.json()
-    console.log('Signup payload:', body)
+    logger.dev('Signup payload:', { 
+      email: body.email, 
+      ownerName: body.ownerName,
+      businessName: body.name,
+      passwordLength: body.password?.length,
+      billingType: body.billingType
+    })
 
     // Validar campos requeridos
     const requiredFields = ['ownerName', 'email', 'password', 'name', 'phone', 'address', 'businessCategory', 'schedules', 'billingType']
@@ -60,7 +67,7 @@ export const POST: APIRoute = async ({ request }) => {
     const backendURL = import.meta.env.PUBLIC_BACKEND_URL
 
     if (!backendURL) {
-      console.error('PUBLIC_BACKEND_URL no está configurada')
+      logger.error('PUBLIC_BACKEND_URL no está configurada')
       return new Response(JSON.stringify({ error: 'Configuración del servidor incompleta' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -77,7 +84,7 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
     const result = await response.json()
-    console.log('Backend response:', result)
+    logger.dev('Backend response:', { status: response.status, statusCode: result.statusCode })
 
     // Retornar la respuesta del backend
     return new Response(JSON.stringify(result), {
@@ -86,7 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
   } catch (error) {
-    console.error('Error en signup:', error)
+    logger.error('Error en signup:', error)
     return new Response(JSON.stringify({ 
       error: 'Error interno del servidor',
       message: 'Error de conexión. Por favor verifica tu internet e intenta nuevamente.'
