@@ -1,19 +1,42 @@
 import { useAtom } from 'jotai';
 import { userAtom } from '@/stores/auth';
+import { Button } from '../ui/button';
+import { LogOut } from 'lucide-react';
 
 const LogoutButton = () => {
   const [, setUser] = useAtom(userAtom);
 
   const handleLogout = async () => {
-    await fetch('/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-    setUser(null); // limpia estado
-    window.location.href = '/login';
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setUser(null); // limpia estado solo si el logout fue exitoso
+        window.location.href = '/login';
+      } else {
+        console.error('Error en logout:', await response.json());
+        // Aún así limpiar el estado local por seguridad
+        setUser(null);
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('Error de conexión en logout:', error);
+      // Limpiar estado local por seguridad
+      setUser(null);
+      window.location.href = '/login';
+    }
   };
 
-  return <button onClick={handleLogout}>Logout</button>;
+  return (
+    <Button className="w-fit flex items-center gap-2 hover:cursor-pointer bg-transparent text-foreground hover:bg-destructive !px-4" onClick={handleLogout}>
+      <LogOut />
+      <span>Cerrar sesión</span>
+    </Button>
+  )
+
 };
 
 export default LogoutButton;
