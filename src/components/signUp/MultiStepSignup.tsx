@@ -60,7 +60,6 @@ const STEPS = [
 ]
 
 export function MultiStepSignup({ plan }: { plan: string }) {
-  const backendURL = import.meta.env.PUBLIC_ENV === "DEV" ? "http://localhost:3000" : import.meta.env.PUBLIC_BACKEND_URL
   const { user } = useAuthCheck();
 
   useEffect(() => {
@@ -227,7 +226,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
       billingType: plan.toUpperCase()
     };
     try {
-      const response = await fetch(backendURL + "/auth/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-import { Briefcase, Calendar, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Settings, User, Users } from "lucide-react"
+import { Briefcase, Calendar, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
 
@@ -34,6 +34,11 @@ const items = [
     title: "Reportes",
     url: "reports",
     icon: FileText,
+  },
+  {
+    title: "Facturas",
+    url: "invoices",
+    icon: Receipt,
   },
 ]
 

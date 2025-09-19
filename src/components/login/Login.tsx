@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button"
 import { useAuthCheck } from "@/hooks/useAuthCheck";
 
 export default function Login() {
-    const backendURL = import.meta.env.PUBLIC_ENV === "DEV" ? "http://localhost:3000" : import.meta.env.PUBLIC_BACKEND_URL
-
     const [errors, setErrors] = useState<Record<string, string>>({})
     const [isLoading, setIsLoading] = useState(false)
     const [, setUser] = useAtom(userAtom);
@@ -26,8 +24,7 @@ export default function Login() {
         setErrors({})
 
         try {
-            // Simulación de llamada al backend
-            const response = await fetch(backendURL + "/auth/login", {
+            const response = await fetch("/api/login", {
                 method: "POST",
                 credentials: "include",
                 headers: {
