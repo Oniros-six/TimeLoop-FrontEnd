@@ -1,7 +1,8 @@
-import { Briefcase, Calendar, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react"
+import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
 import LogoutButton from "../logout/LogoutButton"
+import type { IUser } from "@/interfaces/User"
 
 // Datos de navegación centralizados en config
 const items = [
@@ -27,6 +28,11 @@ const items = [
     icon: Calendar,
   },
   {
+    title: "Planilla de trabajo",
+    url: "work",
+    icon: CalendarDays,
+  },
+  {
     title: "Historial",
     url: "history",
     icon: Clock,
@@ -42,6 +48,10 @@ const items = [
     icon: Receipt,
   },
 ]
+interface props {
+  user: IUser | null,
+  commerceName: string
+}
 
 // Menú inferior
 const bottomItems = [
@@ -57,7 +67,7 @@ const bottomItems = [
   },
 ]
 
-export function AppSidebar() {
+export function AppSidebar({ user, commerceName }: props) {
   return (
     <Sidebar className="h-full">
       <SidebarHeader className="p-4 bg-card">
@@ -65,7 +75,7 @@ export function AppSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <ChartBar className="h-4 w-4" />
           </div>
-          <span className="font-semibold">Logo</span>
+          <span className="font-semibold">{commerceName}</span>
         </div>
       </SidebarHeader>
 
@@ -115,7 +125,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <div className="flex gap-2 align-content-center w-full justify-start px-1">
                   <User />
-                  <span>Usuario activo</span>
+                  <span>{user?.name}</span>
                 </div>
               </SidebarMenuItem>
             </SidebarMenu>
