@@ -1,22 +1,59 @@
+export enum BookingStatus {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  CANCELED = "CANCELED",
+  NO_SHOW = "NO_SHOW",
+  COMPLETED = "COMPLETED",
+  RESCHEDULED = "RESCHEDULED"
+}
+
+export const getStatusText = (status: BookingStatus): string => {
+  switch (status) {
+    case BookingStatus.PENDING:
+      return "Pendiente";
+    case BookingStatus.CONFIRMED:
+      return "Confirmado";
+    case BookingStatus.CANCELED:
+      return "Cancelado";
+    case BookingStatus.NO_SHOW:
+      return "No se presentó";
+    case BookingStatus.COMPLETED:
+      return "Completado";
+    case BookingStatus.RESCHEDULED:
+      return "Reprogramado";
+    default:
+      return status; // Fallback al valor original
+  }
+}
+
 export interface DashboardData {
   commerceId: number;
   commerceName: string;
   history: HistoryItem[];
+  recentActivity: RecentItem[];
 }
-
+//TODO Agregar que usuario/s atendera/atendio el servicio
 export interface HistoryItem {
   id: number;
   bookingId: number;
   customerId: number;
   priceAtBooking: number;
   timeStart: Date;
-  booking: Booking;
+  booking: {
+    bookingServices: BookingService[];
+  };
   customer: Customer;
 }
 
-export interface Booking {
+export interface RecentItem {
+  id: number;
+  customerId: number;
+  timeStart: Date;
+  status: BookingStatus;
   bookingServices: BookingService[];
+  customer: Customer;
 }
+
 
 export interface BookingService {
   service: Service;

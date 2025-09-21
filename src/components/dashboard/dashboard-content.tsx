@@ -28,7 +28,7 @@ export function DashboardContent({dashboardData}: { dashboardData: DashboardData
         <MetricsGrid />
 
         {/* Actividad Reciente */}
-        <RecentActivityCard />
+        <RecentActivityCard recent={dashboardData.recentActivity}/>
 
         {/* Historial */}
         <HistoryCard history={dashboardData.history}/>

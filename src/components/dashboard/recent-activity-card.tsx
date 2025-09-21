@@ -1,11 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, User } from "lucide-react"
-import { activities } from "@/mocks/activity"
+import { type RecentItem, BookingStatus, getStatusText } from "@/interfaces/DashboardData"
 
-// Datos centralizados en mocks/activity
 
-export function RecentActivityCard() {
+function formatActivityDate(date: Date | string): string {
+  // Asegurar que tenemos un objeto Date válido
+  const activityDate = date instanceof Date ? date : new Date(date)
+  
+  // Verificar que la fecha es válida
+  if (isNaN(activityDate.getTime())) {
+    return "Fecha inválida"
+  }
+  
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  // Resetear las horas para comparar solo las fechas
+  const activityDateOnly = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate())
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate())
+
+  if (activityDateOnly.getTime() === todayOnly.getTime()) {
+    return "Hoy"
+  } else if (activityDateOnly.getTime() === tomorrowOnly.getTime()) {
+    return "Mañana"
+  } else {
+    return activityDate.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
+  }
+}
+
+interface props {
+  recent: RecentItem[]
+}
+
+export function RecentActivityCard({ recent }: props) {
   return (
     <Card className="col-span-full">
       <CardHeader>
@@ -16,7 +50,7 @@ export function RecentActivityCard() {
       </CardHeader>
       <CardContent className="px-2">
         <div className="space-y-4">
-          {activities.map((activity) => (
+          {recent.map((activity) => (
             <div
               key={activity.id}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg border bg-card"
@@ -26,27 +60,41 @@ export function RecentActivityCard() {
                   <User className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{activity.client}</p>
-                  <p className="text-sm text-muted-foreground truncate">{activity.service}</p>
+                  <p className="font-medium truncate">{activity.customer.name}</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {
+                      activity.bookingServices.map((b, index) => (
+                        <div key={index}>{b.service.name}</div>
+                      ))
+                    }
+                  </p>
                 </div>
               </div>
 
               <div className="flex justify-between gap-2 sm:gap-4">
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock className="h-3 w-3" />
-                  <span>{activity.time}</span>
-                  <span className="inline">- {activity.date}</span>
+                  <span>
+                    {new Date(activity.timeStart).toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })} -
+                  </span>
+                  <span className="inline">
+                    {formatActivityDate(activity.timeStart)}
+                  </span>
                 </div>
                 <Badge
                   variant={
-                    activity.status === "confirmada"
+                    activity.status === BookingStatus.CONFIRMED
                       ? "default"
-                      : activity.status === "cancelada"
+                      : activity.status === BookingStatus.CANCELED
                         ? "destructive"
                         : "secondary"
                   }
                 >
-                  {activity.status}
+                  {getStatusText(activity.status)}
                 </Badge>
               </div>
             </div>
