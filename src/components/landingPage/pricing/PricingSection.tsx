@@ -6,13 +6,12 @@ import { Badge } from "@/components/ui/badge"
 export default function PricingSection() {
   const plans = [
     {
-      name: "Tarifa fija",
-      type: "flat",
-      subtitle: "Ideal para negocios con agenda estable",
-      price: "$790",
+      name: "Gratis",
+      type: "free",
+      subtitle: "Ideal para negocios que recien inician",
+      price: "$0",
       period: "/mes",
       features: [
-        "Solo pagas si superas las 40 reservas mensuales",
         "Agenda online",
         "Gestión de clientes y citas",
         "Recordatorios y notificaciones automáticas",
@@ -23,7 +22,6 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu mes tiene 50 reservas, pagás $790. <br /> Si tiene 35, no pagás la tarifa.</p>,
       recommended: false,
     },
     {
@@ -33,7 +31,6 @@ export default function PricingSection() {
       price: "1%",
       period: "de tu facturación",
       features: [
-        "Solo pagas si se supera $50.000 en facturación",
         "Agenda online",
         "Gestión de clientes y citas",
         "Recordatorios y notificaciones automáticas",
@@ -44,15 +41,33 @@ export default function PricingSection() {
         "Panel de control completo",
       ],
       cta: "Sumarme al pre-lanzamiento",
-      example: <p className="text-xs mx-2 min-h-10">Ejemplo: Si tu facturación mensual es de $61.000, cobremos 1%, es decir $610. <br /> Si no llega a $50.000, no pagás la tarifa.</p>,
       recommended: true,
     },
+    {
+      name: "Tarifa fija",
+      type: "flat",
+      subtitle: "Ideal para negocios con agenda estable",
+      price: "$790",
+      period: "/mes",
+      features: [
+        "Agenda online",
+        "Gestión de clientes y citas",
+        "Recordatorios y notificaciones automáticas",
+        "Métricas básicas y reporte de clientes",
+        "Pagos online y en efectivo",
+        "Enlaces a redes sociales",
+        "Soporte por email",
+        "Panel de control completo",
+      ],
+      cta: "Sumarme al pre-lanzamiento",
+      recommended: false,
+    }
   ]
 
 
   return (
     <section id="plans" className="bg-background mt-20">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">
@@ -64,7 +79,7 @@ export default function PricingSection() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 place-content-center gap-8 max-w-4xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-3 place-content-center gap-8 mx-auto items-stretch">
           {plans.map((plan, index) => (
             <Card
               key={index}
@@ -111,16 +126,9 @@ export default function PricingSection() {
                   </a>
                 </Button>
               </CardContent>
-              {plan.example}
-
             </Card>
 
           ))}
-        </div>
-
-        {/* Bottom text */}
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground">Todos los planes tienen un segmento gratuito para que pruebes sin compromiso.</p>
         </div>
       </div>
     </section >
