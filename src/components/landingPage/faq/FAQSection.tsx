@@ -5,41 +5,45 @@ const faqs = [
     id: "1",
     question: "¿Qué es TimeLoop y cómo puede ayudar a mi negocio?",
     answer:
-      "Una plataforma de reservas que automatiza agenda, recordatorios y cobros para comercios como peluquerías y barberías.",
+      "Es una plataforma de reservas que automatiza la agenda, los recordatorios y los cobros para comercios como peluquerías, barberías, centros de estetica, salones de masaje, etc.",
   },
   {
     id: "2",
     question: "¿Timeloop me da métricas?",
     answer:
-      "Sí. Podés ver cantidad de reservas, cancelaciones, clientes nuevos y estadísticas de uso para aprovechar oportundidades de mejora para tu negocio.",
+      "Sí. Podés ver la cantidad de reservas, cancelaciones, clientes nuevos y estadísticas de uso para detectar oportunidades de mejora.",
   },
   {
     id: "3",
     question: "¿Es seguro dar mi autorización de MercadoPago?",
     answer:
-      "Totalmente. La conexión se hace directo con MercadoPago mediante su sistema oficial. TimeLoop nunca tiene acceso a tu cuenta de MercadoPago.",
-  },  
+      "Totalmente. La conexión se hace de forma directa con MercadoPago mediante su sistema oficial. TimeLoop nunca accede a tu cuenta de MercadoPago.",
+  },
   {
     id: "4",
     question: "¿Cuánto tarda la configuración?",
     answer:
-      "Menos de 15 minutos. Si preferís, te asistimos por Zoom en 30 minutos.",
+      "Menos de 15 minutos. Si preferís, te asistimos por Zoom en una sesión de 30 minutos.",
   },
   {
     id: "5",
     question: "¿Cómo se agendan mis clientes?",
-    answer:
-      "Al registrarte, recibís un enlace único que podés compartir en redes sociales, mediante el cual tus clientes podrán reservar sus turnos. También se te proporciona un código QR exclusivo para tu negocio.",
+    answer: (
+      <p>
+        Al registrarte, recibís un enlace único que podés compartir en redes sociales, a través del cual tus clientes reservan sus turnos. <br />
+        Además, te damos un código QR único para tu negocio. Lo ponés en la vidriera, mostrador o tarjetas, y con solo escanearlo tus clientes acceden directo a tu agenda online. <br />
+        <b>Es una forma simple y moderna de captar más reservas en el momento.</b>
+      </p>
+    )
   },
   {
     id: "6",
     question: "¿Cómo funciona el Plan Variable?",
     answer: (
       <p>
-        El <b>Plan Variable</b> es muy sencillo: si en el mes <b>no</b> facturás menos de
-        $50.000, entonces <b>no</b> te cobramos el servicio. <br />
-        Si facturás más, el costo del servicio es el 1% de ese monto. <br />
-        Ejemplo: con $70.000 facturados, solo pagás $700 <br />
+        El <b>Plan Variable</b> es muy sencillo <br />
+        El costo del servicio es el 1% de lo facturado en el mes. <br />
+        Ejemplo: con $70.000 facturados, solo pagás $700.<br />
         Es el plan más justo, porque se adapta a lo que generás.
       </p>
     ),
@@ -50,29 +54,32 @@ const faqs = [
     answer: (
       <p>
         No hay problema. Para eso ofrecemos el <b>Plan Fijo</b>, que tiene un
-        monto mensual definido independientemente de cuánto factures. <br />
-        Además, en este plan el servicio es gratuito hasta las primeras 40 reservas del mes. <br />
-        Es decir, si recibís hasta 40 reservas, no pagás nada; si superás ese número, se aplicará el costo del plan.
+        monto mensual definido independientemente de cuánto factures.
       </p>
     ),
   },
   {
     id: "8",
-    question: "¿Puedo cancelar mi suscripción en cualquier momento?",
-    answer:
-      "Sí, podés cancelar tu suscripción en cualquier momento sin penalizaciones. Tu acceso continuará vigente hasta el final de tu período de facturación actual.",
+    question: "¿Tienen un plan gratuito?",
+    answer: "Sí, tenemos un plan gratuito que te permite gestionar hasta 40 reservas mensuales, perfecto para comercios que recién comienzan."
   },
   {
     id: "9",
-    question: "¿Puedo cambiar mi suscripción en cualquier momento?",
+    question: "¿Puedo cancelar mi suscripción en cualquier momento?",
     answer:
-      "Sí, podés cambiar tu suscripción en cualquier momento sin penalizaciones. Tu plan en vigencia continuará hasta el final de tu período de facturación actual.",
+      "Sí, podés cancelarla en cualquier momento sin penalizaciones. Tu acceso sigue vigente hasta el final del período de facturación en curso.",
   },
   {
     id: "10",
+    question: "¿Puedo cambiar mi suscripción en cualquier momento?",
+    answer:
+      "Sí, podés cambiarla en cualquier momento sin penalizaciones. Tu plan actual sigue vigente hasta el final del período de facturación.",
+  },
+  {
+    id: "11",
     question: "¿Tengo que conectar MercadoPago obligatoriamente?",
     answer:
-      "No, solo para aceptar pagos, configurás MercadoPago cuando quieras y si quieres.",
+      "No. Solo si querés aceptar pagos, configurás MercadoPago cuando quieras.",
   },
 ];
 
