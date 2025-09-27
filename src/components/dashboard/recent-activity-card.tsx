@@ -61,6 +61,7 @@ export function RecentActivityCard({ recent }: props) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{activity.customer.name}</p>
+                </div>
                   <p className="text-sm text-muted-foreground truncate">
                     {
                       activity.bookingServices.map((b, index) => (
@@ -68,7 +69,6 @@ export function RecentActivityCard({ recent }: props) {
                       ))
                     }
                   </p>
-                </div>
               </div>
 
               <div className="flex justify-between gap-2 sm:gap-4">
