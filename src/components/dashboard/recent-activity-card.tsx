@@ -7,12 +7,12 @@ import { type RecentItem, BookingStatus, getStatusText } from "@/interfaces/Dash
 function formatActivityDate(date: Date | string): string {
   // Asegurar que tenemos un objeto Date válido
   const activityDate = date instanceof Date ? date : new Date(date)
-  
+
   // Verificar que la fecha es válida
   if (isNaN(activityDate.getTime())) {
     return "Fecha inválida"
   }
-  
+
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(today.getDate() + 1)
@@ -48,20 +48,27 @@ export function RecentActivityCard({ recent }: props) {
           Actividad reciente
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-2">
-        <div className="space-y-4">
-          {recent.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg border bg-card"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                  <User className="h-4 w-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{activity.customer.name}</p>
-                </div>
+{/* //* Diferenciamos el caso vacio */}
+      {recent.length === 0 ?
+
+        <CardContent className="px-2 self-center">
+          No hay actividad reciente para mostrar.
+        </CardContent> :
+
+        <CardContent className="px-2">
+          <div className="space-y-4">
+            {recent.map((activity) => (
+              <div
+                key={activity.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg border bg-card"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{activity.customer.name}</p>
+                  </div>
                   <p className="text-sm text-muted-foreground truncate">
                     {
                       activity.bookingServices.map((b, index) => (
@@ -69,38 +76,40 @@ export function RecentActivityCard({ recent }: props) {
                       ))
                     }
                   </p>
-              </div>
-
-              <div className="flex justify-between gap-2 sm:gap-4">
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  <span>
-                    {new Date(activity.timeStart).toLocaleTimeString('es-ES', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: false,
-                    })} -
-                  </span>
-                  <span className="inline">
-                    {formatActivityDate(activity.timeStart)}
-                  </span>
                 </div>
-                <Badge
-                  variant={
-                    activity.status === BookingStatus.CONFIRMED
-                      ? "default"
-                      : activity.status === BookingStatus.CANCELED
-                        ? "destructive"
-                        : "secondary"
-                  }
-                >
-                  {getStatusText(activity.status)}
-                </Badge>
+
+                <div className="flex justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>
+                      {new Date(activity.timeStart).toLocaleTimeString('es-ES', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })} -
+                    </span>
+                    <span className="inline">
+                      {formatActivityDate(activity.timeStart)}
+                    </span>
+                  </div>
+                  <Badge
+                    variant={
+                      activity.status === BookingStatus.CONFIRMED
+                        ? "default"
+                        : activity.status === BookingStatus.CANCELED
+                          ? "destructive"
+                          : "secondary"
+                    }
+                  >
+                    {getStatusText(activity.status)}
+                  </Badge>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
+            ))}
+          </div>
+        </CardContent>
+      }
+
     </Card>
   )
 }
