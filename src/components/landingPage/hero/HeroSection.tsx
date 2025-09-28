@@ -50,7 +50,7 @@ export default function HeroSection() {
 
       {/* Main Heading */}
       <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-6 leading-tight text-balance">
-        Reduce hasta un 30% las ausencias —
+        Reduce las ausencias —
         <span className="block text-foreground">y convierte más reservas en ingresos reales.</span>
       </h1>
 
