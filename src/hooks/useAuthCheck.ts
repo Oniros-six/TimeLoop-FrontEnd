@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import { userAtom } from '@/stores/auth';
+import { userAtom } from '@/atoms/auth';
 
 export const useAuthCheck = () => {
   const [user, setUser] = useAtom(userAtom);

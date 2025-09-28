@@ -3,8 +3,8 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { useAtom } from "jotai";
-import { userAtom } from "@/stores/auth";
-import { dashboardAtom } from "@/stores/dashboard";
+import { userAtom } from "@/atoms/auth";
+import { dashboardAtom } from "@/atoms/dashboard";
 
 export default function DashboardIsland() {
   const [user,] = useAtom(userAtom);

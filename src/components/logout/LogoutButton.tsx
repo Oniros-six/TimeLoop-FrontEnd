@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { userAtom } from '@/stores/auth';
+import { userAtom } from '@/atoms/auth';
 import { Button } from '../ui/button';
 import { LogOut } from 'lucide-react';
 
