@@ -1,10 +1,7 @@
 ---
-import Layout from "@/layouts/DashboardLayout.astro";
 import DashboardIsland from "@/components/dashboard/DashboardIsland";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import Layout from "@/layouts/DashboardLayout.astro";
 ---
 <Layout>
-    <ProtectedRoute client:load>
-        <DashboardIsland client:load />
-    </ProtectedRoute>
+    <DashboardIsland client:only />
 </Layout>

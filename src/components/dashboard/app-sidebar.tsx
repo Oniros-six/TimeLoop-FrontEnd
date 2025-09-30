@@ -1,9 +1,14 @@
-import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react";
 
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
-import LogoutButton from "@/components/auth/logout/LogoutButton"
-import type { IUser } from "@/interfaces/User"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar";
+import { Skeleton } from "../ui/skeleton";
+import LogoutButton from "@/components/auth/logout/LogoutButton";
 
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/auth";
+import { dashboardAtom } from "@/atoms/dashboard";
+import { Link } from "react-router-dom";
 // Datos de navegación centralizados en config
 const items = [
   {
@@ -24,34 +29,30 @@ const items = [
   },
   {
     title: "Agenda",
-    url: "schedule",
+    url: "agenda",
     icon: Calendar,
   },
   {
     title: "Planilla de trabajo",
-    url: "work",
+    url: "planilla",
     icon: CalendarDays,
   },
   {
     title: "Historial",
-    url: "history",
+    url: "historial",
     icon: Clock,
   },
   {
     title: "Reportes",
-    url: "reports",
+    url: "reporte",
     icon: FileText,
   },
   {
     title: "Facturas",
-    url: "invoices",
+    url: "facturas",
     icon: Receipt,
   },
 ]
-interface props {
-  user: IUser | null,
-  commerceName: string
-}
 
 // Menú inferior
 const bottomItems = [
@@ -67,16 +68,53 @@ const bottomItems = [
   },
 ]
 
-export function AppSidebar({ user, commerceName }: props) {
+export function AppSidebar() {
+  const [user,] = useAtom(userAtom);
+  const [dashboardData,] = useAtom(dashboardAtom);
+
+  const HeaderSkeleton = () => (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center">
+        <Skeleton className="h-16 w-16 rounded-full" />
+      </div>
+      <Skeleton className="h-4 w-full" />
+    </div>
+  )
+
+  //TODO Traer el logo del comercio en algun llamado
+  const Header = () => (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center">
+        <img
+          src={"/timeloop.png"}
+          alt={user?.name || "Usuario"}
+          className="h-16 w-16 rounded-full object-cover"
+        />
+      </div>
+      <span className="font-semibold">{dashboardData?.commerceName}</span>
+    </div>
+  )
+
+  const FooterSkeleton = () => (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center">
+        <Skeleton className="h-6 w-6 rounded-full" />
+      </div>
+      <Skeleton className="h-4 w-full" />
+    </div>
+  )
+
+  const Footer = () => (
+    <div className="flex gap-2 align-content-center w-full justify-start px-1">
+      <User />
+      <span>{user?.name}</span>
+    </div>
+  )
+
   return (
     <Sidebar className="h-full">
       <SidebarHeader className="p-4 bg-card">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <ChartBar className="h-4 w-4" />
-          </div>
-          <span className="font-semibold">{commerceName}</span>
-        </div>
+        {dashboardData != undefined ? <Header /> : <HeaderSkeleton />}
       </SidebarHeader>
 
       <SidebarContent className="bg-card">
@@ -86,10 +124,10 @@ export function AppSidebar({ user, commerceName }: props) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={item.isActive}>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -105,10 +143,10 @@ export function AppSidebar({ user, commerceName }: props) {
               {bottomItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -123,10 +161,7 @@ export function AppSidebar({ user, commerceName }: props) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <div className="flex gap-2 align-content-center w-full justify-start px-1">
-                  <User />
-                  <span>{user?.name}</span>
-                </div>
+                {user != null ? <Footer /> : <FooterSkeleton />}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

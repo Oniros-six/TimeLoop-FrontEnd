@@ -1,5 +1,6 @@
 ---
 // Import global de estilos
+import ProtectedRoute from "@/components/ProtectedRoute";
 import "../styles/global.css";
 ---
 
@@ -21,7 +22,9 @@ import "../styles/global.css";
   </head>
   <body class="flex flex-col bg-background">
     <main class="p-2">
-      <slot/>
+        <ProtectedRoute client:load>
+          <slot>
+         </ProtectedRoute>
     </main>
   </body>
 </html>
