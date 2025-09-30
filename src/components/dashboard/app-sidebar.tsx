@@ -1,7 +1,7 @@
 import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar"
-import LogoutButton from "../logout/LogoutButton"
+import LogoutButton from "@/components/auth/logout/LogoutButton"
 import type { IUser } from "@/interfaces/User"
 
 // Datos de navegación centralizados en config

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { userAtom } from '@/atoms/auth';
 import { useAtom } from 'jotai';
-import { LoginForm } from "@/components/login/LoginForm"
+import { LoginForm } from "@/components/auth/login/LoginForm"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuthCheck } from "@/hooks/useAuthCheck";

@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import type { SignupData } from "@/components/signUp/MultiStepSignup"
+import type { SignupData } from "@/components/auth/signUp/MultiStepSignup"
 
 interface InitialConfigStepProps {
   data: SignupData

@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, Store, Calendar, Clock, Mail, MapPin, Phone, User } from "lucide-react"
-import type { SignupData } from "@/components/signUp/MultiStepSignup"
+import type { SignupData } from "@/components/auth/signUp/MultiStepSignup"
 
 interface WelcomeStepProps {
   data: SignupData

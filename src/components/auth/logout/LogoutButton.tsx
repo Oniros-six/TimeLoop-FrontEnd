@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { userAtom } from '@/atoms/auth';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 
 const LogoutButton = () => {
