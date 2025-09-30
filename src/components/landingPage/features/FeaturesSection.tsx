@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Bell, Clock, CreditCard, Database, Gift, Megaphone, Palette, Share2, ShoppingCart, TrendingUp, Users, Zap } from "lucide-react"
+import { Bell, BookOpen, Clock, CreditCard, Database, Gift, Images, Megaphone, Palette, Percent, Repeat, Share2, ShoppingCart, TrendingUp, Users, Zap } from "lucide-react"
 
 const features = [
   {
@@ -10,7 +10,7 @@ const features = [
   {
     icon: Bell,
     title: "Recordatorios Automáticos",
-    description: "Evitá un 30 % de faltas con recordatorios automáticos vía email y WhatsApp 24 horas antes",
+    description: "Evitá faltas con recordatorios automáticos vía email y WhatsApp 24 horas antes",
   },
   {
     icon: Database,
@@ -44,6 +44,28 @@ const features = [
   },
 ]
 
+const soonFeatures = [
+  {
+    icon: Repeat,
+    title: "Suscripciónes",
+    description: "Ofrece planes de suscripción mensual con beneficios exclusivos para tus clientes.",
+  },
+  {
+    icon: Percent,
+    title: "Promociones y descuentos",
+    description: "Crea promociones, descuentos y sorteos para fidelizar y atraer más clientes.",
+  },
+  {
+    icon: Gift,
+    title: "Programa de Recompensas",
+    description: "Premia a tus clientes frecuentes con beneficios y recompensas especiales.",
+  },
+  {
+    icon: Images,
+    title: "Catalogo",
+    description: "Muestra un catálogo de productos o servicios con fotos para que tus clientes conozcan lo que ofreces.",
+  },
+]
 export default function FeaturesSection() {
   return (
     <section id="features" className="bg-background mt-20">
@@ -59,7 +81,7 @@ export default function FeaturesSection() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
           {features.map((feature, index) => (
             <Card
               key={index}
@@ -75,27 +97,25 @@ export default function FeaturesSection() {
             </Card>
           ))}
         </div>
-        
+
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-foreground mb-8">Próximamente en TimeLoop</h3>
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto">
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
-              <Gift className="w-4 h-4 text-primary flex-shrink-0" />
-              <span className="text-xs md:text-sm font-medium text-foreground">Sistema de fidelización</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
-              <ShoppingCart className="w-4 h-4 text-primary flex-shrink-0" />
-              <span className="text-xs md:text-sm font-medium text-foreground">Ecommerce integrado</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
-              <Megaphone className="w-4 h-4 text-primary flex-shrink-0" />
-              <span className="text-xs md:text-sm font-medium text-foreground">Publicidad en el sitio</span>
-            </div>
-            <div className="flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg bg-muted/50 border border-accent">
-              <Palette className="w-4 h-4 text-primary flex-shrink-0" />
-              <span className="text-xs md:text-sm font-medium text-foreground">Personalización avanzada</span>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
+            {soonFeatures.map((feature, index) => (
+              <Card
+                key={index}
+                className="group hover:shadow-lg bg-card/50 hover:bg-card/80 transition-all duration-300 hover:-translate-y-1 border-border "
+              >
+                <CardContent className="pt-6 text-center">
+                  <div className="mb-6 flex justify-center">
+                    <feature.icon className="w-8 h-8 text-primary mx-auto mb-3" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
