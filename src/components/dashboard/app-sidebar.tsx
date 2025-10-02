@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react";
+import { Briefcase, Calendar, CalendarDays, BarChartBig as ChartBar, Clock, FileText, Handshake, HelpCircle, Home, Receipt, Settings, User, Users } from "lucide-react";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@/components/ui/sidebar";
 import { Skeleton } from "../ui/skeleton";
@@ -24,8 +23,13 @@ const items = [
   },
   {
     title: "Usuarios",
-    url: "users",
+    url: "usuarios",
     icon: Users,
+  },
+  {
+    title: "Clientes",
+    url: "clientes",
+    icon: Handshake,
   },
   {
     title: "Agenda",
