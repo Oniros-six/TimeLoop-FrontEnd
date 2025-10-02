@@ -15,6 +15,7 @@ export default function DashboardIsland() {
   const [view,] = useAtom(viewAtom);
 
   return (
+          <AppSidebar view={view}/>
                   <h1 className="text-xl font-semibold">{view}</h1>
                   <span className="text-sm text-muted-foreground hidden sm:block capitalize">
 

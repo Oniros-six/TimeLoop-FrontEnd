@@ -14,7 +14,6 @@ const items = [
     title: "Panel de control",
     url: "/",
     icon: Home,
-    isActive: true,
   },
   {
     title: "Servicios",
@@ -72,7 +71,7 @@ const bottomItems = [
   },
 ]
 
-export function AppSidebar() {
+export function AppSidebar({ view }: { view: string }) {
   const [user,] = useAtom(userAtom);
   const [dashboardData,] = useAtom(dashboardAtom);
 
@@ -127,7 +126,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.isActive}>
+                  <SidebarMenuButton asChild isActive={item.title === view}>
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
