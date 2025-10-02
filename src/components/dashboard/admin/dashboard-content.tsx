@@ -5,10 +5,14 @@ import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { userAtom } from "@/atoms/auth";
 import { dashboardAtom } from "@/atoms/dashboard";
+import { viewAtom } from "@/atoms/view";
 
 export function DashboardContent() {
-  const [user,] = useAtom(userAtom);
-  const [dashboardData, setDashboardData] = useAtom(dashboardAtom);
+    const [, setView] = useAtom(viewAtom);
+    useEffect(() => {
+        setView("Panel de control")
+    }, [setView]);
+
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
