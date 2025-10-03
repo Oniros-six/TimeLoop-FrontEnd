@@ -61,6 +61,12 @@ export function UsersContent() {
 
     //* Función para abrir el diálogo de confirmación
     const handleToggleUserStatus = (usuario: any) => {
+        // Validación: No permitir que un usuario se suspenda a sí mismo
+        if (currentUser && currentUser.id === usuario.id && usuario.active) {
+            setStatusErrorMessage("No puedes suspenderte a ti mismo");
+            return;
+        }
+        
         setStatusErrorMessage(null); // Limpiar errores previos
         setUserToChangeStatus({
             id: usuario.id,
@@ -153,6 +159,12 @@ export function UsersContent() {
 
     //* Logica para abrir el dialog de cambio de rol
     const handleCambiarRol = (usuario: any) => {
+        // Validación: No permitir que un usuario cambie su propio rol
+        if (currentUser && currentUser.id === usuario.id) {
+            setRoleErrorMessage("No puedes cambiar tu propio rol");
+            return;
+        }
+        
         setRoleErrorMessage(null); // Limpiar errores previos
         setSelectedUser({
             id: usuario.id,
@@ -285,6 +297,7 @@ export function UsersContent() {
                         onStatusToggle={handleToggleUserStatus}
                         isStatusPending={status.isPending}
                         showInactive={showInactive}
+                        currentUser = {currentUser}
                     />
                 </div>
             </div>

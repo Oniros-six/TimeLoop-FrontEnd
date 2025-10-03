@@ -1,5 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { UserRole } from "@/interfaces/User";
+import { useAtom } from "jotai";
+import { userAtom } from "@/atoms/auth";
 
 interface ChangeRoleResponse {
     statusCode: number;
@@ -8,9 +10,16 @@ interface ChangeRoleResponse {
 }
 
 export function useChangeRol() {
+    const [currentUser] = useAtom(userAtom);
     
     return useMutation({
         mutationFn: async ({ userId, newRole }: { userId: number; newRole: UserRole }) => {
+            
+            // Validación: No permitir que un usuario cambie su propio rol
+            if (currentUser && currentUser.id === userId) {
+                throw new Error("No puedes cambiar tu propio rol");
+            }
+            
             const response = await fetch(`/api/users/changeRole/${userId}`, {
                 method: "PUT",
                 credentials: "include",

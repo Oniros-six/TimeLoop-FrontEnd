@@ -10,6 +10,7 @@ interface UserTableProps {
     onStatusToggle: (user: IUser) => void;
     isStatusPending: boolean;
     showInactive: boolean;
+    currentUser: IUser | null
 }
 
 export default function UserTable({
@@ -18,7 +19,8 @@ export default function UserTable({
     onRoleChange,
     onStatusToggle,
     isStatusPending,
-    showInactive
+    showInactive,
+    currentUser
 }: UserTableProps) {
     // Helper de color del badge
     const getRolColor = (rol: string) => {
@@ -39,7 +41,7 @@ export default function UserTable({
                     <TableHead>Nombre</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Rol</TableHead>
-                    {isAdmin && (
+                    {isAdmin && currentUser?.active && (
                         <TableHead className="text-right">Acciones</TableHead>
                     )}
                 </TableRow>
@@ -53,7 +55,7 @@ export default function UserTable({
                     </TableRow>
                 ) : (
                     users.map((usuario) => (
-                        <TableRow key={usuario.id}>
+                        <TableRow key={usuario.id} className={`${currentUser?.id === usuario.id ? "bg-accent/30" : ""}`}>
                             <TableCell className="font-medium">{usuario.name}</TableCell>
                             <TableCell>{usuario.email}</TableCell>
                             <TableCell>
@@ -61,8 +63,8 @@ export default function UserTable({
                                     {usuario.role === "ADMIN" ? "Administrador" : "Colaborador"}
                                 </Badge>
                             </TableCell>
-                            {isAdmin && (
-                                <TableCell className="text-right">
+                            {isAdmin && currentUser?.active && (
+                                <TableCell className={`text-right ${currentUser?.id === usuario.id ? "invisible" : ""}`}>
                                     <UserActionsDropdown
                                         user={usuario}
                                         onRoleChange={onRoleChange}
