@@ -7,7 +7,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { UserX, UserCheck, AlertTriangle, X } from "lucide-react"
+import { UserX, UserCheck, AlertTriangle } from "lucide-react"
+import ErrorDisplay from "./ErrorDisplay"
 
 interface ConfirmStatusDialogProps {
     open: boolean
@@ -19,7 +20,7 @@ interface ConfirmStatusDialogProps {
         name: string
         active: boolean
     } | null
-    errorMessage?: string | null
+    errorMessage?: string | null | undefined
     onClearError?: () => void
 }
 
@@ -58,36 +59,22 @@ export default function ConfirmStatusDialog({
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Mostrar error si existe */}
-                {errorMessage && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-                        <div className="flex items-start">
-                            <div className="flex-1">
-                                <p className="text-sm text-red-800">{errorMessage}</p>
-                            </div>
-                            {onClearError && (
-                                <button
-                                    onClick={onClearError}
-                                    className="ml-2 text-red-400 hover:text-red-600"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
+                <ErrorDisplay
+                    errorMessage={errorMessage}
+                    onClearError={onClearError}
+                />
 
                 <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
                     <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-muted-foreground">
                         {isActivating ? (
                             <p>
-                                Al reactivar este usuario, podrá acceder nuevamente a la plataforma 
+                                Al reactivar este usuario, podrá acceder nuevamente a la plataforma
                                 y realizar todas las acciones según su rol asignado.
                             </p>
                         ) : (
                             <p>
-                                Al suspender este usuario, perderá el acceso a la plataforma 
+                                Al suspender este usuario, perderá el acceso a la plataforma
                                 y no podrá realizar ninguna acción hasta que sea reactivado.
                             </p>
                         )}

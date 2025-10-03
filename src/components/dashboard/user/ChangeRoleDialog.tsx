@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter, Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { UserCog, X } from "lucide-react";
+import { UserCog } from "lucide-react";
 import { UserRole } from "@/interfaces/User";
+import ErrorDisplay from "./ErrorDisplay";
 
 interface PropsInterface {
     openRolDialog: boolean;
@@ -17,7 +18,7 @@ interface PropsInterface {
     setNewRole: (role: UserRole) => void;
     handleChangeRole: () => void;
     isPending: boolean;
-    errorMessage?: string | null;
+    errorMessage?: string | null | undefined;
     onClearError?: () => void;
 }
 
@@ -45,25 +46,11 @@ export default function ChangeRoleDialog({
                         Los cambios se aplicarán inmediatamente.
                     </DialogDescription>
                 </DialogHeader>
-                
-                {/* Mostrar error si existe */}
-                {errorMessage && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-                        <div className="flex items-start">
-                            <div className="flex-1">
-                                <p className="text-sm text-red-800">{errorMessage}</p>
-                            </div>
-                            {onClearError && (
-                                <button
-                                    onClick={onClearError}
-                                    className="ml-2 text-red-400 hover:text-red-600"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
+
+                <ErrorDisplay
+                    errorMessage={errorMessage}
+                    onClearError={onClearError}
+                />
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="usuario">Usuario</Label>

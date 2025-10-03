@@ -3,10 +3,11 @@ import { DialogHeader, DialogFooter, Dialog, DialogTrigger, DialogContent, Dialo
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { UserPlus, X } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { UserRole } from "@/interfaces/User";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import ErrorDisplay from "./ErrorDisplay";
 
 interface PropsInterface {
     setNewUser: (user: any) => void;
@@ -20,11 +21,11 @@ interface PropsInterface {
     setOpenRegisterDialog: (open: boolean) => void;
     handleAgregarUsuario: () => void;
     isPending?: boolean;
-    errorMessage?: string | null;
+    errorMessage?: string | null | undefined;
     onClearError?: () => void;
 }
 
-export default function CreateUserDialog({setNewUser, newUser, openRegisterDialog, setOpenRegisterDialog, handleAgregarUsuario, isPending = false, errorMessage, onClearError}: PropsInterface) {
+export default function CreateUserDialog({ setNewUser, newUser, openRegisterDialog, setOpenRegisterDialog, handleAgregarUsuario, isPending = false, errorMessage, onClearError }: PropsInterface) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
@@ -107,25 +108,11 @@ export default function CreateUserDialog({setNewUser, newUser, openRegisterDialo
                         Completa los datos del nuevo usuario. Haz clic en guardar cuando termines.
                     </DialogDescription>
                 </DialogHeader>
-                
-                {/* Mostrar error si existe */}
-                {errorMessage && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-                        <div className="flex items-start">
-                            <div className="flex-1">
-                                <p className="text-sm text-red-800">{errorMessage}</p>
-                            </div>
-                            {onClearError && (
-                                <button
-                                    onClick={onClearError}
-                                    className="ml-2 text-red-400 hover:text-red-600"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
+
+                <ErrorDisplay
+                    errorMessage={errorMessage}
+                    onClearError={onClearError}
+                />
                 <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Nombre completo</Label>
@@ -248,7 +235,7 @@ export default function CreateUserDialog({setNewUser, newUser, openRegisterDialo
                                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </Button>
                         </div>
-                        
+
                         {/* Indicador de coincidencia de contraseñas */}
                         {confirmPassword.length > 0 && (
                             <div className="flex items-center gap-2">
@@ -258,7 +245,7 @@ export default function CreateUserDialog({setNewUser, newUser, openRegisterDialo
                                 </span>
                             </div>
                         )}
-                        
+
                         {errors.confirmPassword && (
                             <p id="confirmPassword-error" className="text-sm text-red-600">{errors.confirmPassword}</p>
                         )}

@@ -1,16 +1,4 @@
 import { useState, useEffect } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { MoreVertical, UserCog, UserX, UserCheck } from "lucide-react"
 import { useAtom } from "jotai"
 import { viewAtom } from "@/atoms/view"
 import { userAtom } from "@/atoms/auth"
@@ -21,6 +9,8 @@ import { useCreateUser } from "@/hooks/users/useCreateUser"
 import CreateUserDialog from "./CreateUserDialog"
 import ChangeRoleDialog from "./ChangeRoleDialog"
 import ConfirmStatusDialog from "./ConfirmStatusDialog"
+import UserFilters from "./UserFilters"
+import UserTable from "./UserTable"
 import { UserRole } from "@/interfaces/User"
 
 
@@ -161,7 +151,6 @@ export function UsersContent() {
 
     const filteredUsers = users.filter((u) => (showInactive ? !u.active : u.active));
 
-
     //* Logica para abrir el dialog de cambio de rol
     const handleCambiarRol = (usuario: any) => {
         setRoleErrorMessage(null); // Limpiar errores previos
@@ -173,7 +162,6 @@ export function UsersContent() {
         setNewRole(usuario.role === UserRole.ADMIN ? UserRole.EMPLOYEE : UserRole.ADMIN);
         setOpenRolDialog(true);
     }
-
 
     //* Funciones para limpiar errores
     const handleClearError = () => {
@@ -187,7 +175,7 @@ export function UsersContent() {
     const handleClearStatusError = () => {
         setStatusErrorMessage(null);
     };
-    
+
     //* Logica para crear un user
     const handleAgregarUsuario = () => {
         if (!currentUser?.commerceId) {
@@ -225,16 +213,6 @@ export function UsersContent() {
         );
     }
 
-    //* Helper de color del badge
-    const getRolColor = (rol: string) => {
-        switch (rol) {
-            case "ADMIN":
-                return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-            case "EMPLOYEE":
-                return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-        }
-    }
-
     //* Helper para mostrar ocultar usuarios segun su estado
     function handleShowUsers(): void {
         setShowInactive((prev) => !prev)
@@ -242,15 +220,11 @@ export function UsersContent() {
 
     return (
         <div className="space-y-6">
-            {/* //* Filtros */}
-            <div className="flex flex-col rounded-lg border bg-card p-4 gap-4">
-                <h2 className="text-xl font-semibold">Filtros</h2>
-                <div className="flex gap-4">
-                    <Button size={"sm"} className="hover:scale-105 transition-all tracking-wide" onClick={handleShowUsers}>
-                        {showInactive ? "Mostrar activos" : "Mostrar inactivos"}
-                    </Button>
-                </div>
-            </div>
+            {/* Filtros */}
+            <UserFilters
+                showInactive={showInactive}
+                onToggleInactive={handleShowUsers}
+            />
 
             {/* //* Tabla de usuarios */}
             <div className="rounded-lg border bg-card">
@@ -266,8 +240,7 @@ export function UsersContent() {
                                 {filteredUsers.length !== 1 ? "s" : ""}
                             </p>
                         </div>
-                        {isAdmin && (<>
-                            {/* //* ==============CREATE USER DIALOG START============= */}
+                        {isAdmin && (
                             <CreateUserDialog
                                 setNewUser={setNewUser}
                                 newUser={newUser}
@@ -278,13 +251,11 @@ export function UsersContent() {
                                 errorMessage={errorMessage}
                                 onClearError={handleClearError}
                             />
-                        </>)}
-
-                        {/* //* ==============CREATE USER DIALOG END============= */}
+                        )}
 
                     </div>
 
-                    {/* //* ==============CHANGE ROLE DIALOG START============= */}
+                    {/* Diálogos */}
                     <ChangeRoleDialog
                         openRolDialog={openRolDialog}
                         setOpenRolDialog={setOpenRolDialog}
@@ -296,9 +267,7 @@ export function UsersContent() {
                         errorMessage={roleErrorMessage}
                         onClearError={handleClearRoleError}
                     />
-                    {/* //* ==============CHANGE ROLE DIALOG END============= */}
 
-                    {/* //* ==============CONFIRM STATUS DIALOG START============= */}
                     <ConfirmStatusDialog
                         open={openStatusDialog}
                         onOpenChange={setOpenStatusDialog}
@@ -308,79 +277,15 @@ export function UsersContent() {
                         errorMessage={statusErrorMessage}
                         onClearError={handleClearStatusError}
                     />
-                    {/* //* ==============CONFIRM STATUS DIALOG END============= */}
 
-                    <Table>
-                        {/* //* ==============HEADER START============= */}
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nombre</TableHead>
-                                <TableHead>Email</TableHead>
-                                {/* <TableHead className="hidden sm:table-cell">Teléfono</TableHead> */}
-                                <TableHead>Rol</TableHead>
-                                {isAdmin && (
-                                    <TableHead className="text-right">Acciones</TableHead>
-                                )}
-                            </TableRow>
-                        </TableHeader>
-                        {/* //* ==============HEADER END============= */}
-
-                        {/* //* ==============BODY START============= */}
-                        <TableBody>
-                            {filteredUsers.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
-                                        No se encontraron usuarios {showInactive ? "inactivos" : "activos"}
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                filteredUsers.map((usuario) => (
-                                    <TableRow key={usuario.id}>
-                                        <TableCell className="font-medium">{usuario.name}</TableCell>
-                                        <TableCell>{usuario.email}</TableCell>
-                                        {/* <TableCell className="hidden sm:table-cell">{usuario.phone}</TableCell> */}
-                                        <TableCell>
-                                            <Badge variant="secondary" className={getRolColor(usuario.role)}>
-                                                {usuario.role === "ADMIN" ? "Administrador" : "Colaborador"}
-                                            </Badge>
-                                        </TableCell>
-                                        {isAdmin && (
-                                            <TableCell className="text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                            <span className="sr-only">Abrir menú de opciones</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuLabel className="tracking-wide">Acciones</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => handleCambiarRol(usuario)}>
-                                                            <UserCog className="mr-2 h-4 w-4" />
-                                                            Cambiar rol
-                                                        </DropdownMenuItem>
-                                                        {usuario.active ? (
-                                                            <DropdownMenuItem disabled={status.isPending} className="hover:!bg-destructive" onClick={() => handleToggleUserStatus(usuario)}>
-                                                                <UserX className="mr-2 h-4 w-4" />
-                                                                Suspender usuario
-                                                            </DropdownMenuItem>
-                                                        ) : (
-                                                            <DropdownMenuItem disabled={status.isPending} onClick={() => handleToggleUserStatus(usuario)}>
-                                                                <UserCheck className="mr-2 h-4 w-4" />
-                                                                Reactivar usuario
-                                                            </DropdownMenuItem>
-                                                        )}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                        {/* //* ==============BODY END============= */}
-                    </Table>
+                    <UserTable
+                        users={filteredUsers}
+                        isAdmin={isAdmin}
+                        onRoleChange={handleCambiarRol}
+                        onStatusToggle={handleToggleUserStatus}
+                        isStatusPending={status.isPending}
+                        showInactive={showInactive}
+                    />
                 </div>
             </div>
         </div>
