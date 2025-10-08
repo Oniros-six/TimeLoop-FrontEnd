@@ -41,7 +41,7 @@ export default function ServiceOptions({
                             e.stopPropagation()
                             handleDelete(service)
                         }}
-                        className="text-destructive hover:!bg-destructive hover:text-destructive-foreground"
+                        className="text-destructive/90 tracking-wide font-semibold hover:!bg-destructive hover:text-destructive-foreground"
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Eliminar
