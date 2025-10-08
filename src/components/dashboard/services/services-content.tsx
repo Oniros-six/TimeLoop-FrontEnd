@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import ServiceDetailsDialog from "./ServiceDetailsDialog"
 import DeleteServiceDialog from "./DeleteServiceDialog"
 import UpdateServiceDialog from "./UpdateServiceDialog"
+import CreateServiceDialog from "./CreateServiceDialog"
 import { ServicesHeader } from "./ServicesHeader"
 import { ServicesLoading } from "./ServicesLoading"
 import { ServicesError } from "./ServicesError"
@@ -40,11 +41,11 @@ export function ServicesContent() {
   const dialogs = useServiceDialogs();
   const actions = useServiceActions(refetchServices, dialogs.closeDeleteDialog);
   const updateActions = useServiceActions(refetchServices, dialogs.closeUpdateDialog);
+  const createActions = useServiceActions(refetchServices, dialogs.closeCreateDialog);
 
   //* Handlers para acciones
   const handleCreateService = () => {
-    // TODO: Implementar creación de servicio
-    console.log("Crear servicio");
+    dialogs.openCreateDialog();
   };
 
   const handleServiceDetailsClick = (service: IService) => {
@@ -68,6 +69,11 @@ export function ServicesContent() {
   const confirmUpdate = () => {
     if (!dialogs.selectedService) return;
     updateActions.handleUpdate(dialogs.selectedService.id, updateActions.updateForm);
+  };
+
+  const confirmCreate = (formData: any) => {
+    if (!selectedUser || !currentUser) return;
+    createActions.handleCreate(formData, currentUser.commerceId, selectedUser.id);
   };
 
   //* Renderizado condicional basado en el estado
@@ -174,6 +180,17 @@ export function ServicesContent() {
         service={dialogs.selectedService}
         updateForm={updateActions.updateForm}
         setUpdateForm={updateActions.setUpdateForm}
+      />
+
+      <CreateServiceDialog
+        open={dialogs.isCreateDialogOpen}
+        onOpenChange={dialogs.setIsCreateDialogOpen}
+        onConfirm={confirmCreate}
+        isPending={createActions.isCreatePending}
+        errorMessage={createActions.createErrorMessage}
+        onClearError={createActions.clearCreateError}
+        createForm={createActions.createForm}
+        setCreateForm={createActions.setCreateForm}
       />
     </>
   );

@@ -6,6 +6,7 @@ export function useServiceDialogs() {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const openDetailsDialog = (service: IService) => {
     setSelectedService(service);
@@ -37,19 +38,31 @@ export function useServiceDialogs() {
     setSelectedService(null);
   };
 
+  const openCreateDialog = () => {
+    setIsCreateDialogOpen(true);
+  };
+
+  const closeCreateDialog = () => {
+    setIsCreateDialogOpen(false);
+  };
+
   return {
     selectedService,
     isDetailsDialogOpen,
     isDeleteDialogOpen,
     isUpdateDialogOpen,
+    isCreateDialogOpen,
     openDetailsDialog,
     closeDetailsDialog,
     openDeleteDialog,
     closeDeleteDialog,
     openUpdateDialog,
     closeUpdateDialog,
+    openCreateDialog,
+    closeCreateDialog,
     setIsDetailsDialogOpen,
     setIsDeleteDialogOpen,
     setIsUpdateDialogOpen,
+    setIsCreateDialogOpen,
   };
 }

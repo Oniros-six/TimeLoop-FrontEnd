@@ -1,15 +1,33 @@
 import { useState } from "react";
 import { useDeleteService } from "./useDeleteService";
 import { useUpdateService } from "./useUpdateService";
+import { useCreateService } from "./useCreateService";
 import type { IService } from "@/interfaces/Service";
+
+interface CreateServiceForm {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  durationMinutes: number;
+}
 
 export function useServiceActions(refetchServices: () => void, onSuccess?: () => void) {
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null);
   const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null);
+  const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const [updateForm, setUpdateForm] = useState<IService | null>(null);
+  const [createForm, setCreateForm] = useState<CreateServiceForm>({
+    id: 0,
+    name: '',
+    description: '',
+    price: 0,
+    durationMinutes: 0
+  });
 
   const deleteService = useDeleteService();
   const updateService = useUpdateService();
+  const createService = useCreateService();
 
   // Función para inicializar el formulario de edición
   const initializeUpdateForm = (service: IService) => {
@@ -60,20 +78,57 @@ export function useServiceActions(refetchServices: () => void, onSuccess?: () =>
     );
   };
 
+  const handleCreate = (formData: CreateServiceForm, commerceId: number, userId: number) => {
+    createService.mutate(
+      {
+        commerceId,
+        userId,
+        ...formData
+      },
+      {
+        onSuccess: () => {
+          setCreateErrorMessage(null);
+          setCreateForm({
+            id: 0,
+            name: '',
+            description: '',
+            price: 0,
+            durationMinutes: 0
+          });
+          refetchServices();
+          onSuccess?.();
+        },
+        onError: (error) => {
+          console.error("Error al crear el servicio:", error);
+          setCreateErrorMessage(
+            error instanceof Error ? error.message : "Error al crear el servicio"
+          );
+        },
+      }
+    );
+  };
+
   const clearDeleteError = () => setDeleteErrorMessage(null);
   const clearUpdateError = () => setUpdateErrorMessage(null);
+  const clearCreateError = () => setCreateErrorMessage(null);
 
   return {
     deleteErrorMessage,
     updateErrorMessage,
+    createErrorMessage,
     updateForm,
+    createForm,
     setUpdateForm,
+    setCreateForm,
     initializeUpdateForm,
     handleDelete,
     handleUpdate,
+    handleCreate,
     clearDeleteError,
     clearUpdateError,
+    clearCreateError,
     isDeletePending: deleteService.isPending,
     isUpdatePending: updateService.isPending,
+    isCreatePending: createService.isPending,
   };
 }
