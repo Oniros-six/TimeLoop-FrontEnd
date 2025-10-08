@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { UserX, UserCheck, AlertTriangle } from "lucide-react"
-import ErrorDisplay from "./ErrorDisplay"
+import ErrorDisplay from "../ErrorDisplay"
 
 interface ConfirmStatusDialogProps {
     open: boolean

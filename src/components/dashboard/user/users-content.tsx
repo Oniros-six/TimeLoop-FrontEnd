@@ -13,7 +13,6 @@ import UserFilters from "./UserFilters"
 import UserTable from "./UserTable"
 import { UserRole } from "@/interfaces/User"
 
-
 export function UsersContent() {
     //* Seteamos el nombre de la vista
     const [, setView] = useAtom(viewAtom);
@@ -66,7 +65,7 @@ export function UsersContent() {
             setStatusErrorMessage("No puedes suspenderte a ti mismo");
             return;
         }
-        
+
         setStatusErrorMessage(null); // Limpiar errores previos
         setUserToChangeStatus({
             id: usuario.id,
@@ -164,7 +163,7 @@ export function UsersContent() {
             setRoleErrorMessage("No puedes cambiar tu propio rol");
             return;
         }
-        
+
         setRoleErrorMessage(null); // Limpiar errores previos
         setSelectedUser({
             id: usuario.id,
@@ -231,13 +230,26 @@ export function UsersContent() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Filtros */}
             <UserFilters
                 showInactive={showInactive}
                 onToggleInactive={handleShowUsers}
             />
 
+            {isAdmin && (
+                <CreateUserDialog
+                    setNewUser={setNewUser}
+                    newUser={newUser}
+                    openRegisterDialog={openRegisterDialog}
+                    setOpenRegisterDialog={setOpenRegisterDialog}
+                    handleAgregarUsuario={handleAgregarUsuario}
+                    isPending={createUser.isPending}
+                    errorMessage={errorMessage}
+                    onClearError={handleClearError}
+                />
+            )}
+            
             {/* //* Tabla de usuarios */}
             <div className="rounded-lg border bg-card">
                 <div className="p-4">
@@ -252,18 +264,6 @@ export function UsersContent() {
                                 {filteredUsers.length !== 1 ? "s" : ""}
                             </p>
                         </div>
-                        {isAdmin && (
-                            <CreateUserDialog
-                                setNewUser={setNewUser}
-                                newUser={newUser}
-                                openRegisterDialog={openRegisterDialog}
-                                setOpenRegisterDialog={setOpenRegisterDialog}
-                                handleAgregarUsuario={handleAgregarUsuario}
-                                isPending={createUser.isPending}
-                                errorMessage={errorMessage}
-                                onClearError={handleClearError}
-                            />
-                        )}
 
                     </div>
 
@@ -297,7 +297,7 @@ export function UsersContent() {
                         onStatusToggle={handleToggleUserStatus}
                         isStatusPending={status.isPending}
                         showInactive={showInactive}
-                        currentUser = {currentUser}
+                        currentUser={currentUser}
                     />
                 </div>
             </div>

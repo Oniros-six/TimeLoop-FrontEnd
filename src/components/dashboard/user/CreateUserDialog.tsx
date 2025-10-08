@@ -7,7 +7,7 @@ import { UserPlus } from "lucide-react";
 import { UserRole } from "@/interfaces/User";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import ErrorDisplay from "./ErrorDisplay";
+import ErrorDisplay from "../ErrorDisplay";
 
 interface PropsInterface {
     setNewUser: (user: any) => void;

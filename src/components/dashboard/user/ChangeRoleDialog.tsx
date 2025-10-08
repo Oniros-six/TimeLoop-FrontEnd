@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { UserCog } from "lucide-react";
 import { UserRole } from "@/interfaces/User";
-import ErrorDisplay from "./ErrorDisplay";
+import ErrorDisplay from "../ErrorDisplay";
 
 interface PropsInterface {
     openRolDialog: boolean;

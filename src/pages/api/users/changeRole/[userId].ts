@@ -28,7 +28,6 @@ export const PUT: APIRoute = async ({ request, params }) => {
         // Obtener el estado desde el body
         const body = await request.json()
         const { role } = body;
-        console.log(role)
 
         if (!userId) {
             logger.error('userId no proporcionado en la URL')
