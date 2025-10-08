@@ -6,6 +6,7 @@ import { UsersContent } from "./user/users-content";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/atoms/view";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ServicesContent } from "./services/services-content";
 
 export default function DashboardIsland() {
   const queryClient = new QueryClient();
@@ -23,7 +24,7 @@ export default function DashboardIsland() {
         <SidebarProvider>
           <AppSidebar view={view}/>
           <SidebarInset>
-            <div className="flex flex-1 flex-col gap-4 sm:p-4">
+            <div className="flex flex-1 flex-col gap-4 sm:px-4">
               {/* Header */}
               <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 px-4">
                 <SidebarTrigger className="-ml-1" />
@@ -39,6 +40,7 @@ export default function DashboardIsland() {
               <Routes>
                 <Route path="/" element={<DashboardContent />} />
                 <Route path="/usuarios" element={<UsersContent />} />
+                <Route path="/servicios" element={<ServicesContent />} />
               </Routes>
             </div>
           </SidebarInset>

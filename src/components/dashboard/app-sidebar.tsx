@@ -17,7 +17,7 @@ const items = [
   },
   {
     title: "Servicios",
-    url: "services",
+    url: "servicios",
     icon: Briefcase,
   },
   {

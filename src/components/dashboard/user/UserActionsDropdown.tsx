@@ -45,7 +45,7 @@ export default function UserActionsDropdown({
                 {user.active ? (
                     <DropdownMenuItem
                         disabled={isStatusPending}
-                        className="hover:!bg-destructive"
+                        className="text-destructive hover:!bg-destructive hover:text-destructive-foreground"
                         onClick={() => onStatusToggle(user)}
                     >
                         <UserX className="mr-2 h-4 w-4" />
