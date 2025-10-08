@@ -84,7 +84,6 @@ export function UsersContent() {
             { userId: userToChangeStatus.id, active: newActiveStatus },
             {
                 onSuccess: () => {
-                    console.log("Estado del usuario actualizado con exito");
                     setStatusErrorMessage(null); // Limpiar cualquier error previo
                     setOpenStatusDialog(false);
                     setUserToChangeStatus(null);
@@ -205,7 +204,6 @@ export function UsersContent() {
             },
             {
                 onSuccess: () => {
-                    console.log("Usuario creado exitosamente");
                     setErrorMessage(null); // Limpiar cualquier error previo
                     setOpenRegisterDialog(false);
                     setNewUser({

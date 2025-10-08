@@ -1,170 +1,88 @@
 import { userAtom } from "@/atoms/auth"
 import { viewAtom } from "@/atoms/view"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { useServices } from "@/hooks/services/useServices"
 import { useUsers } from "@/hooks/users/useUsers"
+import { useServiceDialogs } from "@/hooks/services/useServiceDialogs"
+import { useServiceActions } from "@/hooks/services/useServiceActions"
 import type { IService } from "@/interfaces/Service"
 import { UserRole, type IUser } from "@/interfaces/User"
 import { useAtom } from "jotai"
 import { useEffect, useState } from "react"
-import ServiceCard from "./ServiceCard"
 import ServiceDetailsDialog from "./ServiceDetailsDialog"
-import UserSelector from "./UserSelector"
 import DeleteServiceDialog from "./DeleteServiceDialog"
 import UpdateServiceDialog from "./UpdateServiceDialog"
-import { useDeleteService } from "@/hooks/services/useDeleteService"
-import { useUpdateService } from "@/hooks/services/useUpdateService"
+import { ServicesHeader } from "./ServicesHeader"
+import { ServicesLoading } from "./ServicesLoading"
+import { ServicesError } from "./ServicesError"
+import { ServicesEmpty } from "./ServicesEmpty"
+import { ServicesGrid } from "./ServicesGrid"
 
 export function ServicesContent() {
   //* Seteamos el nombre de la vista
   const [, setView] = useAtom(viewAtom);
-
-  //* Obtenemos el usuario logueado para verificar permisos
   const [currentUser] = useAtom(userAtom);
 
   useEffect(() => {
     setView("Servicios");
   }, [setView]);
 
-  //* Estados para manejar errores
-  const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null)
-  const [updateErrorMessage, setUpdateErrorMessage] = useState<string | null>(null)
-
-  //* Estados relacionados al dialog de detalles
-  const [selectedService, setSelectedService] = useState<IService | null>(null)
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
-
-  //* Estados relacionados al dialog de opciones
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
-
   //* Estado relacionado al listado de servicios
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(currentUser || null)
-
-  //* Estado relacionado a la edicion del servicio
-  const [updateForm, setUpdateForm] = useState<IService | null>(selectedService)
-
-  //* Dialog relacionado a los detalles del servicio
-  const handleServiceDetailsClick = (service: IService) => {
-    setSelectedService(service)
-    setIsDetailsDialogOpen(true)
-  }
-
-  const handleCloseDialog = () => {
-    setIsDetailsDialogOpen(false)
-    setTimeout(() => setSelectedService(null), 200)
-  }
-  //* =============================================
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(currentUser || null);
 
   //* Verificamos si el usuario actual es administrador
   const isAdmin = currentUser?.role === UserRole.ADMIN;
 
-  //* Llamamos al hook responsable de obtener el array de usaurios del comercio
+  //* Hooks para obtener datos
   const usersHook = useUsers();
-
-  //* Llamamos al hook responsable de obtener el array de servicios del usuario seleccionado
   const { services, loading: loadingServices, error: errorServices, refetch: refetchServices } = useServices(selectedUser?.id);
 
-  //* Funcion para editar
-  const updateService = useUpdateService();
+  //* Hooks personalizados para manejar lógica
+  const dialogs = useServiceDialogs();
+  const actions = useServiceActions(refetchServices, dialogs.closeDeleteDialog);
+  const updateActions = useServiceActions(refetchServices, dialogs.closeUpdateDialog);
 
-  const handleUpdate = (service: IService) => {
-    setSelectedService(service)
-    setIsUpdateDialogOpen(true)
-  }
+  //* Handlers para acciones
+  const handleCreateService = () => {
+    // TODO: Implementar creación de servicio
+    console.log("Crear servicio");
+  };
 
-  const confirmUpdate = () => {
-    if (!selectedService) return;
-
-    updateService.mutate(
-      { serviceId: selectedService.id, data: updateForm },
-      {
-        onSuccess: () => {
-          setUpdateErrorMessage(null); // Limpiar cualquier error previo
-          setIsUpdateDialogOpen(false);
-          setSelectedService(null);
-          refetchServices();
-        },
-        onError: (error) => {
-          console.error("Error al actualizar informacion del servicio:", error);
-          setUpdateErrorMessage(error instanceof Error ? error.message : "Error al actualizar informacion del servicio");
-        }
-      }
-    );
-  }
-  //* =============================================
-
-  //* Funcion para eliminar
-  const deleteService = useDeleteService();
+  const handleServiceDetailsClick = (service: IService) => {
+    dialogs.openDetailsDialog(service);
+  };
 
   const handleDelete = (service: IService) => {
-    setSelectedService(service)
-    setIsDeleteDialogOpen(true)
-  }
+    dialogs.openDeleteDialog(service);
+  };
+
+  const handleUpdate = (service: IService) => {
+    updateActions.initializeUpdateForm(service);
+    dialogs.openUpdateDialog(service);
+  };
 
   const confirmDeletion = () => {
-    if (!selectedService) return;
-
-    deleteService.mutate(
-      { serviceId: selectedService.id },
-      {
-        onSuccess: () => {
-          setDeleteErrorMessage(null); // Limpiar cualquier error previo
-          setIsDeleteDialogOpen(false);
-          setSelectedService(null);
-          refetchServices();
-        },
-        onError: (error) => {
-          console.error("Error al eliminar el servicio:", error);
-          setDeleteErrorMessage(error instanceof Error ? error.message : "Error al eliminar el servicio");
-        }
-      }
-    );
-  }
-  //* =============================================
-
-  //* Funciones para limpiar errores
-  const handleClearDeleteError = () => {
-    setDeleteErrorMessage(null);
+    if (!dialogs.selectedService) return;
+    actions.handleDelete(dialogs.selectedService.id);
   };
 
-  const handleClearUpdateError = () => {
-    setUpdateErrorMessage(null);
-  };
-  //* Renderizar el UserSelector siempre que sea admin, independientemente del estado de carga
-  const renderUserSelector = () => {
-    if (isAdmin) {
-      return (
-        <UserSelector
-          setSelectedUser={setSelectedUser}
-          selectedUser={selectedUser}
-          currentUser={currentUser}
-          users={usersHook.users}
-        />
-      );
-    }
-    return null;
+  const confirmUpdate = () => {
+    if (!dialogs.selectedService) return;
+    updateActions.handleUpdate(dialogs.selectedService.id, updateActions.updateForm);
   };
 
+  //* Renderizado condicional basado en el estado
   if (loadingServices) {
     return (
       <>
-        {renderUserSelector()}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 w-32 bg-muted rounded"></div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="h-3 w-24 bg-muted rounded"></div>
-                <div className="h-3 w-20 bg-muted rounded"></div>
-                <div className="h-3 w-28 bg-muted rounded"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <ServicesHeader
+          isAdmin={isAdmin}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+          currentUser={currentUser}
+          users={usersHook.users}
+          onCreateService={handleCreateService}
+        />
+        <ServicesLoading />
       </>
     );
   }
@@ -172,108 +90,91 @@ export function ServicesContent() {
   if (errorServices) {
     return (
       <>
-        {renderUserSelector()}
-        <div className="flex h-[98vh] w-full self-center items-center justify-center">
-          <div className="text-center">
-            <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-semibold text-destructive mb-2">Error</h3>
-            <p className="text-gray-600 mb-4">{errorServices}</p>
-            <button onClick={() => refetchServices()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-secondary hover:text-secondary-foreground transition-colors"
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
+        <ServicesHeader
+          isAdmin={isAdmin}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+          currentUser={currentUser}
+          users={usersHook.users}
+          onCreateService={handleCreateService}
+        />
+        <ServicesError error={errorServices} onRetry={refetchServices} />
       </>
-    )
+    );
   }
 
   if (services.length === 0) {
-    if (selectedUser?.id != currentUser?.id) {
-      return (
-        <>
-          {renderUserSelector()}
-          <div className="flex flex-col gap-4">
-            <div className="max-w-4xl w-full h-40 p-2 border-1 border-border text-center text-secondary-foreground rounded content-center self-center">
-              No encontramos servicios para {selectedUser?.name}.
-            </div>
-          </div>
-        </>
-      )
-    } else {
-      return (
-        <>
-          {renderUserSelector()}
-          <div className="flex flex-col gap-4 max-w-4xl w-full h-40 p-2 border-1 border-border text-center text-secondary-foreground rounded justify-center self-center">
-            No tienes servicios asociados aún, prueba crear el primero:
-            <div>
-              <Button>Crear servicio</Button>
-            </div>
-          </div>
-        </>
-      )
-    }
+    return (
+      <>
+        <ServicesHeader
+          isAdmin={isAdmin}
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+          currentUser={currentUser}
+          users={usersHook.users}
+          onCreateService={handleCreateService}
+        />
+        <ServicesEmpty
+          selectedUser={selectedUser}
+          currentUser={currentUser}
+          onCreateService={handleCreateService}
+        />
+      </>
+    );
   }
 
   return (
     <>
-      {renderUserSelector()}
+      <ServicesHeader
+        isAdmin={isAdmin}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        currentUser={currentUser}
+        users={usersHook.users}
+        onCreateService={handleCreateService}
+      />
 
-      <div className="content-center">
-        <Button size="lg">Crear servicio</Button>
-      </div>
+      {usersHook.loading ? (
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+      ) : (
+        <ServicesGrid
+          services={services}
+          currentUser={currentUser}
+          onServiceClick={handleServiceDetailsClick}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+        />
+      )}
 
-      {
-        usersHook.loading ?
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          :
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                currentUser={currentUser}
-                handleServiceClick={handleServiceDetailsClick}
-                handleDelete={handleDelete}
-                handleUpdate={handleUpdate}
-              />
-            ))}
-          </div>
-      }
-
-      {/* Modal de detalles del servicio */}
+      {/* Modales */}
       <ServiceDetailsDialog
-        isDialogOpen={isDetailsDialogOpen}
-        setIsDialogOpen={setIsDetailsDialogOpen}
-        selectedService={selectedService}
-        handleCloseDialog={handleCloseDialog}
+        isDialogOpen={dialogs.isDetailsDialogOpen}
+        setIsDialogOpen={dialogs.setIsDetailsDialogOpen}
+        selectedService={dialogs.selectedService}
+        handleCloseDialog={dialogs.closeDetailsDialog}
       />
 
-      {/* Modal de eliminacion del servicio */}
       <DeleteServiceDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
+        open={dialogs.isDeleteDialogOpen}
+        onOpenChange={dialogs.setIsDeleteDialogOpen}
         onConfirm={confirmDeletion}
-        isPending={deleteService.isPending}
-        errorMessage={deleteErrorMessage}
-        onClearError={handleClearDeleteError}
-        service={selectedService}
+        isPending={actions.isDeletePending}
+        errorMessage={actions.deleteErrorMessage}
+        onClearError={actions.clearDeleteError}
+        service={dialogs.selectedService}
       />
 
-      {/* Modal de edicion del servicio */}
       <UpdateServiceDialog
-        open={isUpdateDialogOpen}
-        onOpenChange={setIsUpdateDialogOpen}
+        open={dialogs.isUpdateDialogOpen}
+        onOpenChange={dialogs.setIsUpdateDialogOpen}
         onConfirm={confirmUpdate}
-        isPending={updateService.isPending}
-        errorMessage={updateErrorMessage}
-        onClearError={handleClearUpdateError}
-        service={selectedService}
-        updateForm={updateForm}
-        setUpdateForm={setUpdateForm}
+        isPending={updateActions.isUpdatePending}
+        errorMessage={updateActions.updateErrorMessage}
+        onClearError={updateActions.clearUpdateError}
+        service={dialogs.selectedService}
+        updateForm={updateActions.updateForm}
+        setUpdateForm={updateActions.setUpdateForm}
       />
     </>
   );
 }
-//* 1- Crear servicios

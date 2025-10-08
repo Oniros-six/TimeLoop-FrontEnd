@@ -7,7 +7,7 @@ import { memo } from "react"
 interface propsInterface {
     selectedUser: IUser | null;
     currentUser: IUser | null;
-    setSelectedUser: React.Dispatch<React.SetStateAction<IUser | null>>;
+    setSelectedUser: (user: IUser | null) => void;
     users: IUser[]
 }
 

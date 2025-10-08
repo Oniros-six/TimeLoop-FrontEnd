@@ -40,9 +40,9 @@ export default function UpdateServiceDialog({
 }: ConfirmUpdateDialogProps) {
     if (!service) return null
 
-    useEffect(() => {
-        setUpdateForm({ ...service})
-    }, [])
+    // useEffect(() => {
+    //     setUpdateForm({ ...service})
+    // }, [])
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,7 +69,7 @@ export default function UpdateServiceDialog({
                         <Input
                             id="edit-name"
                             value={updateForm?.name}
-                            onChange={(e) => setUpdateForm({ ...service, name: e.target.value })}
+                            onChange={(e) => setUpdateForm({ ...updateForm, name: e.target.value } as IService)}
                             placeholder={service.name}
                         />
                     </div>
@@ -79,7 +79,7 @@ export default function UpdateServiceDialog({
                         <Textarea
                             id="edit-full-description"
                             value={updateForm?.description}
-                            onChange={(e) => setUpdateForm({ ...service, description: e.target.value })}
+                            onChange={(e) => setUpdateForm({ ...updateForm, description: e.target.value } as IService)}
                             placeholder={service.description}
                             rows={4}
                         />
@@ -91,7 +91,7 @@ export default function UpdateServiceDialog({
                             <Input
                                 id="edit-price"
                                 type="number"
-                                onChange={(e) => setUpdateForm({ ...service, price: Number(e.target.value) })}
+                                onChange={(e) => setUpdateForm({ ...updateForm, price: Number(e.target.value) } as IService)}
                                 placeholder={service.price.toString()}
                                 min={100}
                             />
@@ -102,7 +102,7 @@ export default function UpdateServiceDialog({
                             <Input
                                 id="edit-duration"
                                 type="number"
-                                onChange={(e) => setUpdateForm({ ...service, durationMinutes: Number(e.target.value) })}
+                                onChange={(e) => setUpdateForm({ ...updateForm, durationMinutes: Number(e.target.value) } as IService)}
                                 placeholder={service.durationMinutes.toString()}
                                 min={10}
                             />
