@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogFooter, Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -7,34 +8,44 @@ import { UserRole } from "@/interfaces/User";
 import ErrorDisplay from "../ErrorDisplay";
 
 interface PropsInterface {
-    openRolDialog: boolean;
-    setOpenRolDialog: (open: boolean) => void;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     selectedUser: {
         id: number;
         name: string;
-        currentRole: UserRole;
+        role: UserRole;
     } | null;
-    newRole: UserRole;
-    setNewRole: (role: UserRole) => void;
-    handleChangeRole: () => void;
+    onConfirm: (user: any) => void;
     isPending: boolean;
     errorMessage?: string | null | undefined;
     onClearError?: () => void;
 }
 
 export default function ChangeRoleDialog({
-    openRolDialog,
-    setOpenRolDialog,
+    open,
+    onOpenChange,
     selectedUser,
-    newRole,
-    setNewRole,
-    handleChangeRole,
+    onConfirm,
     isPending,
     errorMessage,
     onClearError
 }: PropsInterface) {
+    const [newRole, setNewRole] = useState<UserRole>(UserRole.EMPLOYEE);
+
+    // Actualizar el rol cuando cambie el usuario seleccionado
+    useEffect(() => {
+        if (selectedUser) {
+            setNewRole(selectedUser.role === UserRole.ADMIN ? UserRole.EMPLOYEE : UserRole.ADMIN);
+        }
+    }, [selectedUser]);
+
+    const handleConfirm = () => {
+        if (selectedUser) {
+            onConfirm(selectedUser);
+        }
+    };
     return (
-        <Dialog open={openRolDialog} onOpenChange={setOpenRolDialog}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
@@ -57,7 +68,7 @@ export default function ChangeRoleDialog({
                         <div className="p-3 bg-muted rounded-md">
                             <p className="font-medium">{selectedUser?.name}</p>
                             <p className="text-sm text-muted-foreground">
-                                Rol actual: {selectedUser?.currentRole === UserRole.ADMIN ? "Administrador" : "Colaborador"}
+                                Rol actual: {selectedUser?.role === UserRole.ADMIN ? "Administrador" : "Colaborador"}
                             </p>
                         </div>
                     </div>
@@ -80,14 +91,14 @@ export default function ChangeRoleDialog({
                 <DialogFooter>
                     <Button
                         variant="outline"
-                        onClick={() => setOpenRolDialog(false)}
+                        onClick={() => onOpenChange(false)}
                         disabled={isPending}
                     >
                         Cancelar
                     </Button>
                     <Button
-                        onClick={handleChangeRole}
-                        disabled={isPending || !newRole || newRole === selectedUser?.currentRole}
+                        onClick={handleConfirm}
+                        disabled={isPending || !newRole || newRole === selectedUser?.role}
                     >
                         {isPending ? "Actualizando..." : "Confirmar"}
                     </Button>

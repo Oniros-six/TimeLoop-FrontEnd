@@ -13,7 +13,7 @@ import ErrorDisplay from "../ErrorDisplay"
 interface ConfirmStatusDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onConfirm: () => void
+    onConfirm: (user: any) => void
     isPending: boolean
     user: {
         id: number
@@ -92,7 +92,7 @@ export default function ConfirmStatusDialog({
                     </Button>
                     <Button
                         variant={confirmButtonVariant}
-                        onClick={onConfirm}
+                        onClick={() => onConfirm(user)}
                         disabled={isPending}
                         className="min-w-[100px] opacity-80 hover:opacity-100 hover:scale-105 transition-all duration-300"
                     >

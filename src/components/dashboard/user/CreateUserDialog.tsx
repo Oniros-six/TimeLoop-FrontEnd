@@ -3,29 +3,32 @@ import { DialogHeader, DialogFooter, Dialog, DialogTrigger, DialogContent, Dialo
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
 import { UserRole } from "@/interfaces/User";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import ErrorDisplay from "../ErrorDisplay";
 
 interface PropsInterface {
-    setNewUser: (user: any) => void;
-    newUser: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onConfirm: (userData: {
         name: string;
         email: string;
         password: string;
         role: UserRole;
-    };
-    openRegisterDialog: boolean;
-    setOpenRegisterDialog: (open: boolean) => void;
-    handleAgregarUsuario: () => void;
+    }) => void;
     isPending?: boolean;
     errorMessage?: string | null | undefined;
     onClearError?: () => void;
 }
 
-export default function CreateUserDialog({ setNewUser, newUser, openRegisterDialog, setOpenRegisterDialog, handleAgregarUsuario, isPending = false, errorMessage, onClearError }: PropsInterface) {
+export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPending = false, errorMessage, onClearError }: PropsInterface) {
+    const [newUser, setNewUser] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: UserRole.EMPLOYEE,
+    });
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
@@ -90,17 +93,20 @@ export default function CreateUserDialog({ setNewUser, newUser, openRegisterDial
 
     const onSubmit = () => {
         if (validate()) {
-            handleAgregarUsuario();
+            onConfirm(newUser);
+            // Reset form
+            setNewUser({
+                name: "",
+                email: "",
+                password: "",
+                role: UserRole.EMPLOYEE,
+            });
+            setConfirmPassword("");
+            setErrors({});
         }
     };
     return (
-        <Dialog open={openRegisterDialog} onOpenChange={setOpenRegisterDialog}>
-            <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Agregar usuario
-                </Button>
-            </DialogTrigger>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Agregar nuevo usuario</DialogTitle>
@@ -267,7 +273,7 @@ export default function CreateUserDialog({ setNewUser, newUser, openRegisterDial
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpenRegisterDialog(false)} disabled={isPending}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancelar
                     </Button>
                     <Button
