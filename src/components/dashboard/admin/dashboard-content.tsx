@@ -19,6 +19,13 @@ export function DashboardContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Guardar commerceName en localStorage cuando cambie dashboardData
+    useEffect(() => {
+        if (dashboardData?.commerceName) {
+            localStorage.setItem('commerceName', dashboardData.commerceName);
+        }
+    }, [dashboardData?.commerceName]);
+
     //TODO Aqui un cacheo no es lo mejor, sino un webhook, o websocket
     useEffect(() => {
         const getDashboardData = async () => {

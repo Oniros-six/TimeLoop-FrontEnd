@@ -6,7 +6,6 @@ import LogoutButton from "@/components/auth/logout/LogoutButton";
 
 import { useAtom } from "jotai";
 import { userAtom } from "@/atoms/auth";
-import { dashboardAtom } from "@/atoms/dashboard";
 import { Link } from "react-router-dom";
 // Datos de navegación centralizados en config
 const items = [
@@ -73,8 +72,7 @@ const bottomItems = [
 
 export function AppSidebar({ view }: { view: string }) {
   const [user,] = useAtom(userAtom);
-  const [dashboardData,] = useAtom(dashboardAtom);
-
+  const commerceName = localStorage.getItem('commerceName');
   const HeaderSkeleton = () => (
     <div className="flex items-center gap-2">
       <div className="flex items-center">
@@ -94,7 +92,7 @@ export function AppSidebar({ view }: { view: string }) {
           className="h-16 w-16 rounded-full object-cover"
         />
       </div>
-      <span className="font-semibold">{dashboardData?.commerceName}</span>
+      <span className="font-semibold">{commerceName}</span>
     </div>
   )
 
@@ -117,7 +115,7 @@ export function AppSidebar({ view }: { view: string }) {
   return (
     <Sidebar className="h-full">
       <SidebarHeader className="p-4 bg-card">
-        {dashboardData != undefined ? <Header /> : <HeaderSkeleton />}
+        {commerceName != undefined ? <Header /> : <HeaderSkeleton />}
       </SidebarHeader>
 
       <SidebarContent className="bg-card">
