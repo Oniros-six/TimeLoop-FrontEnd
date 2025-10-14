@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 import { viewAtom } from "@/atoms/view";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ServicesContent } from "./services/services-content";
+import { BookingsContent } from "./bookings/bookings-content";
 
 export default function DashboardIsland() {
   const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ export default function DashboardIsland() {
                 <Route path="/" element={<DashboardContent />} />
                 <Route path="/usuarios" element={<UsersContent />} />
                 <Route path="/servicios" element={<ServicesContent />} />
+                <Route path="/agenda" element={<BookingsContent />} />
               </Routes>
             </div>
           </SidebarInset>
