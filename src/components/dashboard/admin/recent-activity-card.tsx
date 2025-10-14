@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, User } from "lucide-react"
 import { type RecentItem, BookingStatus, getStatusText } from "@/interfaces/DashboardData"
+import { statusConfig } from "@/interfaces/Booking"
 
 
 function formatActivityDate(date: Date | string): string {
@@ -48,7 +49,7 @@ export function RecentActivityCard({ recent }: props) {
           Actividad reciente
         </CardTitle>
       </CardHeader>
-{/* //* Diferenciamos el caso vacio */}
+      {/* //* Diferenciamos el caso vacio */}
       {recent.length === 0 ?
 
         <CardContent className="px-2 self-center">
@@ -69,13 +70,13 @@ export function RecentActivityCard({ recent }: props) {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{activity.customer.name}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
+                  <div className="text-sm text-muted-foreground truncate">
                     {
                       activity.bookingServices.map((b, index) => (
-                        <div key={index}>{b.service.name}</div>
+                        <p key={index}>{b.service.name}</p>
                       ))
                     }
-                  </p>
+                  </div>
                 </div>
 
                 <div className="flex justify-between gap-2 sm:gap-4">
@@ -92,15 +93,7 @@ export function RecentActivityCard({ recent }: props) {
                       {formatActivityDate(activity.timeStart)}
                     </span>
                   </div>
-                  <Badge
-                    variant={
-                      activity.status === BookingStatus.CONFIRMED
-                        ? "default"
-                        : activity.status === BookingStatus.CANCELED
-                          ? "destructive"
-                          : "secondary"
-                    }
-                  >
+                  <Badge variant="secondary" className={` ${statusConfig[activity.status].color} text-white`}>
                     {getStatusText(activity.status)}
                   </Badge>
                 </div>
