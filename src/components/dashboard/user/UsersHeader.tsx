@@ -34,7 +34,7 @@ export function UsersHeader({
       {/* Header principal */}
       <div className="rounded-lg border bg-card">
         <div className="p-4">
-          <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold">
                 {showInactive ? "Usuarios Inactivos" : "Usuarios Activos"}
