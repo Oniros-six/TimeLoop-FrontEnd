@@ -22,12 +22,12 @@ export const GET: APIRoute = async ({ request, params, url }) => {
             })
         }
 
-        // Obtener userId desde los parámetros de la URL
-        const userId = params.userId
+        // Obtener id desde los parámetros de la URL
+        const id = params.id
 
-        if (!userId) {
-            logger.error('userId no proporcionado en la URL')
-            return new Response(JSON.stringify({ error: 'ID de usuario requerido' }), {
+        if (!id) {
+            logger.error('id no proporcionado en la URL')
+            return new Response(JSON.stringify({ error: 'ID requerido' }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -35,12 +35,25 @@ export const GET: APIRoute = async ({ request, params, url }) => {
 
         // Obtener parámetros de paginación
         const searchParams = new URL(url).searchParams
+
+        const searchingBy = searchParams.get('searchingByUser')
+        const searchingByUser = searchingBy == "true" ? true : false
+
         const cursor = searchParams.get('cursor')
         const limit = searchParams.get('limit') || '10'
 
         // Construir URL del backend con parámetros de paginación
-        const backendUrl = new URL(`${backendURL}/booking/user`)
-        backendUrl.searchParams.set('userId', userId)
+        let backendUrl
+
+        if (searchingByUser) {
+            backendUrl = new URL(`${backendURL}/booking/user`)
+            backendUrl.searchParams.set('userId', id)
+        } else {
+            // Cuando searchingByUser es false, el id es el commerceId del usuario actual
+            backendUrl = new URL(`${backendURL}/booking/commerce`)
+            backendUrl.searchParams.set('commerceId', id)
+        }
+
         backendUrl.searchParams.set('limit', limit)
         if (cursor) {
             backendUrl.searchParams.set('cursor', cursor)
@@ -63,13 +76,13 @@ export const GET: APIRoute = async ({ request, params, url }) => {
         const result = await response.json()
 
         if (response.ok) {
-            logger.dev('Bookings data retrieved successfully:', { userId })
+            logger.dev('Bookings data retrieved successfully')
             return new Response(JSON.stringify(result), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' }
             })
         } else {
-            logger.dev('Failed to retrieve services')
+            logger.dev('Failed to retrieve bookings')
             return new Response(JSON.stringify({
                 error: 'Error al obtener reservas',
                 servicesData: null

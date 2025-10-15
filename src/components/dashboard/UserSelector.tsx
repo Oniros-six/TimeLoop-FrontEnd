@@ -8,6 +8,7 @@ interface propsInterface {
     selectedUser: IUser | null;
     currentUser: IUser | null;
     setSelectedUser: (user: IUser | null) => void;
+    setSearchingByUser: (state: boolean) => void;
     users: IUser[]
 }
 
@@ -15,30 +16,32 @@ const UserSelector = memo(function UserSelector({
     selectedUser,
     currentUser,
     setSelectedUser,
+    setSearchingByUser,
     users
 }: propsInterface) {
 
     const onUserChange = (user: IUser) => {
         setSelectedUser(user)
+        setSearchingByUser(true)
     }
 
     return (
         <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-                <User className="h-4 w-4" />
-                {selectedUser && selectedUser.name}
-            </Button>
-        </DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                    <User className="h-4 w-4" />
+                    {selectedUser ? selectedUser.name : currentUser?.name}
+                </Button>
+            </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
-            {users && users.map((u) => (
-                <DropdownMenuItem key={u.id} onClick={() => onUserChange(u)} className={`${u.id === currentUser?.id ? "bg-accent/50" : ""}`}>
-                    {u.name}
-                </DropdownMenuItem>
-            ))}
-        </DropdownMenuContent>
-    </DropdownMenu>
+            <DropdownMenuContent align="end">
+                {users && users.map((u) => (
+                    <DropdownMenuItem key={u.id} onClick={() => onUserChange(u)} className={`${u.id === currentUser?.id ? "bg-accent/50" : ""}`}>
+                        {u.name}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 })
 
