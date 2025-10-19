@@ -8,7 +8,7 @@ interface propsInterface {
     selectedUser: IUser | null;
     currentUser: IUser | null;
     setSelectedUser: (user: IUser | null) => void;
-    setSearchingByUser: (state: boolean) => void;
+    setSearchingByUser?: (state: boolean) => void;
     users: IUser[]
 }
 
@@ -22,7 +22,7 @@ const UserSelector = memo(function UserSelector({
 
     const onUserChange = (user: IUser) => {
         setSelectedUser(user)
-        setSearchingByUser(true)
+        setSearchingByUser && setSearchingByUser(true)
     }
 
     return (

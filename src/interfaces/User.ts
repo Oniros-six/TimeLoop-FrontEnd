@@ -7,7 +7,7 @@ export interface IUser {
   id: number;
   name: string;
   email: string;
-  phone: number;
+  phone: string | number;
   active: boolean;
   commerceId: number;
   role: UserRole;
