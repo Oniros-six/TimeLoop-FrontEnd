@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import type { ICommerce } from "@/interfaces/Commerce";
 import { BusinessCategory } from "@/interfaces/Commerce";
 import { BillingTypes, PaymentMethod, type ICommerceConfig } from "@/interfaces/Config";
-import { useCommerceConfigs } from "@/hooks/configs/useCommerceConfig";
+import { useCommerceConfigs } from "@/hooks/configs/commerce/useCommerceConfig";
 import { Badge } from "@/components/ui/badge";
 
 interface IConfigProps {
@@ -19,14 +19,21 @@ interface IConfigProps {
     handleSaveCommerce: () => void;
     commerceConfig: ICommerceConfig | null
     setCommerceConfig: (config: ICommerceConfig | null) => void
+    saveErrorMessage?: string | null
+    saveSuccessMessage?: string | null
+    isLoading?: boolean
 }
 
-export default function CommerceConfig({ commerceConfig, setCommerceConfig, commerceInfo, setCommerceInfo, handleSaveCommerce }: IConfigProps) {
+export default function CommerceConfig({ commerceConfig, setCommerceConfig, commerceInfo, setCommerceInfo, handleSaveCommerce, saveErrorMessage, saveSuccessMessage, isLoading }: IConfigProps) {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const res = useCommerceConfigs()
-    if (res.commerceConfig && !commerceConfig)
-        setCommerceConfig(res.commerceConfig)
+    
+    useEffect(() => {
+        if (res.commerceConfig && !commerceConfig) {
+            setCommerceConfig(res.commerceConfig)
+        }
+    }, [res.commerceConfig, commerceConfig, setCommerceConfig])
 
     const validateField = (field: string, value: any): string => {
         switch (field) {
@@ -148,7 +155,6 @@ export default function CommerceConfig({ commerceConfig, setCommerceConfig, comm
             // Campos que pertenecen a commerceConfig
             if (!commerceConfig) return;
             setCommerceConfig({ ...commerceConfig, [field]: value });
-            console.log(commerceConfig)
         }
 
         // Validar el campo en tiempo real
@@ -370,9 +376,21 @@ export default function CommerceConfig({ commerceConfig, setCommerceConfig, comm
                     )}
                 </div>
 
-                <Button onClick={handleSave} className="w-full">
+                {saveErrorMessage && (
+                    <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                        <p className="text-sm text-red-800">{saveErrorMessage}</p>
+                    </div>
+                )}
+
+                {saveSuccessMessage && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                        <p className="text-sm text-green-800">{saveSuccessMessage}</p>
+                    </div>
+                )}
+
+                <Button onClick={handleSave} className="w-full" disabled={isLoading}>
                     <Save className="mr-2 h-4 w-4" />
-                    Guardar cambios
+                    {isLoading ? "Guardando..." : "Guardar cambios"}
                 </Button>
             </CardContent>
         </Card>
