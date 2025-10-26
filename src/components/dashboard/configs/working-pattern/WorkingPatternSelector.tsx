@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { DaySelector } from "./DaySelector"
 import { ScheduleSelector } from "./ScheduleSelector"
@@ -11,157 +11,177 @@ export function WorkingPatternSelector({
   onChange,
   errors = {},
   onErrorChange,
-  title = "Configuración de horarios",
-  description = "Define los días y horarios de atención",
-  showTitle = true,
-  className = ""
+  title,
+  description,
+  showTitle,
+  className
 }: WorkingPatternSelectorProps) {
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({})
+  
+  // Mantener referencias estables usando un solo ref
+  const refs = useRef({ data, onChange, errors, onErrorChange })
+  
+  useEffect(() => {
+    refs.current = { data, onChange, errors, onErrorChange }
+  }, [data, onChange, errors, onErrorChange])
 
-  const updateErrors = (newErrors: Record<string, string>) => {
-    setLocalErrors(newErrors)
-    onErrorChange?.(newErrors)
-  }
+  // Notificar al padre cuando cambien los errores locales
+  useEffect(() => {
+    if (refs.current.onErrorChange) {
+      refs.current.onErrorChange(localErrors)
+    }
+  }, [localErrors])
 
-  const handleDayToggle = (dayId: string, checked: boolean) => {
-    const currentDays = data.workingDays
-    const currentSchedules = data.schedules
+  // Actualizar errores locales
+  const setError = useCallback((key: string, value: string) => {
+    setLocalErrors(prev => {
+      const newErrors = { ...prev }
+      if (value) {
+        newErrors[key] = value
+      } else {
+        delete newErrors[key]
+      }
+      return newErrors
+    })
+  }, [])
+
+  // Manejar selección/deselección de días
+  const handleDayToggle = useCallback((dayId: string, checked: boolean) => {
+    const { workingDays, schedules } = refs.current.data
     let newDays: string[]
-    const newSchedules = { ...currentSchedules }
+    const newSchedules = { ...schedules }
 
     if (checked) {
-      newDays = [...currentDays, dayId]
+      newDays = [...workingDays, dayId]
       newSchedules[dayId] = DEFAULT_DAY_SCHEDULE
     } else {
-      newDays = currentDays.filter((day) => day !== dayId)
+      newDays = workingDays.filter(day => day !== dayId)
       delete newSchedules[dayId]
     }
 
-    onChange({ workingDays: newDays, schedules: newSchedules })
+    refs.current.onChange({ workingDays: newDays, schedules: newSchedules })
 
-    // Limpiar error cuando el usuario selecciona días
-    if (newDays.length > 0 && errors.workingDays) {
-      updateErrors({})
+    // Limpiar error de días de trabajo si hay días seleccionados
+    if (newDays.length > 0 && refs.current.errors.workingDays) {
+      setError('workingDays', '')
     }
-  }
+  }, [setError])
 
-  const handleScheduleChange = (
+  // Manejar cambios en horarios
+  const handleScheduleChange = useCallback((
     dayId: string,
     field: keyof DaySchedule,
     value: string,
   ) => {
-    const currentSchedules = data.schedules
-    const daySchedule = currentSchedules[dayId] || {}
+    const currentData = refs.current.data
+    const currentSchedule = currentData.schedules[dayId] || {}
+    const updatedSchedule = {
+      ...currentSchedule,
+      [field]: value,
+    }
 
     const newSchedules = {
-      ...currentSchedules,
-      [dayId]: {
-        ...daySchedule,
-        [field]: value,
-      },
+      ...currentData.schedules,
+      [dayId]: updatedSchedule,
     }
 
     // Validar horarios
-    const validation = validateSchedule(dayId, field, value, newSchedules[dayId])
+    const validation = validateSchedule(dayId, field, value, updatedSchedule)
     
     if (validation) {
-      updateErrors({ ...localErrors, [validation.errorKey]: validation.errorMessage })
+      setError(validation.errorKey, validation.errorMessage)
     } else {
-      // Limpiar errores si todo está bien
-      updateErrors({
-        ...localErrors,
-        [`${dayId}_morning_schedule`]: "",
-        [`${dayId}_afternoon_schedule`]: "",
-      })
+      // Limpiar errores del día si la validación pasa
+      setError(`${dayId}_morning_schedule`, '')
+      setError(`${dayId}_afternoon_schedule`, '')
     }
 
-    onChange({ ...data, schedules: newSchedules })
-  }
+    refs.current.onChange({ ...currentData, schedules: newSchedules })
+  }, [setError])
 
-  const handleAddShift = (dayId: string, shiftType: 'morning' | 'afternoon') => {
-    const currentSchedules = data.schedules
-    const daySchedule = currentSchedules[dayId] || {}
+  // Agregar un turno
+  const handleAddShift = useCallback((dayId: string, shiftType: 'morning' | 'afternoon') => {
+    const currentData = refs.current.data
+    const currentSchedule = currentData.schedules[dayId] || {}
     const shiftTimes = DEFAULT_SHIFT_TIMES[shiftType]
 
     const newSchedules = {
-      ...currentSchedules,
+      ...currentData.schedules,
       [dayId]: {
-        ...daySchedule,
+        ...currentSchedule,
         [`${shiftType}Open`]: shiftTimes.open,
         [`${shiftType}Close`]: shiftTimes.close,
       },
     }
 
-    onChange({ ...data, schedules: newSchedules })
-  }
+    refs.current.onChange({ ...currentData, schedules: newSchedules })
+  }, [])
 
-  const handleRemoveShift = (dayId: string, shiftType: 'morning' | 'afternoon') => {
-    const currentSchedules = data.schedules
-    const daySchedule = currentSchedules[dayId] || {}
+  // Remover un turno
+  const handleRemoveShift = useCallback((dayId: string, shiftType: 'morning' | 'afternoon') => {
+    const currentData = refs.current.data
+    const currentSchedule = currentData.schedules[dayId] || {}
 
     // Validar que haya al menos un turno activo
-    const validation = validateShiftRemoval(dayId, shiftType, daySchedule)
+    const validation = validateShiftRemoval(dayId, shiftType, currentSchedule)
     
     if (validation) {
-      updateErrors({ ...localErrors, [validation.errorKey]: validation.errorMessage })
+      setError(validation.errorKey, validation.errorMessage)
       return
     }
 
     const newSchedules = {
-      ...currentSchedules,
+      ...currentData.schedules,
       [dayId]: {
-        ...daySchedule,
+        ...currentSchedule,
         [`${shiftType}Open`]: undefined,
         [`${shiftType}Close`]: undefined,
       },
     }
 
     // Limpiar error si existe
-    updateErrors({ ...localErrors, [`${dayId}_shifts`]: "" })
-    onChange({ ...data, schedules: newSchedules })
-  }
+    setError(`${dayId}_shifts`, '')
+    refs.current.onChange({ ...currentData, schedules: newSchedules })
+  }, [setError])
 
+  // Combinar errores externos con errores locales
   const allErrors = { ...errors, ...localErrors }
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      {showTitle && (
+    <div className={`space-y-6 ${className || ''}`}>
+      {showTitle && title && (
         <div className="text-center space-y-2">
           <h3 className="text-xl font-semibold">{title}</h3>
-          <p className="text-muted-foreground">{description}</p>
+          {description && <p className="text-muted-foreground">{description}</p>}
         </div>
       )}
 
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <Label className="text-base font-medium">Días de trabajo</Label>
-            <div className="space-y-4">
-              {DAYS_OF_WEEK.map((day) => (
-                <div key={day.id} className="space-y-3">
-                  <DaySelector
-                    dayId={day.id}
-                    dayLabel={day.label}
-                    isSelected={data.workingDays.includes(day.id)}
-                    onToggle={handleDayToggle}
-                  />
+      <div className="space-y-4">
+        {DAYS_OF_WEEK.map((day) => (
+          <div key={day.id} className="space-y-3">
+            <DaySelector
+              dayId={day.id}
+              dayLabel={day.label}
+              isSelected={data.workingDays.includes(day.id)}
+              onToggle={handleDayToggle}
+            />
 
-                  {data.workingDays.includes(day.id) && (
-                    <ScheduleSelector
-                      dayId={day.id}
-                      schedule={data.schedules[day.id] || {}}
-                      onScheduleChange={handleScheduleChange}
-                      onAddShift={handleAddShift}
-                      onRemoveShift={handleRemoveShift}
-                      errors={allErrors}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-            {errors.workingDays && <p className="text-sm text-red-500">{errors.workingDays}</p>}
+            {data.workingDays.includes(day.id) && (
+              <ScheduleSelector
+                dayId={day.id}
+                schedule={data.schedules[day.id] || {}}
+                onScheduleChange={handleScheduleChange}
+                onAddShift={handleAddShift}
+                onRemoveShift={handleRemoveShift}
+                errors={allErrors}
+              />
+            )}
           </div>
-        </div>
+        ))}
+        
+        {errors.workingDays && (
+          <p className="text-sm text-red-500">{errors.workingDays}</p>
+        )}
       </div>
     </div>
   )

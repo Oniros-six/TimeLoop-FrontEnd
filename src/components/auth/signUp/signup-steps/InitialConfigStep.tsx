@@ -22,7 +22,7 @@ export function InitialConfigStep({ data, updateData, errors, clearErrors }: Ini
   // Manejar cambios en el patrón de trabajo
   const handleWorkingPatternChange = (newPattern: WorkingPattern) => {
     updateData("initialConfig", newPattern)
-    
+
     // Limpiar errores si se seleccionan días
     if (newPattern.workingDays.length > 0 && errors.workingDays) {
       clearErrors()
@@ -40,8 +40,9 @@ export function InitialConfigStep({ data, updateData, errors, clearErrors }: Ini
       onChange={handleWorkingPatternChange}
       errors={{ ...errors, ...localErrors }}
       onErrorChange={handleErrorChange}
-      title="Paso 3 — Configuración inicial"
+      title="Configuración inicial"
       description="Define los días y horarios de atención de tu comercio"
+      showTitle={true}
     />
   )
 }

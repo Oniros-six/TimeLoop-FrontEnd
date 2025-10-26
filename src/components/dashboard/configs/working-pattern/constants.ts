@@ -1,13 +1,24 @@
 // Configuración de días de la semana
 export const DAYS_OF_WEEK = [
-  { id: "monday", label: "Lunes" },
-  { id: "tuesday", label: "Martes" },
-  { id: "wednesday", label: "Miércoles" },
-  { id: "thursday", label: "Jueves" },
-  { id: "friday", label: "Viernes" },
-  { id: "saturday", label: "Sábado" },
-  { id: "sunday", label: "Domingo" },
+  { id: "MONDAY", label: "Lunes" },
+  { id: "TUESDAY", label: "Martes" },
+  { id: "WEDNESDAY", label: "Miércoles" },
+  { id: "THURSDAY", label: "Jueves" },
+  { id: "FRIDAY", label: "Viernes" },
+  { id: "SATURDAY", label: "Sábado" },
+  { id: "SUNDAY", label: "Domingo" },
 ]
+
+// Mapeo de IDs de días (minúsculas) a nombres en español
+export const DAY_NAMES_SPANISH: Record<string, string> = {
+  MONDAY: "Lunes",
+  TUESDAY: "Martes",
+  WEDNESDAY: "Miércoles",
+  THURSDAY: "Jueves",
+  FRIDAY: "Viernes",
+  SATURDAY: "Sábado",
+  SUNDAY: "Domingo",
+}
 
 // Generar opciones de tiempo
 export const generateTimeOptions = () => {

@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, Store, Calendar, Clock, Mail, MapPin, Phone, User } from "lucide-react"
+import { DAY_NAMES_SPANISH } from "@/components/dashboard/configs/working-pattern/constants"
 import type { SignupData } from "@/components/auth/signUp/MultiStepSignup"
 
 interface WelcomeStepProps {
@@ -10,17 +11,7 @@ interface WelcomeStepProps {
 
 export function WelcomeStep({ data, onSubmit, isSubmitting }: WelcomeStepProps) {
   const formatWorkingDays = (days: string[]) => {
-    const dayNames: Record<string, string> = {
-      monday: "Lunes",
-      tuesday: "Martes",
-      wednesday: "Miércoles",
-      thursday: "Jueves",
-      friday: "Viernes",
-      saturday: "Sábado",
-      sunday: "Domingo",
-    }
-
-    return days.map((day) => dayNames[day]).join(", ")
+    return days.map((day) => DAY_NAMES_SPANISH[day]).join(", ")
   }
 
   const formatSchedules = (
@@ -29,16 +20,6 @@ export function WelcomeStep({ data, onSubmit, isSubmitting }: WelcomeStepProps) 
       { morningOpen?: string; morningClose?: string; afternoonOpen?: string; afternoonClose?: string }
     >,
   ) => {
-    const dayNames: Record<string, string> = {
-      monday: "Lunes",
-      tuesday: "Martes",
-      wednesday: "Miércoles",
-      thursday: "Jueves",
-      friday: "Viernes",
-      saturday: "Sábado",
-      sunday: "Domingo",
-    }
-
     return Object.entries(schedules)
       .map(([day, schedule]) => {
         const morning = schedule.morningOpen && schedule.morningClose
@@ -48,7 +29,7 @@ export function WelcomeStep({ data, onSubmit, isSubmitting }: WelcomeStepProps) 
           schedule.afternoonOpen && schedule.afternoonClose
             ? ` y ${schedule.afternoonOpen} - ${schedule.afternoonClose}`
             : ""
-        return `${dayNames[day]}: ${morning}${afternoon}`
+        return `${DAY_NAMES_SPANISH[day]}: ${morning}${afternoon}`
       })
       .join(", ")
   }

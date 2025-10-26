@@ -1,8 +1,9 @@
+import { memo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { ShiftSelector } from "./ShiftSelector"
 import type { ScheduleSelectorProps } from "./types"
 
-export function ScheduleSelector({
+export const ScheduleSelector = memo(function ScheduleSelector({
   dayId,
   schedule,
   onScheduleChange,
@@ -13,6 +14,10 @@ export function ScheduleSelector({
   const hasMorningShift = schedule.morningOpen && schedule.morningClose
   const hasAfternoonShift = schedule.afternoonOpen && schedule.afternoonClose
   const shiftError = errors[`${dayId}_shifts`]
+
+  // Callbacks estables para evitar re-renders
+  const handleAddMorning = useCallback(() => onAddShift(dayId, 'morning'), [dayId, onAddShift])
+  const handleAddAfternoon = useCallback(() => onAddShift(dayId, 'afternoon'), [dayId, onAddShift])
 
   return (
     <div className="ml-6 space-y-3">
@@ -30,7 +35,7 @@ export function ScheduleSelector({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onAddShift(dayId, 'morning')}
+          onClick={handleAddMorning}
           className="w-full h-8 text-xs"
         >
           + Agregar turno mañana
@@ -51,7 +56,7 @@ export function ScheduleSelector({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onAddShift(dayId, 'afternoon')}
+          onClick={handleAddAfternoon}
           className="w-full h-8 text-xs"
         >
           + Agregar turno tarde
@@ -64,4 +69,4 @@ export function ScheduleSelector({
       )}
     </div>
   )
-}
+})

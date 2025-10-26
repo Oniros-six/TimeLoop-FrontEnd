@@ -1,8 +1,9 @@
+import { memo } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import type { DaySelectorProps } from "./types"
 
-export function DaySelector({ 
+export const DaySelector = memo(function DaySelector({ 
   dayId, 
   dayLabel, 
   isSelected, 
@@ -14,10 +15,11 @@ export function DaySelector({
         id={dayId}
         checked={isSelected}
         onCheckedChange={(checked) => onToggle(dayId, checked as boolean)}
+        className="cursor-pointer"
       />
       <Label htmlFor={dayId} className="text-sm font-medium cursor-pointer">
         {dayLabel}
       </Label>
     </div>
   )
-}
+})
