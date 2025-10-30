@@ -5,7 +5,7 @@ export const prerender = false
 
 export const GET: APIRoute = async ({ request, params }) => {
   try {
-    logger.dev('User config request received:', {
+    logger.dev('User info request received:', {
       method: request.method,
       url: request.url,
       headers: Object.fromEntries(request.headers.entries())
@@ -33,14 +33,15 @@ export const GET: APIRoute = async ({ request, params }) => {
       })
     }
 
-    // Enviar al backend para obtener configuración del usuario
-    const response = await fetch(`${backendURL}/user-config/${userId}`, {
+    // Enviar al backend para obtener datos del usuario
+    const response = await fetch(`${backendURL}/user?userId=${userId}`, {
       method: 'GET',
       credentials: 'include',
       headers: {
         'Cookie': request.headers.get('cookie') || ''
       }
     })
+
     logger.dev('Backend response:', { 
       status: response.status, 
       ok: response.ok 
@@ -49,16 +50,16 @@ export const GET: APIRoute = async ({ request, params }) => {
     const result = await response.json()
 
     if (response.ok) {
-      logger.dev('User config data retrieved successfully:', { userId })
+      logger.dev('User data retrieved successfully:', { userId })
       return new Response(JSON.stringify(result), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       })
     } else {
-      logger.dev('Failed to retrieve user config data')
+      logger.dev('Failed to retrieve user data')
       return new Response(JSON.stringify({ 
-        error: 'Error al obtener configuración del usuario',
-        configData: null
+        error: 'Error al obtener datos del usuario',
+        userData: null
       }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' }
@@ -66,22 +67,21 @@ export const GET: APIRoute = async ({ request, params }) => {
     }
 
   } catch (error) {
-    logger.error('Error en obtención de configuración del usuario:', error)
+    logger.error('Error en obtención de datos del usuario:', error)
     return new Response(JSON.stringify({ 
       error: 'Error interno del servidor',
       message: 'Error de conexión. Verifica tu internet e intenta nuevamente.',
-      configData: null
+      userData: null
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     })
   }
 }
-
-//* UPDATE USER CONFIG
+//* UPDATE USER INFO
 export const PUT: APIRoute = async ({ request, params }) => {
   try {
-    logger.dev('User config update request received:', {
+    logger.dev('User update request received:', {
       method: request.method,
       url: request.url,
       headers: Object.fromEntries(request.headers.entries())
@@ -110,8 +110,8 @@ export const PUT: APIRoute = async ({ request, params }) => {
       })
     }
 
-    // Enviar al backend para actualizar configuración del usuario
-    const response = await fetch(`${backendURL}/user-config/${userId}`, {
+    // Enviar al backend para actualizar datos del usuario
+    const response = await fetch(`${backendURL}/user/${userId}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -140,16 +140,16 @@ export const PUT: APIRoute = async ({ request, params }) => {
     }
 
     if (response.ok) {
-      logger.dev('User config updated successfully:', { userId })
+      logger.dev('User updated successfully:', { userId })
       return new Response(JSON.stringify(result), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       })
     } else {
-      logger.dev('Failed to update user config data')
+      logger.dev('Failed to update user data')
       return new Response(JSON.stringify({ 
-        error: result.message || 'Error al actualizar configuración del usuario',
-        configData: null
+        error: result.message || 'Error al actualizar datos del usuario',
+        userData: null
       }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' }
@@ -157,14 +157,15 @@ export const PUT: APIRoute = async ({ request, params }) => {
     }
 
   } catch (error) {
-    logger.error('Error en actualización de configuración del usuario:', error)
+    logger.error('Error en actualización de datos del usuario:', error)
     return new Response(JSON.stringify({ 
       error: 'Error interno del servidor',
       message: 'Error de conexión. Verifica tu internet e intenta nuevamente.',
-      configData: null
+      userData: null
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     })
   }
 }
+

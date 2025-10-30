@@ -108,7 +108,7 @@ export default function UserCard({
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Phone className="h-4 w-4" />
-                        <span className="truncate">{user.phone || "091234567"}</span>
+                        <span className="truncate">{user.phone || ""}</span>
                     </div>
                 </div>
             </CardContent>

@@ -1,21 +1,42 @@
 import { UserRole, type IUser } from "@/interfaces/User";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Save } from "lucide-react";
+import { User, Save, Eye, EyeOff } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useUserConfigs } from "@/hooks/configs/useUserConfigs";
 
 interface IConfigProps {
     userInfo: IUser | null
     setUserInfo: (user: IUser | null) => void
     handleSaveUser: () => void;
+    saveErrorMessage?: string | null
+    saveSuccessMessage?: string | null
+    isLoading?: boolean
+    newPassword: string
+    setNewPassword: (password: string) => void
+    confirmPassword: string
+    setConfirmPassword: (password: string) => void
 }
 
-export default function UserConfig({ userInfo, setUserInfo, handleSaveUser }: IConfigProps) {
+export default function UserConfig({ userInfo, setUserInfo, handleSaveUser, saveErrorMessage, saveSuccessMessage, isLoading, newPassword, setNewPassword, confirmPassword, setConfirmPassword }: IConfigProps) {
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const { userConfig } = useUserConfigs()
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    // Validación de contraseña
+    const validatePassword = (password: string) => {
+        return {
+            length: password.length >= 10,
+            hasNumber: /\d/.test(password),
+            hasLetter: /[a-zA-Z]/.test(password),
+            hasSymbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+        }
+    }
+
+    const passwordValidation = newPassword ? validatePassword(newPassword) : null
+    const allPasswordRequirementsMet = passwordValidation ? Object.values(passwordValidation).every(Boolean) : false
+    const passwordsMatch = newPassword === confirmPassword && newPassword.length > 0
 
     const validateField = (field: string, value: any): string => {
         switch (field) {
@@ -72,6 +93,17 @@ export default function UserConfig({ userInfo, setUserInfo, handleSaveUser }: IC
         if (emailError) newErrors.email = emailError;
         if (phoneError) newErrors.phone = phoneError;
 
+        // Validar password si se proporcionó
+        if (newPassword) {
+            if (!allPasswordRequirementsMet) {
+                return false;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                return false;
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -96,7 +128,6 @@ export default function UserConfig({ userInfo, setUserInfo, handleSaveUser }: IC
             setErrors({});
         }
     };
-
     return (
         <Card>
             <CardHeader className="px-3 sm:px-6">
@@ -149,7 +180,7 @@ export default function UserConfig({ userInfo, setUserInfo, handleSaveUser }: IC
                     <Input
                         id="user-phone"
                         type="tel"
-                        value={userInfo?.phone || ''}
+                        value={userInfo?.phone?.toString() || ''}
                         onChange={(e) => handleFieldChange('phone', e.target.value)}
                         maxLength={9}
                         aria-invalid={!!errors.phone}
@@ -166,9 +197,125 @@ export default function UserConfig({ userInfo, setUserInfo, handleSaveUser }: IC
                     <Input id="user-role" value={userInfo?.role === UserRole.ADMIN ? "Administrador" : "Colaborador"} disabled className="bg-muted" />
                 </div>
 
-                <Button onClick={handleSave} className="w-full">
+                <div className="space-y-2">
+                    <Label htmlFor="user-password">Contraseña</Label>
+                    <div className="relative">
+                        <Input
+                            id="user-password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Completar para cambiar la contraseña"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                    </div>
+
+                    {newPassword && (
+                        <div className="space-y-2 p-3 bg-gray-50 rounded-md border">
+                            <p className="text-sm font-medium text-gray-700">Requisitos de contraseña:</p>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`w-2 h-2 rounded-full ${passwordValidation?.length ? "bg-green-500" : "bg-gray-300"}`}
+                                    />
+                                    <span className={`text-sm ${passwordValidation?.length ? "text-green-700" : "text-gray-500"}`}>
+                                        Mínimo 10 caracteres
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`w-2 h-2 rounded-full ${passwordValidation?.hasNumber ? "bg-green-500" : "bg-gray-300"}`}
+                                    />
+                                    <span className={`text-sm ${passwordValidation?.hasNumber ? "text-green-700" : "text-gray-500"}`}>
+                                        Al menos un número
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`w-2 h-2 rounded-full ${passwordValidation?.hasLetter ? "bg-green-500" : "bg-gray-300"}`}
+                                    />
+                                    <span className={`text-sm ${passwordValidation?.hasLetter ? "text-green-700" : "text-gray-500"}`}>
+                                        Al menos una letra
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`w-2 h-2 rounded-full ${passwordValidation?.hasSymbol ? "bg-green-500" : "bg-gray-300"}`}
+                                    />
+                                    <span className={`text-sm ${passwordValidation?.hasSymbol ? "text-green-700" : "text-gray-500"}`}>
+                                        Al menos un símbolo (!@#$%^&*)
+                                    </span>
+                                </div>
+                            </div>
+                            {allPasswordRequirementsMet && (
+                                <div className="flex items-center gap-2 pt-1">
+                                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                                    <span className="text-sm font-medium text-green-700">¡Contraseña segura!</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {newPassword && (
+                    <div className="space-y-2">
+                        <Label htmlFor="user-confirm-password">Confirmar Nueva Contraseña</Label>
+                        <div className="relative">
+                            <Input
+                                id="user-confirm-password"
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Repite tu contraseña"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className={passwordsMatch ? "border-green-500" : ""}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                        
+                        {confirmPassword.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <div
+                                    className={`w-2 h-2 rounded-full ${passwordsMatch ? "bg-green-500" : "bg-red-500"}`}
+                                />
+                                <span className={`text-sm ${passwordsMatch ? "text-green-700" : "text-red-500"}`}>
+                                    {passwordsMatch ? "Las contraseñas coinciden" : "Las contraseñas no coinciden"}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {saveErrorMessage && (
+                    <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                        <p className="text-sm text-red-800">{saveErrorMessage}</p>
+                    </div>
+                )}
+
+                {saveSuccessMessage && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                        <p className="text-sm text-green-800">{saveSuccessMessage}</p>
+                    </div>
+                )}
+
+                <Button onClick={handleSave} className="w-full" disabled={isLoading}>
                     <Save className="mr-2 h-4 w-4" />
-                    Guardar cambios
+                    {isLoading ? "Guardando..." : "Guardar cambios"}
                 </Button>
             </CardContent>
         </Card>
