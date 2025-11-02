@@ -25,14 +25,12 @@ export function ShiftSelector({
         <span className="text-xs font-medium text-muted-foreground">
           Turno {isMorning ? 'Mañana' : 'Tarde'}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => onRemove(dayId, shiftType)}
-          className="h-6 px-2 text-xs text-red-600 hover:text-red-700"
+          className="h-6 px-2 text-sm tracking-wider cursor-pointer text-red-500 hover:ring hover:ring-red-500 rounded-md"
         >
           Eliminar
-        </Button>
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 text-sm">
