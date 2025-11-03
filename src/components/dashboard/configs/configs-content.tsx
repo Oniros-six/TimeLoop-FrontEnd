@@ -16,6 +16,7 @@ import { useUpdateCommerceInfo } from "@/hooks/configs/commerce/useUpdateCommerc
 import { useUpdateCommerceConfig } from "@/hooks/configs/commerce/useUpdateCommerceConfig";
 import { useUpdateUserInfo } from "@/hooks/configs/user/useUpdateUserInfo";
 import { useUpdateUserConfig } from "@/hooks/configs/user/useUpdateUserConfig";
+import { useUserUpdateWP } from "@/hooks/configs/user/useUserUpdateWP";
 import { useCommerceUpdateWP } from "@/hooks/configs/commerce/useCommerceUpdateWP";
 import convertToWorkingPattern from "./WorkingPatternTransformer";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ export default function () {
     const updateCommerceConfig = useUpdateCommerceConfig();
     const updateUserInfo = useUpdateUserInfo();
     const updateUserConfig = useUpdateUserConfig();
+    const updateUserWP = useUserUpdateWP();
     const updateCommerceWP = useCommerceUpdateWP();
 
     const handleSaveUser = async () => {
@@ -284,9 +286,49 @@ export default function () {
     };
 
     //* Guardar cambios del usuario
-    const handleSaveUserPattern = () => {
-        console.log('Guardando horarios de usuario:', userPatternData)
-        // Aquí implementarás la llamada a la API
+    const handleSaveUserPattern = async () => {
+        if (!userInfo || !userInfo.id || !userPatternData) {
+            setUserSaveErrorMessage("No hay datos de usuario para guardar");
+            return;
+        }
+
+        try {
+            setUserSaveErrorMessage(null);
+            setUserSaveSuccessMessage(null);
+
+            // Normalizar schedules agregando null a los campos faltantes
+            const schedules = userPatternData.schedules;
+            const normalizedSchedules = Object.entries(schedules).map(([weekday, schedule]) => {
+                return {
+                    [weekday]: {
+                        morningOpen: schedule.morningOpen ?? null,
+                        morningClose: schedule.morningClose ?? null,
+                        afternoonOpen: schedule.afternoonOpen ?? null,
+                        afternoonClose: schedule.afternoonClose ?? null
+                    }
+                };
+            }).reduce((acc, item) => ({ ...acc, ...item }), {});
+
+            // Convertir a IWorkingPattern[]
+            const patternsToSend = convertSchedulesToWorkingPatternArray(
+                normalizedSchedules,
+                userWorkingPattern
+            );
+
+            // Actualizar horarios del usuario
+            await updateUserWP.mutateAsync({
+                userId: userInfo.id,
+                data: patternsToSend
+            });
+
+            // Invalidar caché para refrescar datos
+            await queryClient.invalidateQueries({ queryKey: ["userWP", userInfo.id] });
+
+            setUserSaveSuccessMessage("Horarios de usuario actualizados correctamente");
+        } catch (error) {
+            setUserSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar horarios");
+            console.error("Error al guardar horarios de usuario:", error);
+        }
     }
 
     //* Guardar cambios del comercio
@@ -376,10 +418,26 @@ export default function () {
                                         description="Define tus días y horarios de trabajo"
                                         showTitle={true}
                                     />
+
+                                    {userSaveErrorMessage && (
+                                        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                                            <p className="text-sm text-red-800">{userSaveErrorMessage}</p>
+                                        </div>
+                                    )}
+
+                                    {userSaveSuccessMessage && (
+                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                                            <p className="text-sm text-green-800">{userSaveSuccessMessage}</p>
+                                        </div>
+                                    )}
                                 </CardContent>
                                 <CardFooter>
-                                    <Button className="w-full" onClick={handleSaveCommercePattern}>
-                                        Guardar Cambios
+                                    <Button 
+                                        className="w-full" 
+                                        onClick={handleSaveUserPattern}
+                                        disabled={updateUserWP.isPending}
+                                    >
+                                        {updateUserWP.isPending ? "Guardando..." : "Guardar Cambios"}
                                     </Button>
                                 </CardFooter>
                             </Card>
