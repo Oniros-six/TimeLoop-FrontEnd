@@ -1,29 +1,21 @@
 import { userAtom } from "@/atoms/auth";
 import { viewAtom } from "@/atoms/view";
+import { commerceAtom } from "@/atoms/commerce";
 import { useAtom } from "jotai";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import UserConfig from "./UserConfig";
 import CommerceConfig from "./CommerceConfig";
+import ConfigTab from "./ConfigTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserRole, type IUser } from "@/interfaces/User";
 import type { ICommerce } from "@/interfaces/Commerce";
-import { commerceAtom } from "@/atoms/commerce";
 import type { ICommerceConfig } from "@/interfaces/Config";
-import { WorkingPatternSelector, type WorkingPattern } from "@/components/dashboard/configs/WorkingPatternSelector"
 import { useUserWorkingPattern } from "@/hooks/configs/user/useUserWorkingPattern";
 import { useCommerceWorkingPattern } from "@/hooks/configs/commerce/useCommerceWorkingPattern";
-import { useUpdateCommerceInfo } from "@/hooks/configs/commerce/useUpdateCommerceInfo";
-import { useUpdateCommerceConfig } from "@/hooks/configs/commerce/useUpdateCommerceConfig";
-import { useUpdateUserInfo } from "@/hooks/configs/user/useUpdateUserInfo";
-import { useUpdateUserConfig } from "@/hooks/configs/user/useUpdateUserConfig";
-import { useUserUpdateWP } from "@/hooks/configs/user/useUserUpdateWP";
-import { useCommerceUpdateWP } from "@/hooks/configs/commerce/useCommerceUpdateWP";
-import convertToWorkingPattern from "./WorkingPatternTransformer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useQueryClient } from "@tanstack/react-query";
-import type { IWorkingPattern } from "@/interfaces/WorkingPattern";
-import { WeekDays, AvailabilityType } from "@/interfaces/WorkingPattern";
+import { useConfigMessages } from "@/hooks/configs/useConfigMessages";
+import { useWorkingPatternSync } from "@/hooks/configs/useWorkingPatternSync";
+import { useUserConfigSave } from "@/hooks/configs/useUserConfigSave";
+import { useCommerceConfigSave } from "@/hooks/configs/useCommerceConfigSave";
 
 export default function () {
     //* Seteamos el nombre de la vista
@@ -36,476 +28,182 @@ export default function () {
     }, [setView]);
 
     //* Estado para información del usuario
-    const [userInfo, setUserInfo] = useState<IUser | null>(currentUser || null)
+    const [userInfo, setUserInfo] = useState<IUser | null>(currentUser || null);
+    const [newPassword, setNewPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
 
     //* Estado para información del comercio
-    const [commerceInfo, setCommerceInfo] = useState<ICommerce | null>(commerceData)
-    const [commerceConfig, setCommerceConfig] = useState<ICommerceConfig | null>(null)
+    const [commerceInfo, setCommerceInfo] = useState<ICommerce | null>(commerceData);
+    const [commerceConfig, setCommerceConfig] = useState<ICommerceConfig | null>(null);
 
     useEffect(() => {
         setCommerceInfo(commerceData);
     }, [commerceData]);
 
-    //* Estados para mensajes de guardado
-    const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
-    const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
-    const [userSaveErrorMessage, setUserSaveErrorMessage] = useState<string | null>(null);
-    const [userSaveSuccessMessage, setUserSaveSuccessMessage] = useState<string | null>(null);
-    const [newPassword, setNewPassword] = useState<string>("");
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
+    //* Mensajes de estado
+    const userMessages = useConfigMessages();
+    const commerceMessages = useConfigMessages();
 
-    //* Hooks para actualizar comercio
-    const queryClient = useQueryClient();
-    const updateCommerceInfo = useUpdateCommerceInfo();
-    const updateCommerceConfig = useUpdateCommerceConfig();
-    const updateUserInfo = useUpdateUserInfo();
-    const updateUserConfig = useUpdateUserConfig();
-    const updateUserWP = useUserUpdateWP();
-    const updateCommerceWP = useCommerceUpdateWP();
+    //* Working Pattern Hooks
+    const { userWorkingPattern } = useUserWorkingPattern();
+    const { commerceWorkingPattern } = useCommerceWorkingPattern();
 
+    //* Sincronización de Working Patterns
+    const userPatternSync = useWorkingPatternSync(userWorkingPattern);
+    const commercePatternSync = useWorkingPatternSync(commerceWorkingPattern);
+
+    //* Hooks para guardar configuraciones
+    const userConfigSave = useUserConfigSave();
+    const commerceConfigSave = useCommerceConfigSave();
+
+    //* Handlers para guardar información de usuario
     const handleSaveUser = async () => {
-        if (!userInfo || !userInfo.id) {
-            setUserSaveErrorMessage("No hay datos de usuario para guardar");
-            return;
-        }
-
-        try {
-            setUserSaveErrorMessage(null);
-            setUserSaveSuccessMessage(null);
-
-            // Preparar datos a enviar
-            const userDataToSend: Record<string, any> = {
-                name: userInfo.name,
-                email: userInfo.email,
-                phone: userInfo.phone,
-                // Por seguridad no se puede cambiar el role desde el navegador, asi que se mantienen los valores del usuario actual
-                role: currentUser?.role
-            };
-
-            // Agregar password solo si se proporcionó una nueva
-            if (newPassword) {
-                userDataToSend.password = newPassword;
+        userMessages.clearMessages();
+        await userConfigSave.saveUserInfo(
+            {
+                userInfo,
+                currentUser,
+                newPassword
+            },
+            (updatedUser) => {
+                setCurrentUser(updatedUser);
+                setUserInfo(updatedUser);
+                userMessages.setSuccessMessage("Usuario actualizado correctamente");
+                setNewPassword("");
+                setConfirmPassword("");
+            },
+            (error) => {
+                userMessages.setErrorMessage(error);
             }
-
-            // Actualizar información del usuario
-            await updateUserInfo.mutateAsync({
-                userId: userInfo.id,
-                data: userDataToSend
-            });
-
-            // Invalidar caché para refrescar datos
-            await queryClient.invalidateQueries({ queryKey: ["user", userInfo.id] });
-            await queryClient.invalidateQueries({ queryKey: ["userConfig", userInfo.id] });
-
-            // Actualizar átomo con la nueva información (sin incluir el password por seguridad)
-            const updatedUser = {
-                ...userInfo,
-                name: userDataToSend.name,
-                email: userDataToSend.email,
-                phone: userDataToSend.phone,
-            };
-
-            // Actualizar userAtom con la nueva información
-            setCurrentUser(updatedUser as IUser);
-
-            // También actualizar el estado local
-            setUserInfo(updatedUser);
-
-            setUserSaveSuccessMessage("Usuario actualizado correctamente");
-
-            // Limpiar campos de contraseña después de guardar exitosamente
-            setNewPassword("");
-            setConfirmPassword("");
-        } catch (error) {
-            setUserSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar el usuario");
-            console.error("Error al guardar usuario:", error);
-        }
-    }
-
-    const handleSaveCommerce = async () => {
-        if (!commerceInfo || !commerceConfig || !commerceInfo.id) {
-            setSaveErrorMessage("No hay datos de comercio para guardar");
-            return;
-        }
-
-        try {
-            setSaveErrorMessage(null);
-            setSaveSuccessMessage(null);
-
-            //! Filtrar solo los campos permitidos para commerceInfo
-            //TODO Luego tengo que agregar el logo y quizas mas datos
-            const commerceDataToSend = {
-                name: commerceInfo.name,
-                email: commerceInfo.email,
-                phone: commerceInfo.phone,
-                address: commerceInfo.address,
-                businessCategory: commerceInfo.businessCategory
-            };
-
-            // Filtrar solo los campos permitidos para commerceConfig
-            const configDataToSend = {
-                cancellationDeadlineMinutes: commerceConfig.cancellationDeadlineMinutes,
-                welcomeMessage: commerceConfig.welcomeMessage,
-                acceptedPaymentMethods: commerceConfig.acceptedPaymentMethods,
-                billingType: commerceConfig.billingType
-            };
-
-            // Actualizar información básica del comercio
-            await updateCommerceInfo.mutateAsync({
-                commerceId: commerceInfo.id,
-                data: commerceDataToSend
-            });
-
-            // Actualizar configuración del comercio
-            await updateCommerceConfig.mutateAsync({
-                commerceId: commerceInfo.id,
-                data: configDataToSend
-            });
-
-            // Invalidar caché para refrescar datos
-            await queryClient.invalidateQueries({ queryKey: ["commerce", commerceInfo.id] });
-            await queryClient.invalidateQueries({ queryKey: ["commerceConfig", commerceInfo.id] });
-
-            // Actualizar átomo con la nueva información
-            setCommerceData(commerceInfo);
-
-            setSaveSuccessMessage("Comercio actualizado correctamente");
-        } catch (error) {
-            setSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar el comercio");
-            console.error("Error al guardar comercio:", error);
-        }
-    }
-
-    //* WORKING PATTERN HOOKS
-    const { userWorkingPattern, loading: userLoading, error: userError } = useUserWorkingPattern()
-    const { commerceWorkingPattern, loading: commerceLoading, error: commerceError } = useCommerceWorkingPattern()
-
-    //* Estados para errores locales
-    const [userPatternErrors, setUserPatternErrors] = useState<Record<string, string>>({})
-    const [commercePatternErrors, setCommercePatternErrors] = useState<Record<string, string>>({})
-
-    //* Estados locales para patrones de trabajo editables
-    const [userPatternData, setUserPatternData] = useState<WorkingPattern | null>(null)
-    const [commercePatternData, setCommercePatternData] = useState<WorkingPattern | null>(null)
-
-    //* Sincronizar con los datos iniciales cuando cambien
-    useEffect(() => {
-        const converted = convertToWorkingPattern(userWorkingPattern)
-        setUserPatternData(converted)
-    }, [userWorkingPattern])
-
-    useEffect(() => {
-        const converted = convertToWorkingPattern(commerceWorkingPattern)
-        setCommercePatternData(converted)
-    }, [commerceWorkingPattern])
-
-    //* Manejar cambios en el patrón de trabajo del usuario
-    const handleUserWorkingPatternChange = useCallback((newPattern: WorkingPattern) => {
-        setUserPatternData(newPattern)
-    }, [])
-
-    //* Manejar cambios en errores del patrón de trabajo del usuario
-    const handleUserPatternErrorChange = useCallback((newErrors: Record<string, string>) => {
-        setUserPatternErrors(newErrors)
-    }, [])
-
-    //* Manejar cambios en el patrón de trabajo del comercio
-    const handleCommerceWorkingPatternChange = useCallback((newPattern: WorkingPattern) => {
-        setCommercePatternData(newPattern)
-    }, [])
-
-    //* Manejar cambios en errores del patrón de trabajo del comercio
-    const handleCommercePatternErrorChange = useCallback((newErrors: Record<string, string>) => {
-        setCommercePatternErrors(newErrors)
-    }, [])
-
-    //* Función helper para convertir schedules normalizados a IWorkingPattern[]
-    const convertSchedulesToWorkingPatternArray = (
-        normalizedSchedules: Record<string, Record<string, string | null>>,
-        existingPatterns?: IWorkingPattern | IWorkingPattern[]
-    ): IWorkingPattern[] => {
-        // Crear un mapa de los patrones existentes por weekday para preservar los IDs
-        const existingMap = new Map<string, IWorkingPattern>();
-        if (existingPatterns) {
-            const patternsArray = Array.isArray(existingPatterns) ? existingPatterns : [existingPatterns];
-            patternsArray.forEach(pattern => {
-                existingMap.set(pattern.weekday, pattern);
-            });
-        }
-
-        // Procesar todos los días de la semana
-        return Object.values(WeekDays).map(weekday => {
-            const schedule = normalizedSchedules[weekday];
-            const existing = existingMap.get(weekday);
-
-            let availabilityType: AvailabilityType;
-            
-            // Determinar el tipo de disponibilidad basado en los horarios
-            if (!schedule) {
-                // Si no hay schedule, es día libre (off)
-                availabilityType = AvailabilityType.off;
-            } else {
-                const hasMorning = schedule.morningOpen && schedule.morningClose;
-                const hasAfternoon = schedule.afternoonOpen && schedule.afternoonClose;
-                
-                if (hasMorning && hasAfternoon) {
-                    // Tiene ambos turnos = full
-                    availabilityType = AvailabilityType.full;
-                } else if (hasMorning || hasAfternoon) {
-                    // Tiene solo uno = half
-                    availabilityType = AvailabilityType.half;
-                } else {
-                    // No tiene ninguno = off
-                    availabilityType = AvailabilityType.off;
-                }
-            }
-
-            // Preparar los valores, usando null para campos sin horario
-            const morningStart = schedule?.morningOpen || null;
-            const morningEnd = schedule?.morningClose || null;
-            const afternoonStart = schedule?.afternoonOpen || null;
-            const afternoonEnd = schedule?.afternoonClose || null;
-
-            // Crear el objeto con todos los campos siempre presentes (incluyendo null)
-            const pattern: any = {
-                // weekday,
-                availabilityType,
-                morningStart: morningStart === null ? null : morningStart,
-                morningEnd: morningEnd === null ? null : morningEnd,
-                afternoonStart: afternoonStart === null ? null : afternoonStart,
-                afternoonEnd: afternoonEnd === null ? null : afternoonEnd,
-            };
-            
-            // Si hay un patrón existente, agregar el id (si existe)
-            if (existing && (existing as any).id) {
-                pattern.id = (existing as any).id;
-            }
-            
-            return pattern;
-        });
+        );
     };
 
-    //* Guardar cambios del usuario
+    //* Handlers para guardar horarios de usuario
     const handleSaveUserPattern = async () => {
-        if (!userInfo || !userInfo.id || !userPatternData) {
-            setUserSaveErrorMessage("No hay datos de usuario para guardar");
-            return;
-        }
-
-        try {
-            setUserSaveErrorMessage(null);
-            setUserSaveSuccessMessage(null);
-
-            // Normalizar schedules agregando null a los campos faltantes
-            const schedules = userPatternData.schedules;
-            const normalizedSchedules = Object.entries(schedules).map(([weekday, schedule]) => {
-                return {
-                    [weekday]: {
-                        morningOpen: schedule.morningOpen ?? null,
-                        morningClose: schedule.morningClose ?? null,
-                        afternoonOpen: schedule.afternoonOpen ?? null,
-                        afternoonClose: schedule.afternoonClose ?? null
-                    }
-                };
-            }).reduce((acc, item) => ({ ...acc, ...item }), {});
-
-            // Convertir a IWorkingPattern[]
-            const patternsToSend = convertSchedulesToWorkingPatternArray(
-                normalizedSchedules,
+        userMessages.clearMessages();
+        await userConfigSave.saveUserPattern(
+            {
+                userInfo,
+                currentUser,
+                userPatternData: userPatternSync.patternData,
                 userWorkingPattern
-            );
+            },
+            () => {
+                userMessages.setSuccessMessage("Horarios de usuario actualizados correctamente");
+            },
+            (error) => {
+                userMessages.setErrorMessage(error);
+            }
+        );
+    };
 
-            // Actualizar horarios del usuario
-            await updateUserWP.mutateAsync({
-                userId: userInfo.id,
-                data: patternsToSend
-            });
+    //* Handlers para guardar información de comercio
+    const handleSaveCommerce = async () => {
+        commerceMessages.clearMessages();
+        await commerceConfigSave.saveCommerceInfo(
+            {
+                commerceInfo,
+                commerceConfig
+            },
+            () => {
+                if (commerceInfo) {
+                    setCommerceData(commerceInfo);
+                }
+                commerceMessages.setSuccessMessage("Comercio actualizado correctamente");
+            },
+            (error) => {
+                commerceMessages.setErrorMessage(error);
+            }
+        );
+    };
 
-            // Invalidar caché para refrescar datos
-            await queryClient.invalidateQueries({ queryKey: ["userWP", userInfo.id] });
-
-            setUserSaveSuccessMessage("Horarios de usuario actualizados correctamente");
-        } catch (error) {
-            setUserSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar horarios");
-            console.error("Error al guardar horarios de usuario:", error);
-        }
-    }
-
-    //* Guardar cambios del comercio
+    //* Handlers para guardar horarios de comercio
     const handleSaveCommercePattern = async () => {
-        if (!commerceInfo || !commerceInfo.id || !commercePatternData) {
-            setSaveErrorMessage("No hay datos de comercio para guardar");
-            return;
-        }
-
-        try {
-            setSaveErrorMessage(null);
-            setSaveSuccessMessage(null);
-
-            // Normalizar schedules agregando null a los campos faltantes
-            const schedules = commercePatternData.schedules;
-            const normalizedSchedules = Object.entries(schedules).map(([weekday, schedule]) => {
-                return {
-                    [weekday]: {
-                        morningOpen: schedule.morningOpen ?? null,
-                        morningClose: schedule.morningClose ?? null,
-                        afternoonOpen: schedule.afternoonOpen ?? null,
-                        afternoonClose: schedule.afternoonClose ?? null
-                    }
-                };
-            }).reduce((acc, item) => ({ ...acc, ...item }), {});
-
-            // Convertir a IWorkingPattern[]
-            const patternsToSend = convertSchedulesToWorkingPatternArray(
-                normalizedSchedules,
+        commerceMessages.clearMessages();
+        await commerceConfigSave.saveCommercePattern(
+            {
+                commerceInfo,
+                commerceConfig,
+                commercePatternData: commercePatternSync.patternData,
                 commerceWorkingPattern
-            );
+            },
+            () => {
+                commerceMessages.setSuccessMessage("Horarios de comercio actualizados correctamente");
+            },
+            (error) => {
+                commerceMessages.setErrorMessage(error);
+            }
+        );
+    };
 
-            // Actualizar horarios del comercio
-            await updateCommerceWP.mutateAsync({
-                commerceId: commerceInfo.id,
-                data: patternsToSend
-            });
-
-            // Invalidar caché para refrescar datos
-            await queryClient.invalidateQueries({ queryKey: ["commerceWP", commerceInfo.id] });
-
-            setSaveSuccessMessage("Horarios de comercio actualizados correctamente");
-        } catch (error) {
-            setSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar horarios");
-            console.error("Error al guardar horarios de comercio:", error);
-        }
-    }
     return (
         <Tabs defaultValue="usuario" className="w-full max-w-4xl mx-auto">
             <TabsList className="grid w-full max-w-md grid-cols-2 self-center">
                 <TabsTrigger className="cursor-pointer" value="usuario">Usuario</TabsTrigger>
-                <TabsTrigger className="cursor-pointer" disabled={!(currentUser?.role === UserRole.ADMIN)} value="comercio">Comercio</TabsTrigger>
+                <TabsTrigger 
+                    className="cursor-pointer" 
+                    disabled={!(currentUser?.role === UserRole.ADMIN)} 
+                    value="comercio"
+                >
+                    Comercio
+                </TabsTrigger>
             </TabsList>
 
             <TabsContent value="usuario" className="mt-6">
-                <Tabs defaultValue="basico" className="w-full">
-                    <TabsList className="grid w-full max-w-md grid-cols-2 mx-auto mb-6">
-                        <TabsTrigger className="cursor-pointer" value="basico">Básico</TabsTrigger>
-                        <TabsTrigger className="cursor-pointer" value="horarios">Horarios</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="basico">
+                <ConfigTab
+                    basicContent={
                         <UserConfig
                             userInfo={userInfo}
                             setUserInfo={setUserInfo}
                             handleSaveUser={handleSaveUser}
-                            saveErrorMessage={userSaveErrorMessage}
-                            saveSuccessMessage={userSaveSuccessMessage}
-                            isLoading={updateUserInfo.isPending || updateUserConfig.isPending}
+                            saveErrorMessage={userMessages.errorMessage}
+                            saveSuccessMessage={userMessages.successMessage}
+                            isLoading={userConfigSave.isLoading}
                             newPassword={newPassword}
                             setNewPassword={setNewPassword}
                             confirmPassword={confirmPassword}
                             setConfirmPassword={setConfirmPassword}
                         />
-                    </TabsContent>
-
-                    <TabsContent value="horarios">
-                        {
-                            <Card>
-                                <CardContent className="px-3 sm:px-6 space-y-4">
-                                    <WorkingPatternSelector
-                                        data={userPatternData || { workingDays: [], schedules: {} }}
-                                        onChange={handleUserWorkingPatternChange}
-                                        errors={userPatternErrors}
-                                        onErrorChange={handleUserPatternErrorChange}
-                                        title="Horarios de Usuario"
-                                        description="Define tus días y horarios de trabajo"
-                                        showTitle={true}
-                                    />
-
-                                    {userSaveErrorMessage && (
-                                        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                                            <p className="text-sm text-red-800">{userSaveErrorMessage}</p>
-                                        </div>
-                                    )}
-
-                                    {userSaveSuccessMessage && (
-                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                                            <p className="text-sm text-green-800">{userSaveSuccessMessage}</p>
-                                        </div>
-                                    )}
-                                </CardContent>
-                                <CardFooter>
-                                    <Button 
-                                        className="w-full" 
-                                        onClick={handleSaveUserPattern}
-                                        disabled={updateUserWP.isPending}
-                                    >
-                                        {updateUserWP.isPending ? "Guardando..." : "Guardar Cambios"}
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        }
-                    </TabsContent>
-                </Tabs>
+                    }
+                    workingPatternData={userPatternSync.patternData || { workingDays: [], schedules: {} }}
+                    onWorkingPatternChange={userPatternSync.handlePatternChange}
+                    workingPatternErrors={userPatternSync.patternErrors}
+                    onWorkingPatternErrorChange={userPatternSync.handleErrorChange}
+                    workingPatternTitle="Horarios de Usuario"
+                    workingPatternDescription="Define tus días y horarios de trabajo"
+                    onSaveWorkingPattern={handleSaveUserPattern}
+                    isLoadingWorkingPattern={userConfigSave.isLoading}
+                    workingPatternErrorMessage={userMessages.errorMessage}
+                    workingPatternSuccessMessage={userMessages.successMessage}
+                />
             </TabsContent>
 
             <TabsContent value="comercio" className="mt-6">
-                <Tabs defaultValue="basico" className="w-full">
-                    <TabsList className="grid w-full max-w-md grid-cols-2 mx-auto mb-6">
-                        <TabsTrigger className="cursor-pointer" value="basico">Básico</TabsTrigger>
-                        <TabsTrigger className="cursor-pointer" value="horarios">Horarios</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="basico">
+                <ConfigTab
+                    basicContent={
                         <CommerceConfig
                             commerceConfig={commerceConfig}
                             setCommerceConfig={setCommerceConfig}
                             commerceInfo={commerceInfo}
                             setCommerceInfo={setCommerceInfo}
                             handleSaveCommerce={handleSaveCommerce}
-                            saveErrorMessage={saveErrorMessage}
-                            saveSuccessMessage={saveSuccessMessage}
-                            isLoading={updateCommerceInfo.isPending || updateCommerceConfig.isPending}
+                            saveErrorMessage={commerceMessages.errorMessage}
+                            saveSuccessMessage={commerceMessages.successMessage}
+                            isLoading={commerceConfigSave.isLoading}
                         />
-                    </TabsContent>
-
-                    <TabsContent value="horarios">
-                        {
-                            <Card>
-                                <CardContent className="px-3 sm:px-6 space-y-4">
-                                    <WorkingPatternSelector
-                                        data={commercePatternData || { workingDays: [], schedules: {} }}
-                                        onChange={handleCommerceWorkingPatternChange}
-                                        errors={commercePatternErrors}
-                                        onErrorChange={handleCommercePatternErrorChange}
-                                        title="Horarios de Comercio"
-                                        description="Define los días y horarios de atención del comercio"
-                                        showTitle={true}
-                                    />
-
-                                    {saveErrorMessage && (
-                                        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                                            <p className="text-sm text-red-800">{saveErrorMessage}</p>
-                                        </div>
-                                    )}
-
-                                    {saveSuccessMessage && (
-                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                                            <p className="text-sm text-green-800">{saveSuccessMessage}</p>
-                                        </div>
-                                    )}
-                                </CardContent>
-                                <CardFooter>
-                                    <Button 
-                                        className="w-full" 
-                                        onClick={handleSaveCommercePattern}
-                                        disabled={updateCommerceWP.isPending}
-                                    >
-                                        {updateCommerceWP.isPending ? "Guardando..." : "Guardar Cambios"}
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        }
-                    </TabsContent>
-                </Tabs>
-            </TabsContent >
-        </Tabs >
-    )
+                    }
+                    workingPatternData={commercePatternSync.patternData || { workingDays: [], schedules: {} }}
+                    onWorkingPatternChange={commercePatternSync.handlePatternChange}
+                    workingPatternErrors={commercePatternSync.patternErrors}
+                    onWorkingPatternErrorChange={commercePatternSync.handleErrorChange}
+                    workingPatternTitle="Horarios de Comercio"
+                    workingPatternDescription="Define los días y horarios de atención del comercio"
+                    onSaveWorkingPattern={handleSaveCommercePattern}
+                    isLoadingWorkingPattern={commerceConfigSave.isLoading}
+                    workingPatternErrorMessage={commerceMessages.errorMessage}
+                    workingPatternSuccessMessage={commerceMessages.successMessage}
+                />
+            </TabsContent>
+        </Tabs>
+    );
 }
