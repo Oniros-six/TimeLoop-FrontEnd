@@ -14,12 +14,11 @@ export enum AvailabilityType {
 }
 
 export interface IWorkingPattern {
-    id: number,
-    entityId: number,
+    id?: number,
     weekday: WeekDays,
     availabilityType: AvailabilityType,
-    morningStart?: string,
-    morningEnd?: string,
-    afternoonStart?: string,
-    afternoonEnd?: string,
+    morningStart?: string | null,
+    morningEnd?: string | null,
+    afternoonStart?: string | null,
+    afternoonEnd?: string | null,
 }
