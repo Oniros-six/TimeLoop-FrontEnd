@@ -14,6 +14,8 @@ import { useUserWorkingPattern } from "@/hooks/configs/user/useUserWorkingPatter
 import { useCommerceWorkingPattern } from "@/hooks/configs/commerce/useCommerceWorkingPattern";
 import { useUpdateCommerceInfo } from "@/hooks/configs/commerce/useUpdateCommerceInfo";
 import { useUpdateCommerceConfig } from "@/hooks/configs/commerce/useUpdateCommerceConfig";
+import { useUpdateUserInfo } from "@/hooks/configs/user/useUpdateUserInfo";
+import { useUpdateUserConfig } from "@/hooks/configs/user/useUpdateUserConfig";
 import { useCommerceUpdateWP } from "@/hooks/configs/commerce/useCommerceUpdateWP";
 import convertToWorkingPattern from "./WorkingPatternTransformer";
 import { Button } from "@/components/ui/button";
@@ -25,7 +27,7 @@ import { WeekDays, AvailabilityType } from "@/interfaces/WorkingPattern";
 export default function () {
     //* Seteamos el nombre de la vista
     const [, setView] = useAtom(viewAtom);
-    const [currentUser] = useAtom(userAtom);
+    const [currentUser, setCurrentUser] = useAtom(userAtom);
     const [commerceData, setCommerceData] = useAtom(commerceAtom);
 
     useEffect(() => {
@@ -46,15 +48,76 @@ export default function () {
     //* Estados para mensajes de guardado
     const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
     const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+    const [userSaveErrorMessage, setUserSaveErrorMessage] = useState<string | null>(null);
+    const [userSaveSuccessMessage, setUserSaveSuccessMessage] = useState<string | null>(null);
+    const [newPassword, setNewPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
 
     //* Hooks para actualizar comercio
     const queryClient = useQueryClient();
     const updateCommerceInfo = useUpdateCommerceInfo();
     const updateCommerceConfig = useUpdateCommerceConfig();
+    const updateUserInfo = useUpdateUserInfo();
+    const updateUserConfig = useUpdateUserConfig();
     const updateCommerceWP = useCommerceUpdateWP();
 
-    const handleSaveUser = () => {
-        console.log(userInfo)
+    const handleSaveUser = async () => {
+        if (!userInfo || !userInfo.id) {
+            setUserSaveErrorMessage("No hay datos de usuario para guardar");
+            return;
+        }
+
+        try {
+            setUserSaveErrorMessage(null);
+            setUserSaveSuccessMessage(null);
+
+            // Preparar datos a enviar
+            const userDataToSend: Record<string, any> = {
+                name: userInfo.name,
+                email: userInfo.email,
+                phone: userInfo.phone,
+                // Por seguridad no se puede cambiar el role desde el navegador, asi que se mantienen los valores del usuario actual
+                role: currentUser?.role
+            };
+
+            // Agregar password solo si se proporcionó una nueva
+            if (newPassword) {
+                userDataToSend.password = newPassword;
+            }
+
+            // Actualizar información del usuario
+            await updateUserInfo.mutateAsync({
+                userId: userInfo.id,
+                data: userDataToSend
+            });
+
+            // Invalidar caché para refrescar datos
+            await queryClient.invalidateQueries({ queryKey: ["user", userInfo.id] });
+            await queryClient.invalidateQueries({ queryKey: ["userConfig", userInfo.id] });
+
+            // Actualizar átomo con la nueva información (sin incluir el password por seguridad)
+            const updatedUser = {
+                ...userInfo,
+                name: userDataToSend.name,
+                email: userDataToSend.email,
+                phone: userDataToSend.phone,
+            };
+
+            // Actualizar userAtom con la nueva información
+            setCurrentUser(updatedUser as IUser);
+
+            // También actualizar el estado local
+            setUserInfo(updatedUser);
+
+            setUserSaveSuccessMessage("Usuario actualizado correctamente");
+
+            // Limpiar campos de contraseña después de guardar exitosamente
+            setNewPassword("");
+            setConfirmPassword("");
+        } catch (error) {
+            setUserSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar el usuario");
+            console.error("Error al guardar usuario:", error);
+        }
     }
 
     const handleSaveCommerce = async () => {
@@ -218,6 +281,7 @@ export default function () {
             
             return pattern;
         });
+    };
 
     //* Guardar cambios del usuario
     const handleSaveUserPattern = () => {
@@ -285,13 +349,24 @@ export default function () {
                     </TabsList>
 
                     <TabsContent value="basico">
-                        <UserConfig userInfo={userInfo} setUserInfo={setUserInfo} handleSaveUser={handleSaveUser} />
+                        <UserConfig
+                            userInfo={userInfo}
+                            setUserInfo={setUserInfo}
+                            handleSaveUser={handleSaveUser}
+                            saveErrorMessage={userSaveErrorMessage}
+                            saveSuccessMessage={userSaveSuccessMessage}
+                            isLoading={updateUserInfo.isPending || updateUserConfig.isPending}
+                            newPassword={newPassword}
+                            setNewPassword={setNewPassword}
+                            confirmPassword={confirmPassword}
+                            setConfirmPassword={setConfirmPassword}
+                        />
                     </TabsContent>
 
                     <TabsContent value="horarios">
                         {
                             <Card>
-                                <CardContent className="px-3 sm:px-6">
+                                <CardContent className="px-3 sm:px-6 space-y-4">
                                     <WorkingPatternSelector
                                         data={userPatternData || { workingDays: [], schedules: {} }}
                                         onChange={handleUserWorkingPatternChange}
