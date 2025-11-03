@@ -14,10 +14,13 @@ import { useUserWorkingPattern } from "@/hooks/configs/user/useUserWorkingPatter
 import { useCommerceWorkingPattern } from "@/hooks/configs/commerce/useCommerceWorkingPattern";
 import { useUpdateCommerceInfo } from "@/hooks/configs/commerce/useUpdateCommerceInfo";
 import { useUpdateCommerceConfig } from "@/hooks/configs/commerce/useUpdateCommerceConfig";
+import { useCommerceUpdateWP } from "@/hooks/configs/commerce/useCommerceUpdateWP";
 import convertToWorkingPattern from "./WorkingPatternTransformer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useQueryClient } from "@tanstack/react-query";
+import type { IWorkingPattern } from "@/interfaces/WorkingPattern";
+import { WeekDays, AvailabilityType } from "@/interfaces/WorkingPattern";
 
 export default function () {
     //* Seteamos el nombre de la vista
@@ -48,6 +51,7 @@ export default function () {
     const queryClient = useQueryClient();
     const updateCommerceInfo = useUpdateCommerceInfo();
     const updateCommerceConfig = useUpdateCommerceConfig();
+    const updateCommerceWP = useCommerceUpdateWP();
 
     const handleSaveUser = () => {
         console.log(userInfo)
@@ -150,6 +154,71 @@ export default function () {
         setCommercePatternErrors(newErrors)
     }, [])
 
+    //* Función helper para convertir schedules normalizados a IWorkingPattern[]
+    const convertSchedulesToWorkingPatternArray = (
+        normalizedSchedules: Record<string, Record<string, string | null>>,
+        existingPatterns?: IWorkingPattern | IWorkingPattern[]
+    ): IWorkingPattern[] => {
+        // Crear un mapa de los patrones existentes por weekday para preservar los IDs
+        const existingMap = new Map<string, IWorkingPattern>();
+        if (existingPatterns) {
+            const patternsArray = Array.isArray(existingPatterns) ? existingPatterns : [existingPatterns];
+            patternsArray.forEach(pattern => {
+                existingMap.set(pattern.weekday, pattern);
+            });
+        }
+
+        // Procesar todos los días de la semana
+        return Object.values(WeekDays).map(weekday => {
+            const schedule = normalizedSchedules[weekday];
+            const existing = existingMap.get(weekday);
+
+            let availabilityType: AvailabilityType;
+            
+            // Determinar el tipo de disponibilidad basado en los horarios
+            if (!schedule) {
+                // Si no hay schedule, es día libre (off)
+                availabilityType = AvailabilityType.off;
+            } else {
+                const hasMorning = schedule.morningOpen && schedule.morningClose;
+                const hasAfternoon = schedule.afternoonOpen && schedule.afternoonClose;
+                
+                if (hasMorning && hasAfternoon) {
+                    // Tiene ambos turnos = full
+                    availabilityType = AvailabilityType.full;
+                } else if (hasMorning || hasAfternoon) {
+                    // Tiene solo uno = half
+                    availabilityType = AvailabilityType.half;
+                } else {
+                    // No tiene ninguno = off
+                    availabilityType = AvailabilityType.off;
+                }
+            }
+
+            // Preparar los valores, usando null para campos sin horario
+            const morningStart = schedule?.morningOpen || null;
+            const morningEnd = schedule?.morningClose || null;
+            const afternoonStart = schedule?.afternoonOpen || null;
+            const afternoonEnd = schedule?.afternoonClose || null;
+
+            // Crear el objeto con todos los campos siempre presentes (incluyendo null)
+            const pattern: any = {
+                // weekday,
+                availabilityType,
+                morningStart: morningStart === null ? null : morningStart,
+                morningEnd: morningEnd === null ? null : morningEnd,
+                afternoonStart: afternoonStart === null ? null : afternoonStart,
+                afternoonEnd: afternoonEnd === null ? null : afternoonEnd,
+            };
+            
+            // Si hay un patrón existente, agregar el id (si existe)
+            if (existing && (existing as any).id) {
+                pattern.id = (existing as any).id;
+            }
+            
+            return pattern;
+        });
+
     //* Guardar cambios del usuario
     const handleSaveUserPattern = () => {
         console.log('Guardando horarios de usuario:', userPatternData)
@@ -157,9 +226,49 @@ export default function () {
     }
 
     //* Guardar cambios del comercio
-    const handleSaveCommercePattern = () => {
-        console.log('Guardando horarios de comercio:', commercePatternData)
-        // Aquí implementarás la llamada a la API
+    const handleSaveCommercePattern = async () => {
+        if (!commerceInfo || !commerceInfo.id || !commercePatternData) {
+            setSaveErrorMessage("No hay datos de comercio para guardar");
+            return;
+        }
+
+        try {
+            setSaveErrorMessage(null);
+            setSaveSuccessMessage(null);
+
+            // Normalizar schedules agregando null a los campos faltantes
+            const schedules = commercePatternData.schedules;
+            const normalizedSchedules = Object.entries(schedules).map(([weekday, schedule]) => {
+                return {
+                    [weekday]: {
+                        morningOpen: schedule.morningOpen ?? null,
+                        morningClose: schedule.morningClose ?? null,
+                        afternoonOpen: schedule.afternoonOpen ?? null,
+                        afternoonClose: schedule.afternoonClose ?? null
+                    }
+                };
+            }).reduce((acc, item) => ({ ...acc, ...item }), {});
+
+            // Convertir a IWorkingPattern[]
+            const patternsToSend = convertSchedulesToWorkingPatternArray(
+                normalizedSchedules,
+                commerceWorkingPattern
+            );
+
+            // Actualizar horarios del comercio
+            await updateCommerceWP.mutateAsync({
+                commerceId: commerceInfo.id,
+                data: patternsToSend
+            });
+
+            // Invalidar caché para refrescar datos
+            await queryClient.invalidateQueries({ queryKey: ["commerceWP", commerceInfo.id] });
+
+            setSaveSuccessMessage("Horarios de comercio actualizados correctamente");
+        } catch (error) {
+            setSaveErrorMessage(error instanceof Error ? error.message : "Error al actualizar horarios");
+            console.error("Error al guardar horarios de comercio:", error);
+        }
     }
     return (
         <Tabs defaultValue="usuario" className="w-full max-w-4xl mx-auto">
@@ -227,7 +336,7 @@ export default function () {
                     <TabsContent value="horarios">
                         {
                             <Card>
-                                <CardContent className="px-3 sm:px-6">
+                                <CardContent className="px-3 sm:px-6 space-y-4">
                                     <WorkingPatternSelector
                                         data={commercePatternData || { workingDays: [], schedules: {} }}
                                         onChange={handleCommerceWorkingPatternChange}
@@ -237,10 +346,26 @@ export default function () {
                                         description="Define los días y horarios de atención del comercio"
                                         showTitle={true}
                                     />
+
+                                    {saveErrorMessage && (
+                                        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                                            <p className="text-sm text-red-800">{saveErrorMessage}</p>
+                                        </div>
+                                    )}
+
+                                    {saveSuccessMessage && (
+                                        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                                            <p className="text-sm text-green-800">{saveSuccessMessage}</p>
+                                        </div>
+                                    )}
                                 </CardContent>
                                 <CardFooter>
-                                    <Button className="w-full" onClick={handleSaveCommercePattern}>
-                                        Guardar Cambios
+                                    <Button 
+                                        className="w-full" 
+                                        onClick={handleSaveCommercePattern}
+                                        disabled={updateCommerceWP.isPending}
+                                    >
+                                        {updateCommerceWP.isPending ? "Guardando..." : "Guardar Cambios"}
                                     </Button>
                                 </CardFooter>
                             </Card>
