@@ -29,6 +29,7 @@ export const getStatusText = (status: BookingStatus): string => {
 export interface DashboardData {
   commerceId: number;
   commerceName: string;
+  logoUrl: string;
   history: HistoryItem[];
   recentActivity: RecentItem[];
 }

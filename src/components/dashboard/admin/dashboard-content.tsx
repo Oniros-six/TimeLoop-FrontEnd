@@ -23,8 +23,10 @@ export function DashboardContent() {
     useEffect(() => {
         if (dashboardData?.commerceName) {
             localStorage.setItem('commerceName', dashboardData.commerceName);
+            localStorage.setItem('logoUrl', dashboardData.logoUrl
+            );
         }
-    }, [dashboardData?.commerceName]);
+    }, [dashboardData?.commerceName, dashboardData?.logoUrl]);
 
     //TODO Aqui un cacheo no es lo mejor, sino un webhook, o websocket
     useEffect(() => {

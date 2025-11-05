@@ -12,6 +12,7 @@ import { BusinessCategory } from "@/interfaces/Commerce";
 import { BillingTypes, PaymentMethod, type ICommerceConfig } from "@/interfaces/Config";
 import { useCommerceConfigs } from "@/hooks/configs/commerce/useCommerceConfig";
 import { Badge } from "@/components/ui/badge";
+import CommerceConfigLogo from "./CommerceConfigLogo";
 
 interface IConfigProps {
     commerceInfo: ICommerce | null
@@ -208,6 +209,8 @@ export default function CommerceConfig({ commerceConfig, setCommerceConfig, comm
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 px-3 sm:px-6">
+                <CommerceConfigLogo commerceName={commerceInfo?.name} />
+
                 <div className="space-y-2">
                     <Label htmlFor="commerce-name">Nombre del comercio</Label>
                     <Input

@@ -73,6 +73,7 @@ const bottomItems = [
 export function AppSidebar({ view }: { view: string }) {
   const [user,] = useAtom(userAtom);
   const commerceName = localStorage.getItem('commerceName');
+  const logoUrl = localStorage.getItem('logoUrl');
   const HeaderSkeleton = () => (
     <div className="flex items-center gap-2">
       <div className="flex items-center">
@@ -82,12 +83,11 @@ export function AppSidebar({ view }: { view: string }) {
     </div>
   )
 
-  //TODO Traer el logo del comercio en algun llamado
   const Header = () => (
     <div className="flex items-center gap-2">
       <div className="flex items-center justify-center">
         <img
-          src={"/timeloop.png"}
+          src={logoUrl || "/timeloop.png"}
           alt={user?.name || "Usuario"}
           className="h-16 w-16 rounded-full object-cover"
         />
