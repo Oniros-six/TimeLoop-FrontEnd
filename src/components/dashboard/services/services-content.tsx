@@ -89,6 +89,18 @@ export function ServicesContent() {
           onCreateService={handleCreateService}
         />
         <ServicesLoading />
+
+        {/* Modales */}
+        <CreateServiceDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={confirmCreate}
+          isPending={createActions.isCreatePending}
+          errorMessage={createActions.createErrorMessage}
+          onClearError={createActions.clearCreateError}
+          createForm={createActions.createForm}
+          setCreateForm={createActions.setCreateForm}
+        />
       </>
     );
   }
@@ -105,6 +117,18 @@ export function ServicesContent() {
           onCreateService={handleCreateService}
         />
         <ServicesError error={errorServices} onRetry={refetchServices} />
+
+        {/* Modales */}
+        <CreateServiceDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={confirmCreate}
+          isPending={createActions.isCreatePending}
+          errorMessage={createActions.createErrorMessage}
+          onClearError={createActions.clearCreateError}
+          createForm={createActions.createForm}
+          setCreateForm={createActions.setCreateForm}
+        />
       </>
     );
   }
@@ -124,6 +148,18 @@ export function ServicesContent() {
           selectedUser={selectedUser}
           currentUser={currentUser}
           onCreateService={handleCreateService}
+        />
+
+        {/* Modales */}
+        <CreateServiceDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={confirmCreate}
+          isPending={createActions.isCreatePending}
+          errorMessage={createActions.createErrorMessage}
+          onClearError={createActions.clearCreateError}
+          createForm={createActions.createForm}
+          setCreateForm={createActions.setCreateForm}
         />
       </>
     );

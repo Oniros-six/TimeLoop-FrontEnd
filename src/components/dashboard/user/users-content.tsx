@@ -89,6 +89,16 @@ export function UsersContent() {
           usersCount={0}
         />
         <UsersLoading />
+
+        {/* Modales */}
+        <CreateUserDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={handleCreateUser}
+          isPending={actions.isCreatePending}
+          errorMessage={actions.createErrorMessage}
+          onClearError={actions.clearCreateError}
+        />
       </>
     );
   }
@@ -104,6 +114,16 @@ export function UsersContent() {
           usersCount={0}
         />
         <UsersError error={error} onRetry={refetch} />
+
+        {/* Modales */}
+        <CreateUserDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={handleCreateUser}
+          isPending={actions.isCreatePending}
+          errorMessage={actions.createErrorMessage}
+          onClearError={actions.clearCreateError}
+        />
       </>
     );
   }
@@ -121,6 +141,16 @@ export function UsersContent() {
         <UsersEmpty 
           showInactive={showInactive} 
           onCreateUser={dialogs.openCreateDialog} 
+        />
+
+        {/* Modales */}
+        <CreateUserDialog
+          open={dialogs.isCreateDialogOpen}
+          onOpenChange={dialogs.setIsCreateDialogOpen}
+          onConfirm={handleCreateUser}
+          isPending={actions.isCreatePending}
+          errorMessage={actions.createErrorMessage}
+          onClearError={actions.clearCreateError}
         />
       </>
     );
