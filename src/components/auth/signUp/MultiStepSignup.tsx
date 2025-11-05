@@ -194,7 +194,6 @@ export function MultiStepSignup({ plan }: { plan: string }) {
   // Función para enviar datos al backend
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    setSubmitError([])
 
     // Procesar los horarios para enviar al backend
     const processedSchedules = signupData.initialConfig.workingDays.map(day => {
@@ -239,7 +238,6 @@ export function MultiStepSignup({ plan }: { plan: string }) {
       if (response.ok && result.statusCode == 201) {
         window.location.href = '/admin'
       } else {
-        // Mostrar el mensaje específico del backend
         setSubmitError(result.message)
         console.error("Error en el registro:", result)
       }
