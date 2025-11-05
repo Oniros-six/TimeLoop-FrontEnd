@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, User } from "lucide-react"
-import { type RecentItem, BookingStatus, getStatusText } from "@/interfaces/DashboardData"
+import { type RecentItem, getStatusText } from "@/interfaces/DashboardData"
 import { statusConfig } from "@/interfaces/Booking"
 
 
@@ -69,13 +69,7 @@ export function RecentActivityCard({ recent }: props) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{activity.customer.name}</p>
-                  </div>
-                  <div className="text-sm text-muted-foreground truncate">
-                    {
-                      activity.bookingServices.map((b, index) => (
-                        <p key={index}>{b.service.name}</p>
-                      ))
-                    }
+                    <p className="text-sm truncate">{activity.user.name}</p>
                   </div>
                 </div>
 

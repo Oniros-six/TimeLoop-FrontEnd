@@ -32,9 +32,9 @@ export interface DashboardData {
   history: HistoryItem[];
   recentActivity: RecentItem[];
 }
-//TODO Agregar que usuario/s atendera/atendio el servicio
 export interface HistoryItem {
   id: number;
+  user: { name: string };
   bookingId: number;
   customerId: number;
   priceAtBooking: number;
@@ -47,6 +47,7 @@ export interface HistoryItem {
 
 export interface RecentItem {
   id: number;
+  user: { name: string }
   customerId: number;
   timeStart: Date;
   status: BookingStatus;

@@ -1,13 +1,44 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { History } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { History, Clock, User, DollarSign } from "lucide-react"
 
 import type { HistoryItem } from "@/interfaces/DashboardData"
 
 interface props {
   history: HistoryItem[]
 }
+
 export function HistoryCard({ history }: props) {
+  function formatDate(date: Date | string): string {
+    // Asegurar que tenemos un objeto Date válido
+    const activityDate = date instanceof Date ? date : new Date(date)
+
+    // Verificar que la fecha es válida
+    if (isNaN(activityDate.getTime())) {
+      return "Fecha inválida"
+    }
+
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+
+    // Resetear las horas para comparar solo las fechas
+    const activityDateOnly = new Date(activityDate.getFullYear(), activityDate.getMonth(), activityDate.getDate())
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate())
+
+    if (activityDateOnly.getTime() === todayOnly.getTime()) {
+      return "Hoy"
+    } else if (activityDateOnly.getTime() === yesterdayOnly.getTime()) {
+      return "Ayer"
+    } else {
+      return activityDate.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    }
+  }
   return (
     <Card>
       <CardHeader>
@@ -25,67 +56,43 @@ export function HistoryCard({ history }: props) {
         </CardContent> :
 
         <CardContent className="px-2">
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead className="hidden sm:table-cell">Servicio</TableHead>
-                  <TableHead className="table-cell">Fecha</TableHead>
-                  <TableHead>Monto</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {history.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{item.customer.name}</div>
-                        <div className="text-sm text-muted-foreground sm:hidden">
-                          {item.booking.bookingServices.map((b, index) => (
-                            <div key={index}>{b.service.name}</div>
-                          ))}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {item.booking.bookingServices.map((b, index) => (
-                        <div key={index}>{b.service.name}</div>
-                      ))}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {new Date(item.timeStart).toLocaleDateString('es-ES', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })}{' '}
+          <div className="space-y-4">
+            {history.map((item: HistoryItem) => (
+              <div
+                key={item.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg border bg-card"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{item.customer.name}</p>
+                    <p className="text-sm truncate">{item.user.name}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>
                       {new Date(item.timeStart).toLocaleTimeString('es-ES', {
                         hour: '2-digit',
                         minute: '2-digit',
                         hour12: false,
-                      })}
-                    </TableCell>
-                    <TableCell className="table-cell sm:hidden">
-                      <div>
-                        {new Date(item.timeStart).toLocaleDateString('es-ES', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
-                      </div>
-                      <div>
-                        {new Date(item.timeStart).toLocaleTimeString('es-ES', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false,
-                        })}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{item.priceAtBooking}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      })} -
+                    </span>
+                    <span className="inline">
+                      {formatDate(item.timeStart)}
+                    </span>
+                  </div>
+                  <Badge variant="secondary" className="bg-green-600 text-white flex items-center gap-1">
+                    <DollarSign className="h-3 w-3" />
+                    {item.priceAtBooking}
+                  </Badge>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
 
