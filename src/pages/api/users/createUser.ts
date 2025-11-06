@@ -6,6 +6,7 @@ interface CreateUserRequest {
   commerceId: number;
   name: string;
   email: string;
+  phone: string;
   password: string;
   role: UserRole;
 }
@@ -25,11 +26,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Leer body tal cual llega y validarlo mínimamente antes de proxy
     const body: CreateUserRequest = await request.json();
-    const { commerceId, name, email, password, role } = body;
+    const { commerceId, name, email, phone, password, role } = body;
 
-    if (!commerceId || !name || !email || !password || !role) {
+    if (!commerceId || !name || !email || !phone || !password || !role) {
       return new Response(JSON.stringify({
-        error: 'Faltan campos requeridos: commerceId, name, email, password, role'
+        error: 'Faltan campos requeridos: commerceId, name, email, phone, password, role'
       }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
@@ -41,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': 'application/json',
         'Cookie': request.headers.get('cookie') || ''
       },
-      body: JSON.stringify({ commerceId, name, email, password, role })
+      body: JSON.stringify({ commerceId, name, email, phone, password, role })
     });
 
     const result = await backendResponse.json().catch(() => ({}));

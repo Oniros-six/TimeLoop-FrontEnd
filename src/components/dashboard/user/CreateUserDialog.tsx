@@ -14,6 +14,7 @@ interface PropsInterface {
     onConfirm: (userData: {
         name: string;
         email: string;
+        phone: string;
         password: string;
         role: UserRole;
     }) => void;
@@ -26,11 +27,13 @@ export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPend
     const [newUser, setNewUser] = useState({
         name: "",
         email: "",
+        phone: "",
         password: "",
         role: UserRole.EMPLOYEE,
     });
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [liveErrors, setLiveErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -41,6 +44,19 @@ export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPend
             hasLetter: /[a-zA-Z]/.test(password),
             hasSymbol: /[!@#$%^&*(),.?":{}|<>]/.test(password),
         }
+    }
+
+    const validatePhone = (phone: string): string => {
+        if (phone && phone.length > 0) {
+            if (!/^\d+$/.test(phone)) {
+                return "El teléfono solo puede contener números";
+            } else if (!phone.startsWith('09')) {
+                return "El teléfono debe empezar por 09";
+            } else if (phone.length !== 9) {
+                return "El teléfono debe tener exactamente 9 dígitos";
+            }
+        }
+        return "";
     }
 
     const passwordValidation = validatePassword(newUser.password);
@@ -67,6 +83,17 @@ export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPend
             newErrors.email = "Por favor ingresa un email válido";
         } else if ((newUser.email || "").length > 100) {
             newErrors.email = "El email no puede superar 100 caracteres";
+        }
+
+        // Teléfono
+        if (!newUser.phone) {
+            newErrors.phone = "El teléfono es obligatorio";
+        } else if (!/^\d+$/.test(newUser.phone)) {
+            newErrors.phone = "El teléfono solo puede contener números";
+        } else if (!newUser.phone.startsWith('09')) {
+            newErrors.phone = "El teléfono debe empezar por 09";
+        } else if (newUser.phone.length !== 9) {
+            newErrors.phone = "El número de teléfono debe tener exactamente 9 dígitos";
         }
 
         // Password fuerte (≥10, letras, números y símbolo)
@@ -98,6 +125,7 @@ export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPend
             setNewUser({
                 name: "",
                 email: "",
+                phone: "",
                 password: "",
                 role: UserRole.EMPLOYEE,
             });
@@ -149,6 +177,29 @@ export default function CreateUserDialog({ open, onOpenChange, onConfirm, isPend
                         />
                         {errors.email && (
                             <p id="email-error" className="text-sm text-red-600">{errors.email}</p>
+                        )}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="phone">Teléfono</Label>
+                        <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="098765432"
+                            value={newUser.phone}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setNewUser({ ...newUser, phone: value });
+                                // Validación en vivo
+                                const phoneError = validatePhone(value);
+                                setLiveErrors(prev => ({ ...prev, phone: phoneError }));
+                            }}
+                            maxLength={9}
+                            aria-invalid={!!(errors.phone || liveErrors.phone)}
+                            aria-describedby="phone-error"
+                            className={(errors.phone || liveErrors.phone) ? "border-red-500" : ""}
+                        />
+                        {(errors.phone || liveErrors.phone) && (
+                            <p id="phone-error" className="text-sm text-red-600">{errors.phone || liveErrors.phone}</p>
                         )}
                     </div>
                     <div className="grid gap-2">

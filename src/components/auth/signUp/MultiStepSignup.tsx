@@ -13,6 +13,7 @@ export interface SignupData {
   account: {
     ownerName: string
     email: string
+    phone: string
     password: string
     confirmPassword: string
   }
@@ -76,6 +77,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
     account: {
       ownerName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -106,7 +108,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
 
     switch (currentStep) {
       case 0: // Account step
-        const { ownerName, email, password, confirmPassword } = signupData.account
+        const { ownerName, email, phone: ownerPhone, password, confirmPassword } = signupData.account
 
         if (!ownerName.trim()) {
           errors.ownerName = 'El nombre es obligatorio'
@@ -116,6 +118,16 @@ export function MultiStepSignup({ plan }: { plan: string }) {
           errors.email = 'El email es obligatorio'
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           errors.email = 'Por favor ingresa un email válido'
+        }
+
+        if (!ownerPhone) {
+          errors.phone = 'El teléfono es obligatorio'
+        } else if (!/^\d+$/.test(ownerPhone)) {
+          errors.phone = 'El teléfono solo puede contener números'
+        } else if (!ownerPhone.startsWith('09')) {
+          errors.phone = 'El teléfono debe empezar por 09'
+        } else if (ownerPhone.length !== 9) {
+          errors.phone = 'El número de teléfono debe tener exactamente 9 dígitos'
         }
 
         if (!password) {
@@ -132,7 +144,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
         break
 
       case 1: // Business data step
-        const { businessName, businessType, address, phone } = signupData.businessData
+        const { businessName, businessType, address, phone: businessPhone } = signupData.businessData
 
         if (!businessName.trim()) {
           errors.businessName = 'El nombre del comercio es obligatorio'
@@ -146,10 +158,13 @@ export function MultiStepSignup({ plan }: { plan: string }) {
           errors.address = 'La dirección es obligatoria'
         }
 
-        const phoneDigits = phone.replace(/\D/g, '')
-        if (!phone) {
+        if (!businessPhone) {
           errors.phone = 'El teléfono es obligatorio'
-        } else if (phoneDigits.length !== 9) {
+        } else if (!/^\d+$/.test(businessPhone)) {
+          errors.phone = 'El teléfono solo puede contener números'
+        } else if (!businessPhone.startsWith('09')) {
+          errors.phone = 'El teléfono debe empezar por 09'
+        } else if (businessPhone.length !== 9) {
           errors.phone = 'El número de teléfono debe tener exactamente 9 dígitos'
         }
         break
@@ -216,6 +231,7 @@ export function MultiStepSignup({ plan }: { plan: string }) {
     const payload = {
       ownerName: signupData.account.ownerName,
       email: signupData.account.email,
+      ownerPhone: signupData.account.phone,
       password: signupData.account.password,
       name: signupData.businessData.businessName,
       phone: signupData.businessData.phone,

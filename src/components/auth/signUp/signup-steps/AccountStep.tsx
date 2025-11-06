@@ -15,6 +15,7 @@ interface AccountStepProps {
 export function AccountStep({ data, updateData, errors, clearErrors }: AccountStepProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [liveErrors, setLiveErrors] = useState<Record<string, string>>({})
   
   const validatePassword = (password: string) => {
     return {
@@ -25,12 +26,31 @@ export function AccountStep({ data, updateData, errors, clearErrors }: AccountSt
     }
   }
 
+  const validatePhone = (phone: string): string => {
+    if (phone && phone.length > 0) {
+      if (!/^\d+$/.test(phone)) {
+        return "El teléfono solo puede contener números"
+      } else if (!phone.startsWith('09')) {
+        return "El teléfono debe empezar por 09"
+      } else if (phone.length !== 9) {
+        return "El teléfono debe tener exactamente 9 dígitos"
+      }
+    }
+    return ""
+  }
+
   const passwordValidation = validatePassword(data.account.password)
   const allPasswordRequirementsMet = Object.values(passwordValidation).every(Boolean)
   const passwordsMatch = data.account.password === data.account.confirmPassword && data.account.confirmPassword.length > 0
 
   const handleInputChange = (field: string, value: string) => {
     updateData("account", { [field]: value })
+    
+    // Validación en vivo para teléfono
+    if (field === 'phone') {
+      const phoneError = validatePhone(value)
+      setLiveErrors(prev => ({ ...prev, phone: phoneError }))
+    }
     
     // Limpiar error cuando el usuario empiece a escribir
     if (errors[field]) {
@@ -70,6 +90,22 @@ export function AccountStep({ data, updateData, errors, clearErrors }: AccountSt
             className={errors.email ? "border-red-500" : ""}
           />
           {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone">Teléfono</Label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="098765432"
+            value={data.account.phone}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+            maxLength={9}
+            className={(errors.phone || liveErrors.phone) ? "border-red-500" : ""}
+          />
+          {(errors.phone || liveErrors.phone) && (
+            <p className="text-sm text-red-500">{errors.phone || liveErrors.phone}</p>
+          )}
         </div>
 
         <div className="space-y-2">

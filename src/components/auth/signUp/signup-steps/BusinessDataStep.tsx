@@ -22,8 +22,29 @@ const BUSINESS_TYPES = [
 ]
 
 export function BusinessDataStep({ data, updateData, errors, clearErrors }: BusinessDataStepProps) {
+  const [liveErrors, setLiveErrors] = useState<Record<string, string>>({})
+
+  const validatePhone = (phone: string): string => {
+    if (phone && phone.length > 0) {
+      if (!/^\d+$/.test(phone)) {
+        return "El teléfono solo puede contener números"
+      } else if (!phone.startsWith('09')) {
+        return "El teléfono debe empezar por 09"
+      } else if (phone.length !== 9) {
+        return "El teléfono debe tener exactamente 9 dígitos"
+      }
+    }
+    return ""
+  }
+
   const handleInputChange = (field: string, value: string) => {
     updateData("businessData", { [field]: value })
+    
+    // Validación en vivo para teléfono
+    if (field === 'phone') {
+      const phoneError = validatePhone(value)
+      setLiveErrors(prev => ({ ...prev, phone: phoneError }))
+    }
     
     // Limpiar error cuando el usuario empiece a escribir
     if (errors[field]) {
@@ -87,12 +108,16 @@ export function BusinessDataStep({ data, updateData, errors, clearErrors }: Busi
           <Label htmlFor="phone">Teléfono / WhatsApp</Label>
           <Input
             id="phone"
-            placeholder="Ej: 098123456 (9 dígitos)"
+            type="tel"
+            placeholder="098765432"
             value={data.businessData.phone}
             onChange={(e) => handleInputChange("phone", e.target.value)}
-            className={errors.phone ? "border-red-500" : ""}
+            maxLength={9}
+            className={(errors.phone || liveErrors.phone) ? "border-red-500" : ""}
           />
-          {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+          {(errors.phone || liveErrors.phone) && (
+            <p className="text-sm text-red-500">{errors.phone || liveErrors.phone}</p>
+          )}
         </div>
       </div>
     </div>

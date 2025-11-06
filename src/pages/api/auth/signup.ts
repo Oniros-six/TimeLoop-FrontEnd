@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
     })
 
     // Validar campos requeridos
-    const requiredFields = ['ownerName', 'email', 'password', 'name', 'phone', 'address', 'businessCategory', 'schedules', 'billingType']
+    const requiredFields = ['ownerName', 'email', 'ownerPhone', 'password', 'name', 'phone', 'address', 'businessCategory', 'schedules', 'billingType']
     const missingFields = requiredFields.filter(field => !body[field])
     
     if (missingFields.length > 0) {
