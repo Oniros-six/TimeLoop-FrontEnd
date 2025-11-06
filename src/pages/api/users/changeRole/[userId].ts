@@ -39,7 +39,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
 
         let response
         // Enviar al backend para cambiar el rol del usuario
-        response = await fetch(`${backendURL}/user?userId=${userId}`, {
+        response = await fetch(`${backendURL}/user/${userId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
