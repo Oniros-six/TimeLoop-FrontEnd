@@ -16,7 +16,7 @@ export function useUsersGlobal() {
         throw new Error("Commerce ID no disponible");
       }
 
-      const response = await fetch(`/api/users/${currentUser.commerceId}`, {
+      const response = await fetch(`/api/users/byCommerce/${currentUser.commerceId}`, {
         method: "GET",
         credentials: "include",
       });

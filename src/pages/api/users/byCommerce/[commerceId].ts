@@ -11,7 +11,6 @@ export const GET: APIRoute = async ({ request, params }) => {
       headers: Object.fromEntries(request.headers.entries())
     })
 
-    // Obtener URL del backend
     const backendURL = import.meta.env.PUBLIC_BACKEND_URL
 
     if (!backendURL) {
@@ -22,7 +21,6 @@ export const GET: APIRoute = async ({ request, params }) => {
       })
     }
 
-    // Obtener commerceId desde los parámetros de la URL
     const commerceId = params.commerceId
 
     if (!commerceId) {
@@ -33,7 +31,6 @@ export const GET: APIRoute = async ({ request, params }) => {
       })
     }
 
-    // Enviar al backend para obtener datos de usaurios
     const response = await fetch(`${backendURL}/user?commerceId=${commerceId}`, {
       method: 'GET',
       credentials: 'include',
@@ -42,9 +39,9 @@ export const GET: APIRoute = async ({ request, params }) => {
       }
     })
 
-    logger.dev('Backend response:', { 
-      status: response.status, 
-      ok: response.ok 
+    logger.dev('Backend response:', {
+      status: response.status,
+      ok: response.ok
     })
 
     const result = await response.json()
@@ -57,7 +54,7 @@ export const GET: APIRoute = async ({ request, params }) => {
       })
     } else {
       logger.dev('Failed to retrieve users data')
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         error: 'Error al obtener datos de los usuarios',
         usersData: null
       }), {
@@ -68,7 +65,7 @@ export const GET: APIRoute = async ({ request, params }) => {
 
   } catch (error) {
     logger.error('Error en obtención de datos de usuarios:', error)
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: 'Error interno del servidor',
       message: 'Error de conexión. Verifica tu internet e intenta nuevamente.',
       usersData: null
@@ -78,3 +75,4 @@ export const GET: APIRoute = async ({ request, params }) => {
     })
   }
 }
+

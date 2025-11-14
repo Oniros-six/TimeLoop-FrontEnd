@@ -78,6 +78,7 @@ export const GET: APIRoute = async ({ request, params }) => {
     })
   }
 }
+
 //* UPDATE USER INFO
 export const PUT: APIRoute = async ({ request, params }) => {
   try {

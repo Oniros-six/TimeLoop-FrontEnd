@@ -13,7 +13,7 @@ export function useUsers() {
         return [];
       }
 
-      const response = await fetch(`/api/users/${user.commerceId}`, {
+      const response = await fetch(`/api/users/byCommerce/${user.commerceId}`, {
         method: "GET",
         credentials: "include",
       });
