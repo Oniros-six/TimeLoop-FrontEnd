@@ -3,17 +3,18 @@ import { userAtom } from "@/atoms/auth";
 import { useQuery } from "@tanstack/react-query";
 import type { IUser } from "@/interfaces/User";
 
-export function useUsers() {
+export function useUsers(commerceId?: number | null) {
   const [user] = useAtom(userAtom);
+  const targetCommerceId = commerceId ?? user?.commerceId;
 
   const query = useQuery({
-    queryKey: ["users", user?.commerceId], // clave única para el caché
+    queryKey: ["users", targetCommerceId], // clave única para el caché
     queryFn: async (): Promise<IUser[]> => {
-      if (!user?.commerceId) {
+      if (!targetCommerceId) {
         return [];
       }
 
-      const response = await fetch(`/api/users/byCommerce/${user.commerceId}`, {
+      const response = await fetch(`/api/users/byCommerce/${targetCommerceId}`, {
         method: "GET",
         credentials: "include",
       });
@@ -28,7 +29,7 @@ export function useUsers() {
       const data = await response.json();
       return data.data ?? [];
     },
-    enabled: !!user?.commerceId, // no se ejecuta si no hay commerceId
+    enabled: !!targetCommerceId, // no se ejecuta si no hay commerceId
   });
 
   return {
