@@ -12,8 +12,8 @@ interface CustomerInfoFormProps {
 }
 
 export function CustomerInfoForm({ bookingData, setBookingData }: CustomerInfoFormProps) {
-  const [liveErrors, setLiveErrors] = useState<{ customer: { name?: string, email?: string, phone?: string } }>({ 
-    customer: { name: "", email: "", phone: "" } 
+  const [liveErrors, setLiveErrors] = useState<{ customer: { name?: string, email?: string, phone?: string } }>({
+    customer: { name: "", email: "", phone: "" }
   })
 
   const validatePhone = (phone: string): string => {
@@ -62,27 +62,27 @@ export function CustomerInfoForm({ bookingData, setBookingData }: CustomerInfoFo
     // Validación en vivo
     if (field === 'phone') {
       const phoneError = validatePhone(value)
-      setLiveErrors(prev => ({ 
-        ...prev, 
-        customer: { ...prev.customer, phone: phoneError } 
+      setLiveErrors(prev => ({
+        ...prev,
+        customer: { ...prev.customer, phone: phoneError }
       }))
     } else if (field === 'email') {
       const emailError = validateEmail(value)
-      setLiveErrors(prev => ({ 
-        ...prev, 
-        customer: { ...prev.customer, email: emailError } 
+      setLiveErrors(prev => ({
+        ...prev,
+        customer: { ...prev.customer, email: emailError }
       }))
     } else if (field === 'name') {
       const nameError = validateName(value)
-      setLiveErrors(prev => ({ 
-        ...prev, 
-        customer: { ...prev.customer, name: nameError } 
+      setLiveErrors(prev => ({
+        ...prev,
+        customer: { ...prev.customer, name: nameError }
       }))
     }
   }
   useEffect(() => {
     console.log(bookingData)
-   }, [bookingData])
+  }, [bookingData])
 
   return (
     <div className="space-y-6">
@@ -154,10 +154,10 @@ export function CustomerInfoForm({ bookingData, setBookingData }: CustomerInfoFo
       </div>
 
       {/* Información importante */}
-      <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-        <CardContent className="pt-6">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Importante:</strong> Recibirás un correo de confirmación con los detalles de tu reserva. Por favor,
+      <Card className="border-2 border-[#ffd105] ">
+        <CardContent>
+          <p>
+            Recibirás un correo de confirmación con los detalles de tu reserva. Por favor,
             verifica que tu email y teléfono sean correctos.
           </p>
         </CardContent>
