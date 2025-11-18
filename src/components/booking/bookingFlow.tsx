@@ -70,6 +70,12 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
     const nextIndex = currentStepIndex + 1
     if (nextIndex < steps.length) {
       setCurrentStep(steps[nextIndex].id)
+      // Hacer scroll hacia arriba después de que React actualice el DOM
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+      })
     }
   }
 
@@ -88,6 +94,12 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
       }
       
       setCurrentStep(steps[prevIndex].id)
+      // Hacer scroll hacia arriba después de que React actualice el DOM
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+      })
     }
   }
 
@@ -243,7 +255,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
             variant="outline"
             onClick={handlePrevious}
             disabled={currentStep === "staff"}
-            className="gap-2 bg-transparent"
+            className={`gap-2 bg-transparent ${currentStep === "staff" ? "invisible" : ""}`}
           >
             <ChevronLeft className="h-4 w-4" />
             Anterior
@@ -262,10 +274,12 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
               Siguiente
             </Button>
           ) : (
-            <Button onClick={() => (window.location.href = "/")} className="gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Volver al Inicio
-            </Button>
+            <a href={`/${commerce.uniqueName}`}>
+              <Button className="gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Volver al Inicio
+              </Button>
+            </a>
           )}
         </div>
       </div>
