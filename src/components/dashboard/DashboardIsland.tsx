@@ -10,6 +10,7 @@ import ConfigsContent from "./configs/configs-content";
 import { ServicesContent } from "./services/services-content";
 import { UsersContent } from "./user/users-content";
 import { DashboardWrapper } from "./DashboardWrapper";
+import { Proximamente } from "./proximamente/proximamente";
 
 export default function DashboardIsland() {
   const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ export default function DashboardIsland() {
                   <Route path="/servicios" element={<ServicesContent />} />
                   <Route path="/agenda" element={<BookingsContent />} />
                   <Route path="/config" element={<ConfigsContent />} />
+                  <Route path="/proximamente" element={<Proximamente />} />
                 </Routes>
               </div>
             </SidebarInset>

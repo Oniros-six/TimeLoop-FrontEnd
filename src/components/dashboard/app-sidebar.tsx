@@ -26,32 +26,32 @@ const items = [
   },
   {
     title: "Clientes",
-    url: "clientes",
+    url: "proximamente", // TODO: Agregar la ruta de los clientes
     icon: Handshake,
   },
   {
     title: "Agenda",
-    url: "agenda",
+    url: "proximamente", // TODO: Agregar la ruta de la agenda
     icon: Calendar,
   },
   {
     title: "Planilla de trabajo",
-    url: "planilla",
+    url: "proximamente", // TODO: Agregar la ruta de la planilla de trabajo
     icon: CalendarDays,
   },
   {
     title: "Historial",
-    url: "historial",
+    url: "proximamente", // TODO: Agregar la ruta del historial
     icon: Clock,
   },
   {
     title: "Reportes",
-    url: "reporte",
+    url: "proximamente", // TODO: Agregar la ruta de los reportes
     icon: FileText,
   },
   {
     title: "Facturas",
-    url: "facturas",
+    url: "proximamente", // TODO: Agregar la ruta de las facturas
     icon: Receipt,
   },
 ]
