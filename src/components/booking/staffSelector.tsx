@@ -32,14 +32,10 @@ export function StaffSelector({ commerceId, bookingData, setBookingData }: Staff
 
   const skeletonCards = useMemo(() => Array.from({ length: 4 }), [])
 
-  const introText = (
-    <p className="text-muted-foreground">Elige el profesional que te atenderá</p>
-  )
 
   if (loading) {
     return (
       <div className="space-y-6">
-        {introText}
         <div className="grid gap-4 sm:grid-cols-2">
           {skeletonCards.map((_, index) => (
             <Card key={`staff-skeleton-${index}`}>
@@ -71,7 +67,6 @@ export function StaffSelector({ commerceId, bookingData, setBookingData }: Staff
   if (error) {
     return (
       <div className="space-y-6">
-        {introText}
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
           {error}
         </div>
@@ -82,7 +77,6 @@ export function StaffSelector({ commerceId, bookingData, setBookingData }: Staff
   if (staffMembers.length === 0) {
     return (
       <div className="space-y-6">
-        {introText}
         <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
           No hay profesionales disponibles en este momento.
         </div>
@@ -92,22 +86,18 @@ export function StaffSelector({ commerceId, bookingData, setBookingData }: Staff
 
   return (
     <div className="space-y-6">
-      {introText}
-
       <div className="grid gap-4 sm:grid-cols-2">
         {staffMembers.map((staff) => {
           const isSelected = bookingData.staff?.id === staff.id
           return (
             <Card
               key={staff.id}
-              className={`cursor-pointer transition-all ${
-                isSelected ? "border-primary bg-primary/5 shadow-lg" : "hover:shadow-md"
-              }`}
+              className={`cursor-pointer transition-all justify-between  ${isSelected ? "border-primary bg-primary/5 shadow-lg" : "hover:shadow-md"}`}
               onClick={() => handleSelectStaff(staff)}
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex gap-3 flex-1">
+                  <div className="flex gap-3 flex-1 items-center">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
                       {staff.avatar ? (
                         <img
@@ -119,11 +109,8 @@ export function StaffSelector({ commerceId, bookingData, setBookingData }: Staff
                         <UserIcon className="h-5 w-5 text-muted-foreground" />
                       )}
                     </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-base">{staff.name}</CardTitle>
-                    </div>
+                    <CardTitle className="text-base">{staff.name}</CardTitle>
                   </div>
-                  {isSelected && <Badge>Seleccionado</Badge>}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
