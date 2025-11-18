@@ -1,7 +1,6 @@
 import { useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Clock, DollarSign, Plus, X } from "lucide-react"
 import type { IService } from "@/interfaces/Service"
@@ -39,8 +38,7 @@ export function ServiceSelector({ bookingData, setBookingData }: ServiceSelector
 
   const introText = (
     <p className="text-muted-foreground">
-      Selecciona uno o más servicios.{" "}
-      {bookingData.services.length > 0 && `Tienes ${bookingData.services.length} servicio(s) seleccionado(s)`}
+      Puedes seleccionar más de un servicio.
     </p>
   )
 
@@ -92,40 +90,45 @@ export function ServiceSelector({ bookingData, setBookingData }: ServiceSelector
     <div className="space-y-6">
       {introText}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid p-0 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {services.map((service) => {
-          const isSelected = bookingData.services.some((s) => s.id === service.id)
+          const isSelected = bookingData.services.some((s: any) => s.id === service.id)
           return (
             <Card
               key={service.id}
-              className={`cursor-pointer transition-all ${
-                isSelected ? "border-primary bg-primary/5 shadow-lg" : "hover:shadow-md"
-              }`}
+              className={`cursor-pointer transition-all gap-1 py-3 ${isSelected ? "border-primary bg-primary/5" : "hover:border-primary/50"
+                }`}
               onClick={() => handleSelectService(service)}
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-base">{service.name}</CardTitle>
-                  {isSelected && <Badge>Seleccionado</Badge>}
-                </div>
+              <CardHeader>
+                <CardTitle>{service.name}</CardTitle>
+                <CardDescription className="line-clamp-2 my-2 min-h-10">
+                  {service.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {service.description || "Sin descripción disponible"}
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="h-4 w-4" />
-                    <span className="font-semibold">${service.price}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{service.durationMinutes} min</span>
-                  </div>
+
+              <CardContent className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm">
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-semibold">{
+                    service.price.toLocaleString("es-UY", {
+                      style: "currency",
+                      currency: "UYU",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0
+                    })
+                  }</span>
                 </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>{service.durationMinutes} minutos</span>
+                </div>
+              </CardContent>
+              
+              <CardFooter className="pt-2">
                 <Button
                   size="sm"
-                  className="w-full"
+                  className="w-full h-8 text-xs"
                   variant={isSelected ? "default" : "outline"}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -134,21 +137,21 @@ export function ServiceSelector({ bookingData, setBookingData }: ServiceSelector
                 >
                   {isSelected ? (
                     <>
-                      <X className="h-4 w-4 mr-2" />
+                      <X className="h-3 w-3 mr-1" />
                       Deseleccionar
                     </>
                   ) : (
                     <>
-                      <Plus className="h-4 w-4 mr-2" />
+                      <Plus className="h-3 w-3 mr-1" />
                       Seleccionar
                     </>
                   )}
                 </Button>
-              </CardContent>
+              </CardFooter>
             </Card>
           )
         })}
       </div>
-    </div>
+    </div >
   )
 }
