@@ -76,6 +76,17 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
   const handlePrevious = () => {
     const prevIndex = currentStepIndex - 1
     if (prevIndex >= 0) {
+      // Resetear el contenido del paso actual y los pasos siguientes
+      const currentStepId = currentStep
+      
+      if (currentStepId === "customer") {
+        setBookingData(prev => ({ ...prev, customer: null }))
+      } else if (currentStepId === "datetime") {
+        setBookingData(prev => ({ ...prev, date: null, time: "", customer: null }))
+      } else if (currentStepId === "services") {
+        setBookingData(prev => ({ ...prev, services: [], date: null, time: "", customer: null }))
+      }
+      
       setCurrentStep(steps[prevIndex].id)
     }
   }
