@@ -10,8 +10,6 @@ import { Check, ChevronLeft, CheckCircle, DollarSign } from "lucide-react"
 import type { IService } from "@/interfaces/Service"
 import type { IUser } from "@/interfaces/User";
 import type { ICustomer } from "@/interfaces/Customer";
-import type { ICommerce } from "@/interfaces/Commerce"
-import { useCommerce } from "@/hooks/commerce/useCommerce"
 import { Skeleton } from "../ui/skeleton"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useCommerceName } from "@/hooks/commerce/useCommerceName"

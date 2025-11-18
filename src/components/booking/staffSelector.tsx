@@ -1,11 +1,9 @@
 import { useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { User as UserIcon, Mail, Phone } from "lucide-react"
+import { User as UserIcon } from "lucide-react"
 import type { IUser } from "@/interfaces/User"
-import { UserRole } from "@/interfaces/User"
 import type { BookingData } from "./bookingFlow"
 import { useUsers } from "@/hooks/users/useUsers"
 
