@@ -12,6 +12,7 @@ export enum BusinessCategory {
 
 export interface ICommerce {
     id: number
+    uniqueName: string
     logo: string
     name: string
     email: string

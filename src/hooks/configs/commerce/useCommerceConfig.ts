@@ -3,17 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import type { ICommerceConfig } from "@/interfaces/Config";
 import { commerceAtom } from "@/atoms/commerce";
 
-export function useCommerceConfigs() {
+export function useCommerceConfigs(commerceId?: string | number) {
   const [commerce] = useAtom(commerceAtom);
   
+  // Usar el commerceId proporcionado o el del atom
+  const finalCommerceId = commerceId ?? commerce?.id;
+  
   const query = useQuery({
-    queryKey: ["commerce", commerce?.id],
+    queryKey: ["commerce", finalCommerceId],
     queryFn: async (): Promise<ICommerceConfig> => {
-      if (!commerce?.id) {
+      if (!finalCommerceId) {
         throw new Error("Commerce ID no disponible");
       }
 
-      const response = await fetch(`/api/config/commerce/${commerce.id}`, {
+      const response = await fetch(`/api/config/commerce/${finalCommerceId}`, {
         method: "GET",
         credentials: "include",
       });
@@ -28,7 +31,7 @@ export function useCommerceConfigs() {
       const data = await response.json();
       return data.data;
     },
-    enabled: !!commerce?.id, // Solo fetch si hay commerce ID
+    enabled: !!finalCommerceId, // Solo fetch si hay commerce ID
     staleTime: 5 * 60 * 1000, // 5 minutos de cache
     retry: 2,
   });

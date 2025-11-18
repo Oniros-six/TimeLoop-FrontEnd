@@ -2,13 +2,12 @@
 import Layout from "@/layouts/Layout.astro"
 import { BookingFlow } from "@/components/booking/bookingFlow"
 
-const commerceId = Number(Astro.params.commerceId)
+const commerceName = Astro.params.name
 
-if (!commerceId || isNaN(commerceId)) {
+if (!commerceName) {
   return Astro.redirect("/404")
 }
 ---
 <Layout>
-    <BookingFlow commerceId={commerceId} client:load/>
+    <BookingFlow commerceName={commerceName} client:load />
 </Layout>
-
