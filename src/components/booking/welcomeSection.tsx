@@ -7,6 +7,8 @@ import { useCommerceConfigs } from "@/hooks/configs/commerce/useCommerceConfig";
 function WelcomeContent({ commerceName }: { commerceName: string }) {
   const { commerce, loading, error } = useCommerceName(commerceName);
   const {commerceConfig} = useCommerceConfigs(commerce?.id);
+  const commerceLogo = commerce?.logo === "" ? "https://res.cloudinary.com/dsnt2xrb9/image/upload/v1759200427/timeloop/Timeloop_logo.png" : commerce?.logo;
+  
   return (
     <>
       {loading ? (
@@ -25,7 +27,7 @@ function WelcomeContent({ commerceName }: { commerceName: string }) {
       ) : commerce ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-8 mt-20">
           <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-3xl font-bold text-white">
-            <img src={commerce.logo} alt={commerce.name} width={80} height={80} />
+            <img src={commerceLogo} alt={commerce.name} width={80} height={80} />
           </div>
 
           <h1 className="text-4xl font-bold text-center">{commerce.name}</h1>
