@@ -13,6 +13,7 @@ import type { ICustomer } from "@/interfaces/Customer";
 import { Skeleton } from "../ui/skeleton"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useCommerceName } from "@/hooks/commerce/useCommerceName"
+import type { ICommerce } from "@/interfaces/Commerce"
 
 type Step = "staff" | "services" | "datetime" | "customer" | "confirmation"
 
@@ -36,18 +37,18 @@ const steps: { id: Step; label: string; description: string }[] = [
 
 function formatDuration(minutes: number): string {
   if (minutes === 0) return "0 minutos"
-  
+
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
-  
+
   if (hours === 0) {
     return `${remainingMinutes} minutos`
   }
-  
+
   if (remainingMinutes === 0) {
     return `${hours} hs`
   }
-  
+
   return `${hours} hs y ${remainingMinutes} minutos`
 }
 
@@ -85,7 +86,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
     if (prevIndex >= 0) {
       // Resetear el contenido del paso actual y los pasos siguientes
       const currentStepId = currentStep
-      
+
       if (currentStepId === "customer") {
         setBookingData(prev => ({ ...prev, customer: null }))
       } else if (currentStepId === "datetime") {
@@ -93,7 +94,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
       } else if (currentStepId === "services") {
         setBookingData(prev => ({ ...prev, services: [], date: null, time: "", customer: null }))
       }
-      
+
       setCurrentStep(steps[prevIndex].id)
       // Hacer scroll hacia arriba después de que React actualice el DOM
       requestAnimationFrame(() => {
@@ -128,7 +129,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
   }
 
   return (
-      <div className="mx-auto max-w-4xl xl:max-w-6xl mt-20 md:mt-30">
+      <div className="mx-auto max-w-4xl xl:max-w-7xl mt-20 md:mt-30">
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold mb-2">Reserva tu Servicio</h1>
@@ -177,7 +178,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
               {currentStep === "datetime" && <DatetimeSelector bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "customer" && <CustomerInfoForm bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "confirmation" && (
-                <ConfirmationStep bookingData={bookingData} totalPrice={totalPrice} totalDuration={totalDuration} />
+                <ConfirmationStep commerce={commerce} bookingData={bookingData} totalPrice={totalPrice} totalDuration={totalDuration} />
               )}
             </CardContent>
           </Card>
@@ -291,10 +292,12 @@ function ConfirmationStep({
   bookingData,
   totalPrice,
   totalDuration,
+  commerce,
 }: {
   bookingData: BookingData
   totalPrice: number
   totalDuration: number
+  commerce: ICommerce
 }) {
   return (
     <div className="space-y-6">
@@ -310,25 +313,8 @@ function ConfirmationStep({
         </div>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Servicios</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {bookingData.services.map((service) => (
-              <div key={service.id} className="flex justify-between text-sm">
-                <span>{service.name}</span>
-                <span className="font-medium">${service.price.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-            ))}
-            <div className="border-t pt-2 flex justify-between font-semibold">
-              <span>Total Servicios:</span>
-              <span>${totalPrice.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/*//* Detalles de la Cita */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Detalles de la Cita</CardTitle>
@@ -350,10 +336,32 @@ function ConfirmationStep({
               <p className="text-muted-foreground">Duración</p>
               <p className="font-medium">{formatDuration(totalDuration)}</p>
             </div>
+            <div>
+              <p className="text-muted-foreground">Nota</p>
+              <p className="font-medium">{bookingData.note}</p>
+            </div>
           </CardContent>
         </Card>
-      </div>
+        {/*//* Servicios */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Servicios</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {bookingData.services.map((service) => (
+              <div key={service.id} className="flex justify-between text-sm">
+                <span>{service.name}</span>
+                <span className="font-medium">${service.price.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+            ))}
+            <div className="border-t pt-2 flex justify-between font-semibold">
+              <span>Total Servicios:</span>
+              <span>${totalPrice.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+          </CardContent>
+        </Card>
 
+        {/*//* Información del Cliente */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Información del Cliente</CardTitle>
@@ -373,6 +381,33 @@ function ConfirmationStep({
           </div>
         </CardContent>
       </Card>
+
+        {/*//* Información del Comercio */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Información del Comercio</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div>
+              <p className="text-muted-foreground">Nombre</p>
+              <p className="font-medium">{commerce?.name}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Email</p>
+              <p className="font-medium">{commerce?.email}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Teléfono</p>
+              <p className="font-medium">{commerce?.phone}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Dirección</p>
+              <p className="font-medium">{commerce?.address}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
     </div>
   )
 }
