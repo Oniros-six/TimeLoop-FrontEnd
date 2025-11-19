@@ -23,6 +23,7 @@ export interface BookingData {
   customer: ICustomer | null
   date: Date | null
   time: string
+  note?: string
 }
 
 const steps: { id: Step; label: string; description: string }[] = [

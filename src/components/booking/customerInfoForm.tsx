@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User, Mail, Phone } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { User, Mail, Phone, FileText } from "lucide-react"
 import type { BookingData } from "./bookingFlow"
 import type { ICustomer } from "@/interfaces/Customer"
 
@@ -49,6 +50,14 @@ export function CustomerInfoForm({ bookingData, setBookingData }: CustomerInfoFo
   }
 
   const handleChange = (field: string, value: string) => {
+    if (field === 'note') {
+      setBookingData({
+        ...bookingData,
+        note: value,
+      })
+      return
+    }
+
     const currentCustomer = bookingData.customer || { name: "", email: "", phone: "" }
     setBookingData({
       ...bookingData,
@@ -150,6 +159,24 @@ export function CustomerInfoForm({ bookingData, setBookingData }: CustomerInfoFo
               <p className="text-sm text-red-500">{liveErrors.customer?.phone}</p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Nota */}
+      <div className="sm:col-span-2">
+        <div className="space-y-2">
+          <Label htmlFor="note" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Nota (Opcional)
+          </Label>
+          <Textarea
+            id="note"
+            placeholder="Agrega alguna nota o comentario sobre tu reserva..."
+            value={bookingData.note || ""}
+            onChange={(e) => handleChange("note", e.target.value)}
+            maxLength={500}
+            rows={5}
+          />
         </div>
       </div>
 
