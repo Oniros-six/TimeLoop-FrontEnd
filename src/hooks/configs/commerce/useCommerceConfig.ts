@@ -32,7 +32,6 @@ export function useCommerceConfigs(commerceId?: string | number) {
       return data.data;
     },
     enabled: !!finalCommerceId, // Solo fetch si hay commerce ID
-    staleTime: 5 * 60 * 1000, // 5 minutos de cache
     retry: 2,
   });
 

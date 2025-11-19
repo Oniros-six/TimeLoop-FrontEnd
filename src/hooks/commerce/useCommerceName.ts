@@ -19,8 +19,7 @@ export function useCommerceName(commerceName: string) {
       const data = await response.json();
       return data.data || data;
     },
-    enabled: !!commerceName, // Solo fetch si no está cacheado o es diferente
-    staleTime: 5 * 60 * 1000, // 5 minutos de cache
+    enabled: !!commerceName,
     retry: 2,
   });
 
