@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro"
+import WelcomeLayout from "@/layouts/WelcomeLayout.astro"
 import WelcomeSection from "@/components/booking/welcomeSection"
 
 const commerceName = Astro.params.name
@@ -8,7 +8,7 @@ if (!commerceName) {
   return Astro.redirect("/404")
 }
 ---
-<Layout>
+<WelcomeLayout>
   <WelcomeSection commerceName={commerceName} client:load/>
-</Layout>
+</WelcomeLayout>
 

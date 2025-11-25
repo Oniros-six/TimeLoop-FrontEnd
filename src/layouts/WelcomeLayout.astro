@@ -1,0 +1,33 @@
+---
+// Import global de estilos
+import "../styles/global.css";
+import Footer from "@/components/landingPage/footer/Footer";
+import Navbar from "@/components/landingPage/navbar/Navbar";
+import Analytics from '@vercel/analytics/astro'
+---
+
+<!doctype html>
+<html lang="es" class="dark" style="color-scheme: dark;">
+  <head>
+    <!-- FAVICONS -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="TimeLoop" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>TimeLoop</title>
+  </head>
+  <body class="flex flex-col bg-background">
+    <!-- //TODO Agregar navbar con logo de timeloop y link de inicio de sesion -->
+    <main class="p-2">
+      <slot/>
+    </main>
+    <!-- //TODO: Agregar footer con redes sociales del negocio -->
+    <Analytics/>
+  </body>
+</html>
