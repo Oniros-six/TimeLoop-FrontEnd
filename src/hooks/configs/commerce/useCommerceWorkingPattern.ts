@@ -3,17 +3,20 @@ import { useQuery } from "@tanstack/react-query";
 import { commerceAtom } from "@/atoms/commerce";
 import type { IWorkingPattern } from "@/interfaces/WorkingPattern";
 
-export function useCommerceWorkingPattern() {
+export function useCommerceWorkingPattern(commerceId?: string | number) {
     const [commerce] = useAtom(commerceAtom);
+    
+    // Usar el commerceId proporcionado o el del atom
+    const finalCommerceId = commerceId ?? commerce?.id;
   
   const query = useQuery({
-    queryKey: ["commerceWP", commerce?.id],
-    queryFn: async (): Promise<IWorkingPattern> => {
-      if (!commerce?.id) {
+    queryKey: ["commerceWP", finalCommerceId],
+    queryFn: async (): Promise<IWorkingPattern[]> => {
+      if (!finalCommerceId) {
         throw new Error("Commerce ID no disponible");
       }
 
-      const response = await fetch(`/api/config/commerce/WP/${commerce.id}`, {
+      const response = await fetch(`/api/config/commerce/WP/${finalCommerceId}`, {
         method: "GET",
         credentials: "include",
       });
@@ -28,7 +31,7 @@ export function useCommerceWorkingPattern() {
       const data = await response.json();
       return data.data;
     },
-    enabled: !!commerce?.id, // Solo fetch si hay commerce ID
+    enabled: !!finalCommerceId, // Solo fetch si hay commerce ID
     staleTime: 5 * 60 * 1000, // 5 minutos de cache
     retry: 2,
   });
