@@ -8,7 +8,7 @@ export default function PricingSection() {
     {
       name: "Gratis",
       type: "free",
-      subtitle: "Ideal para negocios que recien inician",
+      subtitle: "Hasta un maximo de 40 reservas mensuales",
       price: "$0",
       period: "/mes",
       features: [
@@ -27,9 +27,9 @@ export default function PricingSection() {
     {
       name: "Tarifa variable",
       type: "flexible",
-      subtitle: "Ideal para cualquier negocio, sin importar el tamaño",
+      subtitle: "Sin costos fijos. Solo una comisión del 1% por cada cita paga",
       price: "1%",
-      period: "de tu facturación",
+      period: "por venta procesada",
       features: [
         "Agenda online",
         "Gestión de clientes y citas",

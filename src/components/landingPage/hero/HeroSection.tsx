@@ -45,7 +45,7 @@ export default function HeroSection() {
     <section id="home" className="flex flex-col justify-center bg-background px-4 sm:px-6 lg:px-8 mt-20 max-w-6xl mx-auto text-center">
       <Badge variant="secondary" className="mb-8 animate-fade-in-up px-4 py-2 self-center">
         <Sparkles className="w-4 h-4 mr-2" />
-        Pre-lanzamiento exclusivo
+        Lanzamiento en febrero 2026
       </Badge>
 
       {/* Main Heading */}
@@ -57,10 +57,6 @@ export default function HeroSection() {
       {/* Subheading */}
       <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 max-w-3xl mx-auto leading-relaxed text-pretty">
         TimeLoop automatiza tu agenda, envía recordatorios por WhatsApp y email, y llena los huecos de tu calendario sin esfuerzo
-      </p>
-
-      <p className="text-base sm:text-lg text-primary/80 mb-8 font-medium animate-fade-in-up animation-delay-500">
-        No te pierdas los beneficios exclusivos de pre-lanzamiento
       </p>
 
       {/* CTA Button */}
@@ -85,7 +81,7 @@ export default function HeroSection() {
                 className="h-12 px-8 text-lg font-semibold bg-primary hover:bg-secondary transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading || !email}
               >
-                {isLoading ? "Enviando..." : "Reservar mi cupo!"}
+                {isLoading ? "Enviando..." : "Quiero mas informacion!"}
               </Button>
             </form>
 
@@ -111,7 +107,7 @@ export default function HeroSection() {
         </div>
       )}
 
-      <div className="mt-16 grid grid-cols-1 sm:grid-cols-4 gap-6 mx-auto animate-fade-in-up animation-delay-800">
+      <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 mx-auto animate-fade-in-up animation-delay-800">
         <Card className="border-0 bg-card/50 hover:bg-card/80 transition-colors">
           <CardContent className="pt-6 text-center">
             <Clock className="w-8 h-8 text-primary mx-auto mb-3" />
@@ -133,14 +129,6 @@ export default function HeroSection() {
             <TrendingUp className="w-8 h-8 text-primary mx-auto mb-3" />
             <div className="text-lg font-semibold text-foreground mb-2">Aumenta tus Clientes</div>
             <div className="text-sm text-muted-foreground">Los clientes pueden agendarse en cualquier momento del día, sin tener que esperar.</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-card/50 hover:bg-card/80 transition-colors">
-          <CardContent className="pt-6 text-center">
-            <Gift className="w-8 h-8 text-primary mx-auto mb-3" />
-            <div className="text-lg font-semibold text-foreground mb-2">Beneficios Exclusivos</div>
-            <div className="text-sm text-muted-foreground">Beneficios exclusivos por registro pre-lanzamiento.</div>
           </CardContent>
         </Card>
       </div>
