@@ -175,7 +175,7 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
             <CardContent className="px-3 lg:px-6">
               {currentStep === "staff" && <StaffSelector commerceId={commerce.id} bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "services" && <ServiceSelector bookingData={bookingData} setBookingData={setBookingData} />}
-              {currentStep === "datetime" && <DatetimeSelector bookingData={bookingData} setBookingData={setBookingData} />}
+              {currentStep === "datetime" && <DatetimeSelector commerceId={commerce.id} bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "customer" && <CustomerInfoForm bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "confirmation" && (
                 <ConfirmationStep commerce={commerce} bookingData={bookingData} totalPrice={totalPrice} totalDuration={totalDuration} />
