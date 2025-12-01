@@ -120,8 +120,8 @@ export default function CreateServiceDialog({
                                 type="number"
                                 value={createForm.durationMinutes || ''}
                                 onChange={(e) => setCreateForm({ ...createForm, durationMinutes: Number(e.target.value) })}
-                                placeholder="10"
-                                min="10"
+                                placeholder="15"
+                                min="15"
                                 required
                             />
                         </div>
