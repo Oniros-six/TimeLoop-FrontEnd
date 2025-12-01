@@ -1,8 +1,8 @@
 ---
 // Import global de estilos
 import "../styles/global.css";
-import Footer from "@/components/landingPage/footer/Footer";
-import Navbar from "@/components/landingPage/navbar/Navbar";
+import BookingFooter from "@/components/landingPage/footer/BookingFooter";
+import BookingNavbar from "@/components/landingPage/navbar/BookingNavbar";
 import Analytics from '@vercel/analytics/astro'
 ---
 
@@ -23,11 +23,11 @@ import Analytics from '@vercel/analytics/astro'
     <title>TimeLoop</title>
   </head>
   <body class="flex flex-col bg-background">
-    <!-- //TODO Agregar navbar con logo de timeloop y link de inicio de sesion -->
+    <BookingNavbar client:load/>
     <main class="p-2">
       <slot/>
     </main>
-    <!-- //TODO: Agregar footer con redes sociales del negocio -->
+    <BookingFooter client:load/>
     <Analytics/>
   </body>
 </html>

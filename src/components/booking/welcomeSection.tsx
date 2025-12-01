@@ -6,11 +6,11 @@ import { useCommerceConfigs } from "@/hooks/configs/commerce/useCommerceConfig";
 import { useCommerceWorkingPattern } from "@/hooks/configs/commerce/useCommerceWorkingPattern";
 import { DAY_NAMES_SPANISH } from "@/components/dashboard/configs/working-pattern/constants";
 import { AvailabilityType, WeekDays } from "@/interfaces/WorkingPattern";
-import { Clock } from "lucide-react";
+import { Clock, Facebook, Instagram, Phone } from "lucide-react";
 
 function WelcomeContent({ commerceName }: { commerceName: string }) {
   const { commerce, loading, error } = useCommerceName(commerceName);
-  const {commerceConfig} = useCommerceConfigs(commerce?.id);
+  const { commerceConfig } = useCommerceConfigs(commerce?.id);
   const { commerceWorkingPattern, loading: loadingHours } = useCommerceWorkingPattern(commerce?.id);
   const commerceLogo = commerce?.logo === "" ? "https://res.cloudinary.com/dsnt2xrb9/image/upload/v1759200427/timeloop/Timeloop_logo.png" : commerce?.logo;
 
@@ -20,18 +20,18 @@ function WelcomeContent({ commerceName }: { commerceName: string }) {
     }
 
     const parts: string[] = [];
-    
+
     if (pattern.morningStart && pattern.morningEnd) {
       parts.push(`${pattern.morningStart} - ${pattern.morningEnd}`);
     }
-    
+
     if (pattern.afternoonStart && pattern.afternoonEnd) {
       parts.push(`${pattern.afternoonStart} - ${pattern.afternoonEnd}`);
     }
-    
+
     return parts.join(" y ") || "Cerrado";
   };
-  
+
   return (
     <>
       {/*//* === Estado de carga === */}
@@ -49,13 +49,45 @@ function WelcomeContent({ commerceName }: { commerceName: string }) {
           </div>
         </div>
       ) : commerce ? (
-        <div className="flex flex-col items-center justify-center py-12 space-y-8 mt-20">
+
+        <div className="flex flex-col items-center justify-center py-12 mt-20">
           {/*//* === Logo y nombre del comercio === */}
+          <h1 className="text-4xl font-bold text-center mb-4">{commerce.name}</h1>
+
           <div className="w-30 md:w-35 lg:w-40 h-30 md:h-35 lg:h-40 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-3xl font-bold text-white">
             <img src={commerceLogo} alt={commerce.name} className="rounded-lg" />
           </div>
 
-          <h1 className="text-4xl font-bold text-center">{commerce.name}</h1>
+          {/* Social Media */}
+          <div className="space-y-4 mt-4 mb-8">
+            <div className="flex gap-3">
+              <a
+                // target="_blank" rel="noopener noreferrer"
+                href="#"
+                className="p-2 rounded-lg bg-card hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-105"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                // target="_blank" rel="noopener noreferrer"
+                href="#"
+                className="p-2 rounded-lg bg-card hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-105"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                // target="_blank" rel="noopener noreferrer"
+                href="#"
+                className="p-2 rounded-lg bg-card hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-105"
+                aria-label="Teléfono"
+              >
+                <Phone className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
 
           {/*//* === Mensaje de bienvenida === */}
           <p className="text-lg text-muted-foreground text-center max-w-md">
@@ -72,12 +104,12 @@ function WelcomeContent({ commerceName }: { commerceName: string }) {
               <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                 {(() => {
                   const weekOrder: WeekDays[] = [WeekDays.MONDAY, WeekDays.TUESDAY, WeekDays.WEDNESDAY, WeekDays.THURSDAY, WeekDays.FRIDAY, WeekDays.SATURDAY, WeekDays.SUNDAY];
-                  
+
                   // Crear un mapa de patrones por día para búsqueda rápida
                   const patternsMap = new Map(
                     commerceWorkingPattern.map(pattern => [pattern.weekday, pattern])
                   );
-                  
+
                   // Crear un array con todos los días de la semana, usando los patrones existentes o creando uno "cerrado"
                   const allDays = weekOrder.map(weekday => {
                     const pattern = patternsMap.get(weekday);
@@ -94,7 +126,7 @@ function WelcomeContent({ commerceName }: { commerceName: string }) {
                       afternoonEnd: null
                     };
                   });
-                  
+
                   return allDays.map((pattern) => (
                     <div key={pattern.weekday} className="flex justify-between items-center text-sm">
                       <span className="font-medium">{DAY_NAMES_SPANISH[pattern.weekday]}:</span>
