@@ -28,10 +28,10 @@ export interface BookingData {
 }
 
 const steps: { id: Step; label: string; description: string }[] = [
+  { id: "customer", label: "Tus Datos", description: "Información personal" },
   { id: "staff", label: "Profesional", description: "Elige quién te atenderá" },
   { id: "services", label: "Servicios", description: "Selecciona los servicios" },
   { id: "datetime", label: "Fecha y Hora", description: "Selecciona disponibilidad" },
-  { id: "customer", label: "Tus Datos", description: "Información personal" },
   { id: "confirmation", label: "Confirmación", description: "Resumen" },
 ]
 
@@ -55,7 +55,7 @@ function formatDuration(minutes: number): string {
 function BookingFlowContent({ commerceName }: { commerceName: string }) {
   const { commerce, loading, error } = useCommerceName(commerceName)
 
-  const [currentStep, setCurrentStep] = useState<Step>("staff")
+  const [currentStep, setCurrentStep] = useState<Step>("customer")
   //TODO Estos datos son suficientes para empezar pero puede que se le agreguen mas
   const [bookingData, setBookingData] = useState<BookingData>({
     services: [],
@@ -87,12 +87,12 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
       // Resetear el contenido del paso actual y los pasos siguientes
       const currentStepId = currentStep
 
-      if (currentStepId === "customer") {
-        setBookingData(prev => ({ ...prev, customer: null }))
-      } else if (currentStepId === "datetime") {
-        setBookingData(prev => ({ ...prev, date: null, time: "", customer: null }))
+      if (currentStepId === "datetime") {
+        setBookingData(prev => ({ ...prev, date: null, time: "" }))
       } else if (currentStepId === "services") {
-        setBookingData(prev => ({ ...prev, services: [], date: null, time: "", customer: null }))
+        setBookingData(prev => ({ ...prev, services: [], date: null, time: "" }))
+      } else if (currentStepId === "staff") {
+        setBookingData(prev => ({ ...prev, staff: null, services: [], date: null, time: "" }))
       }
 
       setCurrentStep(steps[prevIndex].id)
@@ -173,10 +173,10 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 lg:px-6">
+              {currentStep === "customer" && <CustomerInfoForm bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "staff" && <StaffSelector commerceId={commerce.id} bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "services" && <ServiceSelector bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "datetime" && <DatetimeSelector commerceId={commerce.id} bookingData={bookingData} setBookingData={setBookingData} />}
-              {currentStep === "customer" && <CustomerInfoForm bookingData={bookingData} setBookingData={setBookingData} />}
               {currentStep === "confirmation" && (
                 <ConfirmationStep commerce={commerce} bookingData={bookingData} totalPrice={totalPrice} totalDuration={totalDuration} />
               )}
@@ -189,6 +189,37 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
               <CardTitle className="text-lg">Resumen de tu Reserva</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              {/*//* Datos del Cliente */}
+              {bookingData.customer?.name && (
+                <div>
+                  <span className="font-medium">Tus Datos</span>
+                  <ul className="text-sm space-y-1">
+                    <li>
+                      <div className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white"></span>
+                        {bookingData.customer?.name}
+                      </div>
+                    </li>
+                    {bookingData.customer?.email && (
+                      <li>
+                        <div className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white"></span>
+                          {bookingData.customer?.email}
+                        </div>
+                      </li>
+                    )}
+                    {bookingData.customer?.phone && (
+                      <li>
+                        <div className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-white"></span>
+                          {bookingData.customer?.phone}
+                        </div>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
               {/*//* Profesional */}
               {bookingData.staff?.name && (
                 <div>
@@ -256,8 +287,8 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
           <Button
             variant="outline"
             onClick={handlePrevious}
-            disabled={currentStep === "staff"}
-            className={`gap-2 bg-transparent ${currentStep === "staff" ? "invisible" : ""}`}
+            disabled={currentStep === "customer"}
+            className={`gap-2 bg-transparent ${currentStep === "customer" ? "invisible" : ""}`}
           >
             <ChevronLeft className="h-4 w-4" />
             Anterior
@@ -267,10 +298,10 @@ function BookingFlowContent({ commerceName }: { commerceName: string }) {
             <Button
               onClick={handleNext}
               disabled={
-                (currentStep === "services" && bookingData.services.length === 0) ||
+                (currentStep === "customer" && (!bookingData.customer?.name || !bookingData.customer?.email || !bookingData.customer?.phone)) ||
                 (currentStep === "staff" && !bookingData.staff?.id) ||
-                (currentStep === "datetime" && (!bookingData.date || !bookingData.time)) ||
-                (currentStep === "customer" && (!bookingData.customer?.name || !bookingData.customer?.email || !bookingData.customer?.phone))
+                (currentStep === "services" && bookingData.services.length === 0) ||
+                (currentStep === "datetime" && (!bookingData.date || !bookingData.time))
               }
             >
               Siguiente
