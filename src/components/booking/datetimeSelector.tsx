@@ -3,8 +3,9 @@
 // ============================================================================
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock } from "lucide-react"
+import { Calendar, Clock, Wifi, WifiOff } from "lucide-react"
 import { useCommerceWorkingPattern } from "@/hooks/configs/commerce/useCommerceWorkingPattern"
+import { useBookingAvailability } from "@/hooks/bookings/useBookingAvailability"
 import { WeekDays, AvailabilityType } from "@/interfaces/WorkingPattern"
 
 // ============================================================================
@@ -77,29 +78,6 @@ const generateAvailableDates = (workingPattern?: Array<{ weekday: WeekDays; avai
   return dates
 }
 
-// ============================================================================
-// CONSTANTES
-// ============================================================================
-
-// Horarios disponibles de 9:00 a 18:00
-const availableTimes = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
-]
 
 // ============================================================================
 // COMPONENTE PRINCIPAL
@@ -117,6 +95,26 @@ export function DatetimeSelector({ bookingData, setBookingData, commerceId }: Da
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(bookingData.date)
 
+  // Memorizar array de IDs de servicios para evitar recrearlo en cada render
+  const serviceIds = useMemo(() => {
+    return bookingData.services.map((s: any) => s.id)
+  }, [bookingData.services])
+
+  // Hook de disponibilidad en tiempo real (solo se activa cuando hay fecha seleccionada)
+  const {
+    slots,
+    loading: loadingAvailability,
+    error: availabilityError,
+    wsStatus,
+    wsConnected,
+  } = useBookingAvailability({
+    commerceId,
+    userId: bookingData.staff?.id,
+    date: selectedDate,
+    services: serviceIds,
+    enabled: !!selectedDate && !!commerceId && !!bookingData.staff?.id && bookingData.services.length > 0,
+  })
+
   // ==========================================================================
   // HANDLERS
   // ==========================================================================
@@ -129,10 +127,12 @@ export function DatetimeSelector({ bookingData, setBookingData, commerceId }: Da
     })
   }
 
-  const handleSelectTime = (time: string) => {
+  const handleSelectTime = (slot: { time: string; start: string; end: string }) => {
     setBookingData({
       ...bookingData,
-      time: time,
+      time: slot.time,
+      timeStart: slot.start,
+      timeEnd: slot.end,
     })
   }
 
@@ -192,23 +192,58 @@ export function DatetimeSelector({ bookingData, setBookingData, commerceId }: Da
           ====================================================================== */}
       {selectedDate && (
         <div>
-          {/* //* Título de la sección */}
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Selecciona una Hora
-          </h3>
-          
-          {/* //* Grid de horarios disponibles */}
-          <div className="grid gap-2 grid-cols-4 lg:grid-cols-7">
-            {availableTimes.map((time) => {
-              const isSelected = bookingData.time === time
-              return (
-                <Button key={time} variant={isSelected ? "default" : "outline"} onClick={() => handleSelectTime(time)}>
-                  {time}
-                </Button>
-              )
-            })}
+          {/* //* Título de la sección con indicador de WebSocket */}
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Selecciona una Hora
+            </h3>
+            {/* //* Indicador de estado WebSocket */}
+            {wsConnected ? (
+              <div className="flex items-center gap-1 text-xs text-green-600">
+                <Wifi className="h-4 w-4" />
+                <span className="hidden sm:inline">Tiempo real</span>
+              </div>
+            ) : wsStatus === 'connecting' ? (
+              <div className="flex items-center gap-1 text-xs text-yellow-600">
+                <WifiOff className="h-4 w-4" />
+                <span className="hidden sm:inline">Conectando...</span>
+              </div>
+            ) : null}
           </div>
+
+          {/* //* Estado de carga */}
+          {loadingAvailability ? (
+            <div className="text-center text-sm text-muted-foreground py-4">
+              Cargando horarios disponibles...
+            </div>
+          ) : availabilityError ? (
+            <div className="text-center text-sm text-red-500 py-4">
+              Error al cargar disponibilidad: {availabilityError}
+            </div>
+          ) : slots.length === 0 ? (
+            <div className="text-center text-sm text-muted-foreground py-4">
+              No hay horarios disponibles para esta fecha
+            </div>
+          ) : (
+            /* //* Grid de horarios disponibles desde el backend */
+            <div className="grid gap-2 grid-cols-4 lg:grid-cols-7">
+              {slots.map((slot) => {
+                const isSelected = bookingData.time === slot.time
+                return (
+                  <Button
+                    key={slot.start}
+                    variant={isSelected ? "default" : "outline"}
+                    disabled={!slot.available}
+                    className={`${!slot.available ? "opacity-50 cursor-not-allowed" : ""}`}
+                    onClick={() => slot.available && handleSelectTime(slot)}
+                  >
+                    {slot.time}
+                  </Button>
+                )
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>
